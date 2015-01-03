@@ -10,7 +10,7 @@ import UIKit
 
 class ProgressViewController: UIViewController {
     
-    var gameState: GameState!
+    var gameState: GameState?
     
     private let dotsSpread: CGFloat = 80.0
     private var timeLabel: ManglableLabel?
@@ -52,11 +52,10 @@ class ProgressViewController: UIViewController {
             ]
         )
         
-        for i in 1...(gameState.challenges.count) {
+        for i in 1...(gameState!.challenges.count) {
             let dotLabel = UILabel()
             dotLabel.setTranslatesAutoresizingMaskIntoConstraints(false)
             dotLabel.backgroundColor = UIColor.clearColor()
-            dotLabel.textColor = DesignLanguage.ActiveTextColor
             dotLabel.font = font
             dotLabel.text = "."
             view.addSubview(dotLabel)
@@ -71,7 +70,7 @@ class ProgressViewController: UIViewController {
                         toItem: view,
                         attribute: NSLayoutAttribute.CenterX,
                         multiplier: 1.0,
-                        constant: -(dotsSpread/2.0) + ((dotsSpread*CGFloat(i - 1))/CGFloat(gameState.challenges.count - 1))),
+                        constant: -(dotsSpread/2.0) + ((dotsSpread*CGFloat(i - 1))/CGFloat(gameState!.challenges.count - 1))),
                     NSLayoutConstraint(
                         item: dotLabel,
                         attribute: NSLayoutAttribute.CenterY,
@@ -106,5 +105,43 @@ class ProgressViewController: UIViewController {
                 metrics: nil,
                 views: ["bottomShadow" : bottomShadow])
         )
+        
+        GameManager.sharedInstance.subscribeToGameStateChangeNotifications(self)
+        
+        refreshDotViews()
+    }
+    
+    deinit {
+        GameManager.sharedInstance.unsubscribeFromGameStateChangeNotifications(self)
+    }
+    
+    private func refreshDotViews() {
+        let currChallengeIndex = gameState?.currentChallengeIndex ?? Int.max
+        for (dotViewIndex, dotView) in enumerate(self.dotViews) {
+            dotView.textColor = (dotViewIndex >= currChallengeIndex) ? DesignLanguage.ActiveTextColor : DesignLanguage.InactiveTextColor
+        }
+    }
+    
+    func refresh(displayLink: CADisplayLink) {
+        if let gameStartTime = gameState?.timeStart {
+            let timeInGame = NSDate().timeIntervalSinceDate(gameStartTime)
+            let minsInGame = Int(floor(timeInGame/60.0))
+            let secsInGame = Int(floor(timeInGame - NSTimeInterval(minsInGame*60)))
+            let hundredthsOfSecsInGame = Int(floor((timeInGame - floor(timeInGame))*100))
+            timeLabel?.text = NSString(format: "%02d:%02d:%02d", minsInGame, secsInGame, hundredthsOfSecsInGame)
+        } else {
+            displayLink.invalidate()
+        }
+    }
+}
+
+extension ProgressViewController: GameStateChangeListener {
+    func gameStateChanged(change: GameStateChange) {
+        gameState = change.newGameState
+        if change.oldGameState?.timeStart == nil && change.newGameState?.timeStart != nil {
+            let displayLink = CADisplayLink(target: self, selector: "refresh:")
+            displayLink.addToRunLoop(NSRunLoop.currentRunLoop(), forMode: NSDefaultRunLoopMode)
+        }
+        refreshDotViews()
     }
 }

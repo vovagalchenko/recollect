@@ -9,7 +9,6 @@
 import UIKit
 
 class HalfScreenViewController: UIViewController, TransitionAnimationDelegate {
-    var displayLink: CADisplayLink?
     var displayLinkStartDate: NSDate?
     var displayLinkDuration: NSTimeInterval?
     var transitionBeginningState: TransitionAnimationState?
@@ -33,7 +32,7 @@ class HalfScreenViewController: UIViewController, TransitionAnimationDelegate {
         }
     }
     
-    func refreshFrame(link: CADisplayLink) {
+    func refreshFrame(displayLink: CADisplayLink) {
         let timeElapsed = NSDate().timeIntervalSinceDate(displayLinkStartDate!)
         let timeLeft = displayLinkDuration! - timeElapsed
         subviewsWalk(view) {
@@ -56,8 +55,7 @@ class HalfScreenViewController: UIViewController, TransitionAnimationDelegate {
         }
         
         if timeElapsed >= displayLinkDuration {
-            displayLink?.invalidate()
-            displayLink = nil
+            displayLink.invalidate()
             displayLinkDuration = nil
             displayLinkStartDate = nil
             transitionBeginningState = nil
@@ -71,7 +69,7 @@ class HalfScreenViewController: UIViewController, TransitionAnimationDelegate {
     }
     
     func animationWillBegin(beginningState: TransitionAnimationState, plannedAnimationDuration: NSTimeInterval) {
-        displayLink = CADisplayLink(target: self, selector: Selector("refreshFrame:"))
+        let displayLink = CADisplayLink(target: self, selector: Selector("refreshFrame:"))
         transitionBeginningState = beginningState
         displayLinkStartDate = NSDate()
         displayLinkDuration = plannedAnimationDuration
