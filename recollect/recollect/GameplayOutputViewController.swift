@@ -118,15 +118,11 @@ class GameplayOutputViewController: HalfScreenViewController {
         
         setActiveChallenge(gameState.currentChallengeIndex, animated: false)
         
-        NSNotificationCenter.defaultCenter().addObserver(
-            self,
-            selector: "gameStateChangeNotificationReceived:",
-            name: GameManager.GameStateChangeNotificationName,
-            object: GameManager.sharedInstance)
+        GameManager.sharedInstance.subscribeToGameStateChangeNotifications(self)
     }
     
     deinit {
-        NSNotificationCenter.defaultCenter().removeObserver(self)
+        GameManager.sharedInstance.unsubscribeFromGameStateChangeNotifications(self)
     }
     
     func challengeLabel(operand: Int) -> ManglableLabel {
@@ -188,10 +184,8 @@ class GameplayOutputViewController: HalfScreenViewController {
     }
 }
 
-extension GameplayOutputViewController {
-    func gameStateChangeNotificationReceived(notification: NSNotification!) {
-        let change = notification!.userInfo![GameManager.GameStateChangeUserInfoKey]! as GameStateChange
-        
+extension GameplayOutputViewController: GameStateChangeListener {
+    func gameStateChanged(change: GameStateChange) {
         if change.oldGameState?.currentChallengeIndex != change.newGameState?.currentChallengeIndex {
             if let newChallengeIndex = change.newGameState?.currentChallengeIndex {
                 setActiveChallenge(newChallengeIndex, animated: true)

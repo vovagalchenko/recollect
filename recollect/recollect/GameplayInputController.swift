@@ -74,15 +74,11 @@ class GameplayInputController: HalfScreenViewController {
             }
         }
         
-        NSNotificationCenter.defaultCenter().addObserver(
-            self,
-            selector: "gameStateChangeNotificationReceived:",
-            name: GameManager.GameStateChangeNotificationName,
-            object: GameManager.sharedInstance)
+        GameManager.sharedInstance.subscribeToGameStateChangeNotifications(self)
     }
     
     deinit {
-        NSNotificationCenter.defaultCenter().removeObserver(self)
+        GameManager.sharedInstance.unsubscribeFromGameStateChangeNotifications(self)
     }
     
     func handleButtonPress(gameplayButton: GameplayButton) {
@@ -97,17 +93,15 @@ class GameplayInputController: HalfScreenViewController {
     }
 }
 
-extension GameplayInputController {
-    func gameStateChangeNotificationReceived(notification: NSNotification!) {
-        let change = notification!.userInfo![GameManager.GameStateChangeUserInfoKey]! as GameStateChange
-        
+extension GameplayInputController: GameStateChangeListener {
+    func gameStateChanged(change: GameStateChange) {
         if (change.oldGameState?.currentChallengeIndex ?? Int.min) < 0 &&
-           (change.newGameState?.currentChallengeIndex ?? Int.min) >= 0 {
-            UIView.animateWithDuration(DesignLanguage.MinorAnimationDuration, animations: {
-                for button in self.buttons {
-                    button.enabled = (button.text != "»")
-                }
-            })
+            (change.newGameState?.currentChallengeIndex ?? Int.min) >= 0 {
+                UIView.animateWithDuration(DesignLanguage.MinorAnimationDuration, animations: {
+                    for button in self.buttons {
+                        button.enabled = (button.text != "»")
+                    }
+                })
         } else if (change.newGameState?.currentChallengeIndex ?? Int.min) >= (change.newGameState?.challenges.count ?? Int.max) {
             UIView.animateWithDuration(DesignLanguage.MinorAnimationDuration, animations: {
                 for button in self.buttons {

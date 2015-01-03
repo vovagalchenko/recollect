@@ -20,6 +20,8 @@
 		8087FEC81A52355F00F3B3AD /* GameManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8087FEC71A52355F00F3B3AD /* GameManager.swift */; };
 		8087FECA1A54968E00F3B3AD /* GameplayButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8087FEC91A54968E00F3B3AD /* GameplayButton.swift */; };
 		8087FECD1A54998D00F3B3AD /* GameplayInputController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8087FECC1A54998D00F3B3AD /* GameplayInputController.swift */; };
+		8098CD2D1A58367C009968EE /* GameState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8098CD2C1A58367C009968EE /* GameState.swift */; };
+		8098CD2F1A5836E0009968EE /* Challenge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8098CD2E1A5836E0009968EE /* Challenge.swift */; };
 		80A0A0661A4F237A00122749 /* LevelPickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80A0A0651A4F237A00122749 /* LevelPickerViewController.swift */; };
 		80D712B719F4E0A600152F13 /* Launch Screen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 80D712B619F4E0A600152F13 /* Launch Screen.xib */; };
 /* End PBXBuildFile section */
@@ -53,6 +55,8 @@
 		8087FEC71A52355F00F3B3AD /* GameManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameManager.swift; sourceTree = "<group>"; };
 		8087FEC91A54968E00F3B3AD /* GameplayButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameplayButton.swift; sourceTree = "<group>"; };
 		8087FECC1A54998D00F3B3AD /* GameplayInputController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameplayInputController.swift; sourceTree = "<group>"; };
+		8098CD2C1A58367C009968EE /* GameState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameState.swift; sourceTree = "<group>"; };
+		8098CD2E1A5836E0009968EE /* Challenge.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Challenge.swift; sourceTree = "<group>"; };
 		80A0A0651A4F237A00122749 /* LevelPickerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LevelPickerViewController.swift; sourceTree = "<group>"; };
 		80D712B619F4E0A600152F13 /* Launch Screen.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "Launch Screen.xib"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -96,7 +100,7 @@
 		80539B4519F4BCFD00C23F6D /* recollect */ = {
 			isa = PBXGroup;
 			children = (
-				8087FEC71A52355F00F3B3AD /* GameManager.swift */,
+				8098CD2B1A58365D009968EE /* Model */,
 				80539B4A19F4BCFD00C23F6D /* BaseViewController.swift */,
 				8087FECB1A5496C100F3B3AD /* Gameplay UI Helpers */,
 				8087FEC51A5234E600F3B3AD /* HalfScreenController */,
@@ -163,6 +167,16 @@
 				805DE3EA1A564D550072CB12 /* ProgressViewController.swift */,
 			);
 			name = "Gameplay UI Helpers";
+			sourceTree = "<group>";
+		};
+		8098CD2B1A58365D009968EE /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				8087FEC71A52355F00F3B3AD /* GameManager.swift */,
+				8098CD2C1A58367C009968EE /* GameState.swift */,
+				8098CD2E1A5836E0009968EE /* Challenge.swift */,
+			);
+			name = Model;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -266,10 +280,12 @@
 			files = (
 				806B529B1A4B3BB6005F4DFA /* DesignLanguage.swift in Sources */,
 				8087FEC81A52355F00F3B3AD /* GameManager.swift in Sources */,
+				8098CD2D1A58367C009968EE /* GameState.swift in Sources */,
 				8087FECD1A54998D00F3B3AD /* GameplayInputController.swift in Sources */,
 				805DE3EB1A564D550072CB12 /* ProgressViewController.swift in Sources */,
 				8087FECA1A54968E00F3B3AD /* GameplayButton.swift in Sources */,
 				80539B4B19F4BCFD00C23F6D /* BaseViewController.swift in Sources */,
+				8098CD2F1A5836E0009968EE /* Challenge.swift in Sources */,
 				80539B4919F4BCFD00C23F6D /* AppDelegate.swift in Sources */,
 				806B529D1A4B3DFD005F4DFA /* LogoViewController.swift in Sources */,
 				8087FEC21A5114BC00F3B3AD /* ManglableLabel.swift in Sources */,

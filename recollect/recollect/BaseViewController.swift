@@ -69,15 +69,11 @@ class BaseViewController: UIViewController {
             return levelPickerVC
         })
         
-        NSNotificationCenter.defaultCenter().addObserver(
-            self,
-            selector: "gameStateChangeNotificationReceived:",
-            name: GameManager.GameStateChangeNotificationName,
-            object: GameManager.sharedInstance)
+        GameManager.sharedInstance.subscribeToGameStateChangeNotifications(self)
     }
     
     deinit {
-        NSNotificationCenter.defaultCenter().removeObserver(self)
+        GameManager.sharedInstance.unsubscribeFromGameStateChangeNotifications(self)
     }
     
     private var transitionQueue: [((() -> HalfScreenViewController?)?, (() -> HalfScreenViewController?)?, HalfScreenViewController?, HalfScreenViewController?)] = Array()
@@ -271,9 +267,8 @@ class BaseViewController: UIViewController {
 }
 
 
-extension BaseViewController {
-    func gameStateChangeNotificationReceived(notification: NSNotification!) {
-        let change = notification!.userInfo![GameManager.GameStateChangeUserInfoKey]! as GameStateChange
+extension BaseViewController: GameStateChangeListener {
+    func gameStateChanged(change: GameStateChange) {
         if change.oldGameState == nil && change.newGameState != nil {
             self.queueTransition(newTopViewControllerFunc: {
                 let gameplayOutputController = GameplayOutputViewController()
