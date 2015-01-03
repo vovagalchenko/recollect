@@ -17,6 +17,7 @@ class GameplayInputController: HalfScreenViewController {
         ["7", "8", "9"],
         ["«", "0", "»"]
     ]
+    var buttons: [GameplayButton] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -24,6 +25,7 @@ class GameplayInputController: HalfScreenViewController {
         for (lineNumber, buttonTextLine) in enumerate(buttonsText) {
             for (buttonNumber, buttonText) in enumerate(buttonTextLine) {
                 let button = gameplayButton(buttonText)
+                buttons.append(button)
                 if buttonText.toInt() != nil {
                     button.enabled = false
                 }
@@ -72,6 +74,15 @@ class GameplayInputController: HalfScreenViewController {
             }
         }
         
+        NSNotificationCenter.defaultCenter().addObserver(
+            self,
+            selector: "gameStateChangeNotificationReceived:",
+            name: GameManager.GameStateChangeNotificationName,
+            object: GameManager.sharedInstance)
+    }
+    
+    deinit {
+        NSNotificationCenter.defaultCenter().removeObserver(self)
     }
     
     func handleButtonPress(gameplayButton: GameplayButton) {
@@ -83,6 +94,27 @@ class GameplayInputController: HalfScreenViewController {
         button.addTarget(self, action: "handleButtonPress:", forControlEvents: UIControlEvents.TouchUpInside)
         button.text = text
         return button
+    }
+}
+
+extension GameplayInputController {
+    func gameStateChangeNotificationReceived(notification: NSNotification!) {
+        let change = notification!.userInfo![GameManager.GameStateChangeUserInfoKey]! as GameStateChange
+        
+        if (change.oldGameState?.currentChallengeIndex ?? Int.min) < 0 &&
+           (change.newGameState?.currentChallengeIndex ?? Int.min) >= 0 {
+            UIView.animateWithDuration(DesignLanguage.MinorAnimationDuration, animations: {
+                for button in self.buttons {
+                    button.enabled = (button.text != "»")
+                }
+            })
+        } else if (change.newGameState?.currentChallengeIndex ?? Int.min) >= (change.newGameState?.challenges.count ?? Int.max) {
+            UIView.animateWithDuration(DesignLanguage.MinorAnimationDuration, animations: {
+                for button in self.buttons {
+                    button.enabled = (button.text == "«")
+                }
+            })
+        }
     }
 }
 

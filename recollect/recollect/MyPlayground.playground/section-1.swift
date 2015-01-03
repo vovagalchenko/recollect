@@ -15,3 +15,8 @@ func banana(dotsSpread: Float, i: Int) -> Float {
 }
 
 banana(50, 0)
+
+
+let arr = [1, 2, 3, 4, 5]
+var mutableArr = arr
+var anotherArr = [1, 2, 3, 4]

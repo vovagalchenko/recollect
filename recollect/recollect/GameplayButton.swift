@@ -14,7 +14,7 @@ class GameplayButton: UIControl {
         didSet {
             if (highlighted) {
                 label.textColor = DesignLanguage.InactiveTextColor
-            } else {
+            } else if enabled {
                 label.textColor = DesignLanguage.ActiveTextColor
             }
             setNeedsDisplay()

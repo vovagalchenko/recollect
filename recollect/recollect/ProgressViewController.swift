@@ -10,8 +10,9 @@ import UIKit
 
 class ProgressViewController: UIViewController {
     
+    var gameState: GameState!
+    
     private let dotsSpread: CGFloat = 80.0
-    private let numRounds: Int = GameManager.numRounds
     private var timeLabel: ManglableLabel?
     private var dotViews: [UILabel] = [UILabel]()
     
@@ -25,7 +26,7 @@ class ProgressViewController: UIViewController {
         timeLabel = ManglableLabel()
         timeLabel?.setTranslatesAutoresizingMaskIntoConstraints(false)
         timeLabel?.backgroundColor = UIColor.clearColor()
-        timeLabel?.textColor = UIColor(red: 140.0/255.0, green: 147.0/255.0, blue: 148.0/255.0, alpha: 0.30)
+        timeLabel?.textColor = DesignLanguage.NeverActiveTextColor.colorWithAlphaComponent(0.30)
         timeLabel?.font = font
         timeLabel?.text = "00:00:00"
         view.addSubview(timeLabel!)
@@ -51,7 +52,7 @@ class ProgressViewController: UIViewController {
             ]
         )
         
-        for i in 1...numRounds {
+        for i in 1...(gameState.challenges.count) {
             let dotLabel = UILabel()
             dotLabel.setTranslatesAutoresizingMaskIntoConstraints(false)
             dotLabel.backgroundColor = UIColor.clearColor()
@@ -70,7 +71,7 @@ class ProgressViewController: UIViewController {
                         toItem: view,
                         attribute: NSLayoutAttribute.CenterX,
                         multiplier: 1.0,
-                        constant: -(dotsSpread/2.0) + ((dotsSpread*CGFloat(i - 1))/CGFloat(numRounds - 1))),
+                        constant: -(dotsSpread/2.0) + ((dotsSpread*CGFloat(i - 1))/CGFloat(gameState.challenges.count - 1))),
                     NSLayoutConstraint(
                         item: dotLabel,
                         attribute: NSLayoutAttribute.CenterY,
