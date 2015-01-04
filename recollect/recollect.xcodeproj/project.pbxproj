@@ -20,6 +20,8 @@
 		8087FEC81A52355F00F3B3AD /* GameManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8087FEC71A52355F00F3B3AD /* GameManager.swift */; };
 		8087FECA1A54968E00F3B3AD /* GameplayButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8087FEC91A54968E00F3B3AD /* GameplayButton.swift */; };
 		8087FECD1A54998D00F3B3AD /* GameplayInputController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8087FECC1A54998D00F3B3AD /* GameplayInputController.swift */; };
+		808E20471A589A3D00580CE9 /* BlurView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 808E20461A589A3D00580CE9 /* BlurView.swift */; };
+		808E204A1A589B7100580CE9 /* GradientView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 808E20491A589B7100580CE9 /* GradientView.swift */; };
 		8098CD2D1A58367C009968EE /* GameState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8098CD2C1A58367C009968EE /* GameState.swift */; };
 		8098CD2F1A5836E0009968EE /* Challenge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8098CD2E1A5836E0009968EE /* Challenge.swift */; };
 		80A0A0661A4F237A00122749 /* LevelPickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80A0A0651A4F237A00122749 /* LevelPickerViewController.swift */; };
@@ -55,6 +57,8 @@
 		8087FEC71A52355F00F3B3AD /* GameManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameManager.swift; sourceTree = "<group>"; };
 		8087FEC91A54968E00F3B3AD /* GameplayButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameplayButton.swift; sourceTree = "<group>"; };
 		8087FECC1A54998D00F3B3AD /* GameplayInputController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameplayInputController.swift; sourceTree = "<group>"; };
+		808E20461A589A3D00580CE9 /* BlurView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BlurView.swift; sourceTree = "<group>"; };
+		808E20491A589B7100580CE9 /* GradientView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GradientView.swift; sourceTree = "<group>"; };
 		8098CD2C1A58367C009968EE /* GameState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameState.swift; sourceTree = "<group>"; };
 		8098CD2E1A5836E0009968EE /* Challenge.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Challenge.swift; sourceTree = "<group>"; };
 		80A0A0651A4F237A00122749 /* LevelPickerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LevelPickerViewController.swift; sourceTree = "<group>"; };
@@ -165,6 +169,8 @@
 			children = (
 				8087FEC91A54968E00F3B3AD /* GameplayButton.swift */,
 				805DE3EA1A564D550072CB12 /* ProgressViewController.swift */,
+				808E20461A589A3D00580CE9 /* BlurView.swift */,
+				808E20491A589B7100580CE9 /* GradientView.swift */,
 			);
 			name = "Gameplay UI Helpers";
 			sourceTree = "<group>";
@@ -228,6 +234,7 @@
 				TargetAttributes = {
 					80539B4219F4BCFD00C23F6D = {
 						CreatedOnToolsVersion = 6.0.1;
+						DevelopmentTeam = DUYQ44RPLQ;
 					};
 					80539B5719F4BCFE00C23F6D = {
 						CreatedOnToolsVersion = 6.0.1;
@@ -280,9 +287,11 @@
 			files = (
 				806B529B1A4B3BB6005F4DFA /* DesignLanguage.swift in Sources */,
 				8087FEC81A52355F00F3B3AD /* GameManager.swift in Sources */,
+				808E20471A589A3D00580CE9 /* BlurView.swift in Sources */,
 				8098CD2D1A58367C009968EE /* GameState.swift in Sources */,
 				8087FECD1A54998D00F3B3AD /* GameplayInputController.swift in Sources */,
 				805DE3EB1A564D550072CB12 /* ProgressViewController.swift in Sources */,
+				808E204A1A589B7100580CE9 /* GradientView.swift in Sources */,
 				8087FECA1A54968E00F3B3AD /* GameplayButton.swift in Sources */,
 				80539B4B19F4BCFD00C23F6D /* BaseViewController.swift in Sources */,
 				8098CD2F1A5836E0009968EE /* Challenge.swift in Sources */,
@@ -396,10 +405,13 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				INFOPLIST_FILE = recollect/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 			};
 			name = Debug;
 		};
@@ -408,10 +420,13 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				INFOPLIST_FILE = recollect/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 			};
 			name = Release;
 		};

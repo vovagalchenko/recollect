@@ -83,11 +83,6 @@ class ProgressViewController: UIViewController {
             )
         }
         
-        let dispatchTime = dispatch_time(
-            DISPATCH_TIME_NOW,
-            Int64(5.0 * Double(NSEC_PER_SEC))
-        )
-        
         let bottomShadow = UIView()
         bottomShadow.setTranslatesAutoresizingMaskIntoConstraints(false)
         bottomShadow.backgroundColor = DesignLanguage.ShadowColor

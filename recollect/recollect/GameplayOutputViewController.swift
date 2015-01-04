@@ -15,6 +15,7 @@ class GameplayOutputViewController: HalfScreenViewController {
     private let progressViewHeight: CGFloat = 42.0
     private var progressVC: ProgressViewController?
     private var challengeContainer: UIView?
+    private var blurView: BlurView?
     private var challengeContainerXPositionConstraint: NSLayoutConstraint?
     
     override func viewDidLoad() {
@@ -40,6 +41,7 @@ class GameplayOutputViewController: HalfScreenViewController {
         )
         
         challengeContainer = UIView()
+        challengeContainer!.backgroundColor = DesignLanguage.TopHalfBGColor
         challengeContainer!.setTranslatesAutoresizingMaskIntoConstraints(false)
         view.addSubview(challengeContainer!)
         
@@ -116,6 +118,49 @@ class GameplayOutputViewController: HalfScreenViewController {
             )
         }
         
+        blurView = BlurView(frame: CGRectZero)
+        blurView?.viewToBlur = challengeContainer
+        view.addSubview(blurView!)
+        
+        view.addConstraints(
+            [
+                NSLayoutConstraint(
+                    item: blurView!,
+                    attribute: NSLayoutAttribute.Top,
+                    relatedBy: NSLayoutRelation.Equal,
+                    toItem: challengeContainer,
+                    attribute: NSLayoutAttribute.Top,
+                    multiplier: 1.0,
+                    constant: 0.0),
+                NSLayoutConstraint(
+                    item: blurView!,
+                    attribute: NSLayoutAttribute.Bottom,
+                    relatedBy: NSLayoutRelation.Equal,
+                    toItem: challengeContainer,
+                    attribute: NSLayoutAttribute.Bottom,
+                    multiplier: 1.0,
+                    constant: 0.0),
+                NSLayoutConstraint(
+                    item: blurView!,
+                    attribute: NSLayoutAttribute.Left,
+                    relatedBy: NSLayoutRelation.Equal,
+                    toItem: view,
+                    attribute: NSLayoutAttribute.Left,
+                    multiplier: 1.0,
+                    constant: 0.0),
+                NSLayoutConstraint(
+                    item: blurView!,
+                    attribute: NSLayoutAttribute.Right,
+                    relatedBy: NSLayoutRelation.Equal,
+                    toItem: view,
+                    attribute: NSLayoutAttribute.Right,
+                    multiplier: CGFloat(gameState.n)/CGFloat(gameState.n + 1),
+                    constant: 0.0),
+            ]
+        )
+        
+        view.bringSubviewToFront(progressVC!.view)
+        
         setActiveChallenge(gameState.currentChallengeIndex, animated: false)
         
         GameManager.sharedInstance.subscribeToGameStateChangeNotifications(self)
@@ -163,10 +208,12 @@ class GameplayOutputViewController: HalfScreenViewController {
         switch animationState {
             case TransitionAnimationState.Inactive:
                 progressVC?.view.transform = CGAffineTransformMakeTranslation(0.0, progressViewHeight)
-                challengeContainer?.transform = CGAffineTransformMakeTranslation(CGRectIntersection(view.bounds, challengeContainer!.frame).width, 0.0)
+                challengeContainer?.transform = CGAffineTransformMakeTranslation(view.bounds.size.width - (challengeContainer?.frame.origin.x ?? 0), 0.0)
+                blurView?.alpha = 0
             case TransitionAnimationState.Active:
                 progressVC?.view.transform = CGAffineTransformMakeTranslation(0.0, 0.0)
                 challengeContainer?.transform = CGAffineTransformMakeTranslation(0.0, 0.0)
+                blurView?.alpha = 1
         }
     }
     

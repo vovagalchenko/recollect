@@ -134,7 +134,6 @@ class BaseViewController: UIViewController {
                 }
             }
         }
-        
         view.addConstraints(newViewConstraints)
         view.setNeedsLayout()
         view.layoutIfNeeded()
