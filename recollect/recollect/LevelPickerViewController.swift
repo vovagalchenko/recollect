@@ -12,8 +12,13 @@ class LevelPickerViewController: HalfScreenViewController, UIGestureRecognizerDe
     
     let horizontalPadding: CGFloat = 50
     let verticalPadding: CGFloat = 20
+    var scrollView: UIScrollView!
     
     var delegate: LevelPickerViewControllerDelegate?
+    
+    deinit {
+        scrollView.delegate = nil
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -26,7 +31,7 @@ class LevelPickerViewController: HalfScreenViewController, UIGestureRecognizerDe
         tapLabel.text = "TAP TO START."
         view.addSubview(tapLabel)
         
-        let scrollView = UIScrollView()
+        scrollView = UIScrollView()
         scrollView.delegate = self
         scrollView.setTranslatesAutoresizingMaskIntoConstraints(false)
         scrollView.alwaysBounceHorizontal = true
@@ -194,9 +199,10 @@ class LevelPickerViewController: HalfScreenViewController, UIGestureRecognizerDe
 
 extension LevelPickerViewController: UIScrollViewDelegate {
     
+    /*
     func scrollViewWillBeginDecelerating(scrollView: UIScrollView) {
         snapToNearestLevelLabel(scrollView)
-    }
+    }*/
     
     func scrollViewDidEndDragging(scrollView: UIScrollView, willDecelerate decelerate: Bool) {
         if (!decelerate) {

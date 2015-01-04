@@ -135,7 +135,8 @@ class BlurView: UIView {
     
     func refresh(displayLink: CADisplayLink) {
         let rectInTargetsCoordinates = viewToBlur!.layer.presentationLayer().convertRect(layer.presentationLayer().bounds, fromLayer:layer.presentationLayer() as CALayer)
-        if !CGRectEqualToRect(rectInTargetsCoordinates, currentBlurredRectInBlurredViewsCoordinates) {
+        if !CGRectEqualToRect(rectInTargetsCoordinates, currentBlurredRectInBlurredViewsCoordinates)
+            && CGRectIntersection(rectInTargetsCoordinates, viewToBlur!.layer.presentationLayer().bounds).width > 0 {
             let image = screenshotToBlur(rectInTargetsCoordinates)
             blurredView.image = treatImage(image)
             currentBlurredRectInBlurredViewsCoordinates = rectInTargetsCoordinates
