@@ -11,58 +11,25 @@ import UIKit
 class BlurView: UIView {
     
     let blurRadius: CGFloat = 30
-    var displayLink: CADisplayLink?
-    var viewToBlur: UIView?
-    var blurredView: UIImageView!
-    var currentBlurredRectInBlurredViewsCoordinates: CGRect = CGRectZero
+    let viewToBlur: UIView
+    let blurredView: UIImageView
+    let gradientView: GradientView
     
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        opaque = true
-        self.backgroundColor = DesignLanguage.TopHalfBGColor
-        setTranslatesAutoresizingMaskIntoConstraints(false)
-        
+    init(viewToBlur: UIView) {
+        self.viewToBlur = viewToBlur
         blurredView = UIImageView()
         blurredView.setTranslatesAutoresizingMaskIntoConstraints(false)
         blurredView.contentMode = UIViewContentMode.ScaleToFill
-        addSubview(blurredView)
-        addConstraints([
-            NSLayoutConstraint(
-                item: blurredView,
-                attribute: NSLayoutAttribute.Top,
-                relatedBy: NSLayoutRelation.Equal,
-                toItem: self,
-                attribute: NSLayoutAttribute.Top,
-                multiplier: 1.0,
-                constant: 0.0),
-            NSLayoutConstraint(
-                item: blurredView,
-                attribute: NSLayoutAttribute.Bottom,
-                relatedBy: NSLayoutRelation.Equal,
-                toItem: self,
-                attribute: NSLayoutAttribute.Bottom,
-                multiplier: 1.0,
-                constant: 0.0),
-            NSLayoutConstraint(
-                item: blurredView,
-                attribute: NSLayoutAttribute.Left,
-                relatedBy: NSLayoutRelation.Equal,
-                toItem: self,
-                attribute: NSLayoutAttribute.Left,
-                multiplier: 1.0,
-                constant: 0.0),
-            NSLayoutConstraint(
-                item: blurredView,
-                attribute: NSLayoutAttribute.Right,
-                relatedBy: NSLayoutRelation.Equal,
-                toItem: self,
-                attribute: NSLayoutAttribute.Right,
-                multiplier: 1.0,
-                constant: 0.0),
-        ])
+        gradientView = GradientView(frame: CGRectZero)
+        super.init(frame: CGRectZero)
+        opaque = true
+        clipsToBounds = true
+        backgroundColor = DesignLanguage.TopHalfBGColor
+        setTranslatesAutoresizingMaskIntoConstraints(false)
         
-        let gradientView = GradientView(frame: CGRectZero)
+        addSubview(blurredView)
         addSubview(gradientView)
+        
         addConstraints([
             NSLayoutConstraint(
                 item: gradientView,
@@ -79,7 +46,7 @@ class BlurView: UIView {
                 toItem: self,
                 attribute: NSLayoutAttribute.Bottom,
                 multiplier: 1.0,
-                constant: 42.0),
+                constant: DesignLanguage.ProgressBarHeight),
             NSLayoutConstraint(
                 item: gradientView,
                 attribute: NSLayoutAttribute.Left,
@@ -99,20 +66,19 @@ class BlurView: UIView {
         ])
     }
     
-    override func willMoveToWindow(newWindow: UIWindow?) {
-        if newWindow != nil {
-            displayLink = CADisplayLink(target: self, selector: "refresh:")
-            displayLink?.addToRunLoop(NSRunLoop.currentRunLoop(), forMode: NSDefaultRunLoopMode)
-        } else {
-            displayLink?.invalidate()
+    override func layoutSubviews() {
+        let beforeRect = blurredView.bounds
+        super.layoutSubviews()
+        if !CGRectEqualToRect(beforeRect, blurredView.bounds) {
+            let blurredImage = self.treatImage(self.screenshot(self.viewToBlur))
+            self.blurredView.image = blurredImage
         }
     }
     
-    private func screenshotToBlur(rectInTargetsCoordinates: CGRect) -> CIImage {
-        UIGraphicsBeginImageContextWithOptions(bounds.size, false, UIScreen.mainScreen().scale)
+    private func screenshot(viewToCapture: UIView) -> CIImage {
+        UIGraphicsBeginImageContextWithOptions(viewToCapture.bounds.size, false, UIScreen.mainScreen().scale)
         let ctx = UIGraphicsGetCurrentContext()
-        CGContextTranslateCTM(ctx, -rectInTargetsCoordinates.origin.x, -rectInTargetsCoordinates.origin.y)
-        viewToBlur?.layer.presentationLayer().renderInContext(ctx)
+        viewToCapture.layer.renderInContext(ctx)
         
         let uiImage = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
@@ -131,16 +97,6 @@ class BlurView: UIView {
         )
         
         return UIImage(CIImage: croppedBlurredImage)!
-    }
-    
-    func refresh(displayLink: CADisplayLink) {
-        let rectInTargetsCoordinates = viewToBlur!.layer.presentationLayer().convertRect(layer.presentationLayer().bounds, fromLayer:layer.presentationLayer() as CALayer)
-        if !CGRectEqualToRect(rectInTargetsCoordinates, currentBlurredRectInBlurredViewsCoordinates)
-            && CGRectIntersection(rectInTargetsCoordinates, viewToBlur!.layer.presentationLayer().bounds).width > 0 {
-            let image = screenshotToBlur(rectInTargetsCoordinates)
-            blurredView.image = treatImage(image)
-            currentBlurredRectInBlurredViewsCoordinates = rectInTargetsCoordinates
-        }
     }
     
     required init(coder aDecoder: NSCoder) {

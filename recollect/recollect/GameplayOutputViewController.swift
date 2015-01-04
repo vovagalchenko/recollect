@@ -12,7 +12,6 @@ class GameplayOutputViewController: HalfScreenViewController {
     
     var gameState: GameState!
     
-    private let progressViewHeight: CGFloat = 42.0
     private var progressVC: ProgressViewController?
     private var challengeContainer: UIView?
     private var blurView: BlurView?
@@ -34,7 +33,7 @@ class GameplayOutputViewController: HalfScreenViewController {
                 metrics: nil,
                 views: ["progressView" : progressVC!.view]) +
             NSLayoutConstraint.constraintsWithVisualFormat(
-                "V:[progressView(\(progressViewHeight))]|",
+                "V:[progressView(\(DesignLanguage.ProgressBarHeight))]|",
                 options: NSLayoutFormatOptions(0),
                 metrics: nil,
                 views: ["progressView" : progressVC!.view])
@@ -118,9 +117,43 @@ class GameplayOutputViewController: HalfScreenViewController {
             )
         }
         
-        blurView = BlurView(frame: CGRectZero)
-        blurView?.viewToBlur = challengeContainer
+        blurView = BlurView(viewToBlur: challengeContainer!)
         view.addSubview(blurView!)
+        
+        view.addConstraints([
+            NSLayoutConstraint(
+                item: blurView!.blurredView,
+                attribute: NSLayoutAttribute.CenterY,
+                relatedBy: NSLayoutRelation.Equal,
+                toItem: challengeContainer,
+                attribute: NSLayoutAttribute.CenterY,
+                multiplier: 1.0,
+                constant: 0.0),
+            NSLayoutConstraint(
+                item: blurView!.blurredView,
+                attribute: NSLayoutAttribute.Height,
+                relatedBy: NSLayoutRelation.Equal,
+                toItem: challengeContainer,
+                attribute: NSLayoutAttribute.Height,
+                multiplier:1.0,
+                constant: 0.0),
+            NSLayoutConstraint(
+                item: blurView!.blurredView,
+                attribute: NSLayoutAttribute.Left,
+                relatedBy: NSLayoutRelation.Equal,
+                toItem: challengeContainer,
+                attribute: NSLayoutAttribute.Left,
+                multiplier: 1.0,
+                constant: 0.0),
+            NSLayoutConstraint(
+                item: blurView!.blurredView,
+                attribute: NSLayoutAttribute.Right,
+                relatedBy: NSLayoutRelation.Equal,
+                toItem: challengeContainer,
+                attribute: NSLayoutAttribute.Right,
+                multiplier: 1.0,
+                constant: 0.0),
+            ])
         
         view.addConstraints(
             [
@@ -128,7 +161,7 @@ class GameplayOutputViewController: HalfScreenViewController {
                     item: blurView!,
                     attribute: NSLayoutAttribute.Top,
                     relatedBy: NSLayoutRelation.Equal,
-                    toItem: challengeContainer,
+                    toItem: view,
                     attribute: NSLayoutAttribute.Top,
                     multiplier: 1.0,
                     constant: 0.0),
@@ -136,7 +169,7 @@ class GameplayOutputViewController: HalfScreenViewController {
                     item: blurView!,
                     attribute: NSLayoutAttribute.Bottom,
                     relatedBy: NSLayoutRelation.Equal,
-                    toItem: challengeContainer,
+                    toItem: view,
                     attribute: NSLayoutAttribute.Bottom,
                     multiplier: 1.0,
                     constant: 0.0),
@@ -207,14 +240,35 @@ class GameplayOutputViewController: HalfScreenViewController {
     private func configureForTransition(animationState: TransitionAnimationState) {
         switch animationState {
             case TransitionAnimationState.Inactive:
-                progressVC?.view.transform = CGAffineTransformMakeTranslation(0.0, progressViewHeight)
+                progressVC?.view.transform = CGAffineTransformMakeTranslation(0.0, DesignLanguage.ProgressBarHeight)
                 challengeContainer?.transform = CGAffineTransformMakeTranslation(view.bounds.size.width - (challengeContainer?.frame.origin.x ?? 0), 0.0)
                 blurView?.alpha = 0
             case TransitionAnimationState.Active:
-                progressVC?.view.transform = CGAffineTransformMakeTranslation(0.0, 0.0)
-                challengeContainer?.transform = CGAffineTransformMakeTranslation(0.0, 0.0)
+                progressVC?.view.transform = CGAffineTransformIdentity
+                challengeContainer?.transform = CGAffineTransformIdentity
                 blurView?.alpha = 1
         }
+    }
+    
+    private let initialShakeDuration: NSTimeInterval = 0.1
+    private let shakeReductionFactor: NSTimeInterval = 0.01
+    private let totalNumShakes = 8
+    private func shakeChallenges(shakeNumber: Int = 0) {
+        UIView.animateWithDuration(initialShakeDuration - (NSTimeInterval(shakeNumber) * shakeReductionFactor), animations: {
+            let sign: CGFloat = (shakeNumber%2 == 0) ? -1.0 : 1.0
+            let initialShakeAmount = self.view.bounds.size.width/CGFloat(4*(self.gameState!.n + 1))
+            let actualShakeAmount = initialShakeAmount - (initialShakeAmount*(CGFloat(shakeNumber)/CGFloat(self.totalNumShakes)))
+            let translation = CGAffineTransformMakeTranslation(sign*actualShakeAmount, 0.0)
+            self.challengeContainer?.transform = translation
+            self.blurView?.blurredView.transform = translation
+        }, completion: { (finished: Bool) -> Void in
+            if (shakeNumber == self.totalNumShakes - 1) {
+                self.challengeContainer?.transform = CGAffineTransformIdentity
+                self.blurView?.blurredView.transform = CGAffineTransformIdentity
+            } else {
+                self.shakeChallenges(shakeNumber: shakeNumber + 1)
+            }
+        })
     }
     
     override func animationWillBegin(beginningState: TransitionAnimationState, plannedAnimationDuration: NSTimeInterval) {
@@ -237,6 +291,9 @@ extension GameplayOutputViewController: GameStateChangeListener {
             if let newChallengeIndex = change.newGameState?.currentChallengeIndex {
                 setActiveChallenge(newChallengeIndex, animated: true)
             }
+        } else if change.oldGameState != nil && change.newGameState != nil {
+            // Wrong answer was entered
+            shakeChallenges()
         }
         
         gameState = change.newGameState
