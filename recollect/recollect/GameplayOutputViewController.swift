@@ -12,6 +12,7 @@ class GameplayOutputViewController: HalfScreenViewController {
     
     var gameState: GameState!
     
+    private var plusLabel: UILabel?
     private var progressVC: ProgressViewController?
     private var challengeContainer: UIView?
     private var blurView: BlurView?
@@ -192,6 +193,35 @@ class GameplayOutputViewController: HalfScreenViewController {
             ]
         )
         
+        plusLabel = UILabel()
+        plusLabel!.setTranslatesAutoresizingMaskIntoConstraints(false)
+        plusLabel!.backgroundColor = UIColor.clearColor()
+        plusLabel!.textColor = DesignLanguage.NeverActiveTextColor
+        plusLabel!.font = UIFont(name: "AvenirNext-Regular", size: 45.0)
+        plusLabel!.text = "+"
+        view.addSubview(plusLabel!)
+        
+        view.addConstraints(
+            [
+                NSLayoutConstraint(
+                    item: plusLabel!,
+                    attribute: NSLayoutAttribute.CenterY,
+                    relatedBy: NSLayoutRelation.Equal,
+                    toItem: challengeContainer,
+                    attribute: NSLayoutAttribute.CenterY,
+                    multiplier: 1.0,
+                    constant: 0.0),
+                NSLayoutConstraint(
+                    item: plusLabel!,
+                    attribute: NSLayoutAttribute.CenterX,
+                    relatedBy: NSLayoutRelation.Equal,
+                    toItem: view,
+                    attribute: NSLayoutAttribute.Right,
+                    multiplier: (CGFloat(gameState.n) + 0.25)/CGFloat(gameState.n + 1),
+                    constant: 0.0)
+            ]
+        )
+        
         view.bringSubviewToFront(progressVC!.view)
         
         setActiveChallenge(gameState.currentChallengeIndex, animated: false)
@@ -219,6 +249,7 @@ class GameplayOutputViewController: HalfScreenViewController {
         UIView.animateWithDuration(animated ? DesignLanguage.MinorAnimationDuration : 0.0, animations: { () -> Void in
             self.view.setNeedsLayout()
             self.view.layoutIfNeeded()
+            self.plusLabel?.alpha = (challengeIndex > (self.gameState.challenges.count - self.gameState.n - 1)) ? 0.0 : 1.0
         })
     }
     
@@ -242,10 +273,12 @@ class GameplayOutputViewController: HalfScreenViewController {
             case TransitionAnimationState.Inactive:
                 progressVC?.view.transform = CGAffineTransformMakeTranslation(0.0, DesignLanguage.ProgressBarHeight)
                 challengeContainer?.transform = CGAffineTransformMakeTranslation(view.bounds.size.width - (challengeContainer?.frame.origin.x ?? 0), 0.0)
+                plusLabel?.transform = CGAffineTransformMakeTranslation(view.bounds.size.width - (plusLabel?.frame.origin.x ?? 0), 0.0)
                 blurView?.alpha = 0
             case TransitionAnimationState.Active:
                 progressVC?.view.transform = CGAffineTransformIdentity
                 challengeContainer?.transform = CGAffineTransformIdentity
+                plusLabel?.transform = CGAffineTransformIdentity
                 blurView?.alpha = 1
         }
     }
@@ -287,6 +320,7 @@ class GameplayOutputViewController: HalfScreenViewController {
 
 extension GameplayOutputViewController: GameStateChangeListener {
     func gameStateChanged(change: GameStateChange) {
+        gameState = change.newGameState
         if change.oldGameState?.currentChallengeIndex != change.newGameState?.currentChallengeIndex {
             if let newChallengeIndex = change.newGameState?.currentChallengeIndex {
                 setActiveChallenge(newChallengeIndex, animated: true)
@@ -295,7 +329,5 @@ extension GameplayOutputViewController: GameStateChangeListener {
             // Wrong answer was entered
             shakeChallenges()
         }
-        
-        gameState = change.newGameState
     }
 }
