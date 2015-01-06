@@ -41,13 +41,13 @@ enum ChallengeOperator: Streamable {
     
     func apply(lOperand: Int, rOperand: Int) -> Int {
         switch (self) {
-        case .Sum: return (lOperand + rOperand) % 10
+            case .Sum: return (lOperand + rOperand) % 10
         }
     }
     
     func writeTo<Target : OutputStreamType>(inout target: Target) {
         switch (self) {
-        case .Sum: target.write("+")
+            case .Sum: target.write("+")
         }
     }
 }

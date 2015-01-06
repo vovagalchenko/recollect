@@ -26,27 +26,27 @@ class ManglableLabel: UILabel {
             originalTextColor = textColor
         }
         
-        let existingOriginalText = originalText!
-        
-        let strLength = countElements(existingOriginalText)
-        let numCharactersToLeaveUnmangled = Int(round(Float(strLength) * portionOfTextToLeaveUnmangled))
-        let indexOfSplitChar = advance(existingOriginalText.startIndex, numCharactersToLeaveUnmangled)
-        var newString = NSMutableAttributedString(string: existingOriginalText.substringToIndex(indexOfSplitChar), attributes: [NSForegroundColorAttributeName: originalTextColor!])
-        var alpha: CGFloat = 0
-        originalTextColor?.getRed(nil, green: nil, blue: nil, alpha: &alpha)
-        let mangledStringColor = canUseAlphaForAccents ? originalTextColor!.colorWithAlphaComponent(alpha * 0.5) : originalTextColor!
-        for character in existingOriginalText.substringFromIndex(indexOfSplitChar).unicodeScalars {
-            var replacement = character
-            if aToZCaps[0] <= character && aToZCaps[aToZCaps.count - 1] >= character {
-                replacement = aToZCaps[Int(arc4random_uniform(UInt32(aToZCaps.count)))]
-            } else if aToZLowercase[0] <= character && aToZLowercase[aToZLowercase.count - 1] >= character {
-                replacement = aToZLowercase[Int(arc4random_uniform(UInt32(aToZLowercase.count)))]
-            } else if zeroToNine[0] <= character && zeroToNine[zeroToNine.count - 1] >= character {
-                replacement = zeroToNine[Int(arc4random_uniform(UInt32(zeroToNine.count)))]
+        if let existingOriginalText = originalText {
+            let strLength = countElements(existingOriginalText)
+            let numCharactersToLeaveUnmangled = Int(round(Float(strLength) * portionOfTextToLeaveUnmangled))
+            let indexOfSplitChar = advance(existingOriginalText.startIndex, numCharactersToLeaveUnmangled)
+            var newString = NSMutableAttributedString(string: existingOriginalText.substringToIndex(indexOfSplitChar), attributes: [NSForegroundColorAttributeName: originalTextColor!])
+            var alpha: CGFloat = 0
+            originalTextColor?.getRed(nil, green: nil, blue: nil, alpha: &alpha)
+            let mangledStringColor = canUseAlphaForAccents ? originalTextColor!.colorWithAlphaComponent(alpha * 0.5) : originalTextColor!
+            for character in existingOriginalText.substringFromIndex(indexOfSplitChar).unicodeScalars {
+                var replacement = character
+                if aToZCaps[0] <= character && aToZCaps[aToZCaps.count - 1] >= character {
+                    replacement = aToZCaps[Int(arc4random_uniform(UInt32(aToZCaps.count)))]
+                } else if aToZLowercase[0] <= character && aToZLowercase[aToZLowercase.count - 1] >= character {
+                    replacement = aToZLowercase[Int(arc4random_uniform(UInt32(aToZLowercase.count)))]
+                } else if zeroToNine[0] <= character && zeroToNine[zeroToNine.count - 1] >= character {
+                    replacement = zeroToNine[Int(arc4random_uniform(UInt32(zeroToNine.count)))]
+                }
+                newString.appendAttributedString(NSAttributedString(string: String(replacement), attributes: [NSForegroundColorAttributeName: mangledStringColor]))
             }
-            newString.appendAttributedString(NSAttributedString(string: String(replacement), attributes: [NSForegroundColorAttributeName: mangledStringColor]))
+            attributedText = newString
         }
-        attributedText = newString
     }
     
     func unmangle() {

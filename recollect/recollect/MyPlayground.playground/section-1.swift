@@ -20,3 +20,25 @@ banana(50, 0)
 let arr = [1, 2, 3, 4, 5]
 var mutableArr = arr
 var anotherArr = [1, 2, 3, 4]
+
+class Test {
+    var dict: [String: Int] {
+        didSet {
+            println("HERRO: \(dict)")
+            woah = dict
+        }
+    }
+    
+    var woah: [String: Int]
+    
+    init() {
+        dict = [String: Int]()
+        woah = dict
+    }
+}
+
+let t = Test()
+t.dict = ["asdf": 1234]
+t.dict["asdf"] = 3456
+
+t

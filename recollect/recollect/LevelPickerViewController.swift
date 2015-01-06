@@ -14,7 +14,12 @@ class LevelPickerViewController: HalfScreenViewController, UIGestureRecognizerDe
     let verticalPadding: CGFloat = 20
     var scrollView: UIScrollView!
     
-    var delegate: LevelPickerViewControllerDelegate?
+    let delegate: LevelPickerViewControllerDelegate
+    
+    init(delegate: LevelPickerViewControllerDelegate) {
+        self.delegate = delegate
+        super.init(nibName: nil, bundle: nil)
+    }
     
     deinit {
         scrollView.delegate = nil
@@ -170,7 +175,7 @@ class LevelPickerViewController: HalfScreenViewController, UIGestureRecognizerDe
             }
         }
         
-        delegate?.pickedLevel(labelClosestToCenter!.text!)
+        delegate.pickedLevel(labelClosestToCenter!.text!)
     }
     
     private func instructionsLabel() -> ManglableLabel {

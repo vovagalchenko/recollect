@@ -118,8 +118,7 @@ class ProgressViewController: UIViewController {
     }
     
     func refresh(displayLink: CADisplayLink) {
-        if let gameStartTime = gameState?.timeStart {
-            let timeInGame = NSDate().timeIntervalSinceDate(gameStartTime)
+        if let timeInGame = gameState?.time() {
             let minsInGame = Int(floor(timeInGame/60.0))
             let secsInGame = Int(floor(timeInGame - NSTimeInterval(minsInGame*60)))
             let hundredthsOfSecsInGame = Int(floor((timeInGame - floor(timeInGame))*100))
@@ -133,7 +132,7 @@ class ProgressViewController: UIViewController {
 extension ProgressViewController: GameStateChangeListener {
     func gameStateChanged(change: GameStateChange) {
         gameState = change.newGameState
-        if change.oldGameState?.timeStart == nil && change.newGameState?.timeStart != nil {
+        if change.oldGameState?.latestTimeStart == nil && change.newGameState?.latestTimeStart != nil {
             let displayLink = CADisplayLink(target: self, selector: "refresh:")
             displayLink.addToRunLoop(NSRunLoop.currentRunLoop(), forMode: NSDefaultRunLoopMode)
         }

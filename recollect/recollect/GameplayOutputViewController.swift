@@ -10,13 +10,18 @@ import UIKit
 
 class GameplayOutputViewController: HalfScreenViewController {
     
-    var gameState: GameState!
+    var gameState: GameState
     
     private var plusLabel: UILabel?
     private var progressVC: ProgressViewController?
     private var challengeContainer: UIView?
     private var blurView: BlurView?
     private var challengeContainerXPositionConstraint: NSLayoutConstraint?
+    
+    init(gameState: GameState) {
+        self.gameState = gameState
+        super.init(nibName: nil, bundle: nil)
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -41,7 +46,7 @@ class GameplayOutputViewController: HalfScreenViewController {
         )
         
         challengeContainer = UIView()
-        challengeContainer!.backgroundColor = DesignLanguage.TopHalfBGColor
+        challengeContainer!.backgroundColor = UIColor.clearColor()
         challengeContainer!.setTranslatesAutoresizingMaskIntoConstraints(false)
         view.addSubview(challengeContainer!)
         
@@ -272,12 +277,16 @@ class GameplayOutputViewController: HalfScreenViewController {
         switch animationState {
             case TransitionAnimationState.Inactive:
                 progressVC?.view.transform = CGAffineTransformMakeTranslation(0.0, DesignLanguage.ProgressBarHeight)
-                challengeContainer?.transform = CGAffineTransformMakeTranslation(view.bounds.size.width - (challengeContainer?.frame.origin.x ?? 0), 0.0)
+                let challengesTransform = CGAffineTransformMakeTranslation(view.bounds.size.width - (challengeContainer?.frame.origin.x ?? 0), 0.0)
+                challengeContainer?.transform = challengesTransform
                 plusLabel?.transform = CGAffineTransformMakeTranslation(view.bounds.size.width - (plusLabel?.frame.origin.x ?? 0), 0.0)
+                blurView?.blurredView.transform = challengesTransform
                 blurView?.alpha = 0
             case TransitionAnimationState.Active:
                 progressVC?.view.transform = CGAffineTransformIdentity
                 challengeContainer?.transform = CGAffineTransformIdentity
+                blurView?.blurredView.transform = CGAffineTransformIdentity
+                challengeContainer?.alpha = 1
                 plusLabel?.transform = CGAffineTransformIdentity
                 blurView?.alpha = 1
         }
@@ -289,7 +298,7 @@ class GameplayOutputViewController: HalfScreenViewController {
     private func shakeChallenges(shakeNumber: Int = 0) {
         UIView.animateWithDuration(initialShakeDuration - (NSTimeInterval(shakeNumber) * shakeReductionFactor), animations: {
             let sign: CGFloat = (shakeNumber%2 == 0) ? -1.0 : 1.0
-            let initialShakeAmount = self.view.bounds.size.width/CGFloat(4*(self.gameState!.n + 1))
+            let initialShakeAmount = self.view.bounds.size.width/CGFloat(4*(self.gameState.n + 1))
             let actualShakeAmount = initialShakeAmount - (initialShakeAmount*(CGFloat(shakeNumber)/CGFloat(self.totalNumShakes)))
             let translation = CGAffineTransformMakeTranslation(sign*actualShakeAmount, 0.0)
             self.challengeContainer?.transform = translation
@@ -320,14 +329,16 @@ class GameplayOutputViewController: HalfScreenViewController {
 
 extension GameplayOutputViewController: GameStateChangeListener {
     func gameStateChanged(change: GameStateChange) {
-        gameState = change.newGameState
-        if change.oldGameState?.currentChallengeIndex != change.newGameState?.currentChallengeIndex {
-            if let newChallengeIndex = change.newGameState?.currentChallengeIndex {
-                setActiveChallenge(newChallengeIndex, animated: true)
+        if let newGameState = change.newGameState {
+            gameState = newGameState
+            if change.oldGameState?.currentChallengeIndex != newGameState.currentChallengeIndex {
+                if newGameState.currentChallengeIndex < newGameState.challenges.count {
+                    setActiveChallenge(newGameState.currentChallengeIndex, animated: true)
+                }
+            } else if change.oldGameState != nil {
+                // Wrong answer was entered
+                shakeChallenges()
             }
-        } else if change.oldGameState != nil && change.newGameState != nil {
-            // Wrong answer was entered
-            shakeChallenges()
         }
     }
 }

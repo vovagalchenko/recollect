@@ -10,7 +10,7 @@ import UIKit
 
 class GameplayInputController: HalfScreenViewController {
     
-    var delegate: GameplayInputControllerDelegate?
+    let delegate: GameplayInputControllerDelegate
     let buttonsText = [
         ["1", "2", "3"],
         ["4", "5", "6"],
@@ -18,6 +18,11 @@ class GameplayInputController: HalfScreenViewController {
         ["«", "0", "»"]
     ]
     var buttons: [GameplayButton] = []
+    
+    init(delegate: GameplayInputControllerDelegate) {
+        self.delegate = delegate
+        super.init(nibName: nil, bundle: nil)
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -82,7 +87,7 @@ class GameplayInputController: HalfScreenViewController {
     }
     
     func handleButtonPress(gameplayButton: GameplayButton) {
-        delegate?.receivedInput(GameplayInput.fromString(gameplayButton.text))
+        delegate.receivedInput(GameplayInput.fromString(gameplayButton.text))
     }
     
     private func gameplayButton(text: String) -> GameplayButton {
@@ -102,12 +107,6 @@ extension GameplayInputController: GameStateChangeListener {
                         button.enabled = (button.text != "»")
                     }
                 })
-        } else if (change.newGameState?.currentChallengeIndex ?? Int.min) >= (change.newGameState?.challenges.count ?? Int.max) {
-            UIView.animateWithDuration(DesignLanguage.MinorAnimationDuration, animations: {
-                for button in self.buttons {
-                    button.enabled = (button.text == "«")
-                }
-            })
         }
     }
 }

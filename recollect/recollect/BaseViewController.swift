@@ -63,11 +63,10 @@ class BaseViewController: UIViewController {
                 constant: 0.0)
         ])
         
-        queueTransition(newTopViewControllerFunc: { return LogoViewController() }, newBottomViewControllerFunc: {
-            let levelPickerVC = LevelPickerViewController()
-            levelPickerVC.delegate = GameManager.sharedInstance
-            return levelPickerVC
-        })
+        queueTransition(
+            newTopViewControllerFunc: { return LogoViewController() },
+            newBottomViewControllerFunc: { return LevelPickerViewController(delegate: GameManager.sharedInstance) }
+        )
         
         GameManager.sharedInstance.subscribeToGameStateChangeNotifications(self)
     }
@@ -269,21 +268,20 @@ class BaseViewController: UIViewController {
 extension BaseViewController: GameStateChangeListener {
     func gameStateChanged(change: GameStateChange) {
         if change.oldGameState == nil && change.newGameState != nil {
-            self.queueTransition(newTopViewControllerFunc: {
-                let gameplayOutputController = GameplayOutputViewController()
-                gameplayOutputController.gameState = change.newGameState
-                return gameplayOutputController
-                }, newBottomViewControllerFunc: {
-                    let gameplayInputController = GameplayInputController()
-                    gameplayInputController.delegate = GameManager.sharedInstance
-                    return gameplayInputController
-            })
+            queueTransition(
+                newTopViewControllerFunc: { return GameplayOutputViewController(gameState: change.newGameState!) },
+                newBottomViewControllerFunc: { return GameplayInputController(delegate: GameManager.sharedInstance) }
+            )
         } else if change.oldGameState != nil && change.newGameState == nil {
-            self.queueTransition(newTopViewControllerFunc: { return LogoViewController() }, newBottomViewControllerFunc: {
-                let levelPicker = LevelPickerViewController()
-                levelPicker.delegate = GameManager.sharedInstance
-                return levelPicker
-            })
+            queueTransition(
+                newTopViewControllerFunc: { return LogoViewController() },
+                newBottomViewControllerFunc: { return LevelPickerViewController(delegate: GameManager.sharedInstance) }
+            )
+        } else if change.newGameState?.currentChallengeIndex >= change.newGameState?.challenges.count {
+            queueTransition(
+                newTopViewControllerFunc: { return GameResultViewController(gameState: change.newGameState!) },
+                newBottomViewControllerFunc: { return nil }
+            )
         }
     }
 }

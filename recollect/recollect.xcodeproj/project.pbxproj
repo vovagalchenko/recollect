@@ -25,6 +25,10 @@
 		8098CD2D1A58367C009968EE /* GameState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8098CD2C1A58367C009968EE /* GameState.swift */; };
 		8098CD2F1A5836E0009968EE /* Challenge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8098CD2E1A5836E0009968EE /* Challenge.swift */; };
 		80A0A0661A4F237A00122749 /* LevelPickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80A0A0651A4F237A00122749 /* LevelPickerViewController.swift */; };
+		80CFFDE41A5BAE7F00E3640B /* GameResultViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80CFFDE31A5BAE7F00E3640B /* GameResultViewController.swift */; };
+		80CFFDE61A5BBA8E00E3640B /* PlayerIdentityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80CFFDE51A5BBA8E00E3640B /* PlayerIdentityManager.swift */; };
+		80CFFDE81A5BBE0400E3640B /* Leaderboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80CFFDE71A5BBE0400E3640B /* Leaderboard.swift */; };
+		80CFFDEA1A5BC0DD00E3640B /* LocalPlayerIdentity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80CFFDE91A5BC0DD00E3640B /* LocalPlayerIdentity.swift */; };
 		80D712B719F4E0A600152F13 /* Launch Screen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 80D712B619F4E0A600152F13 /* Launch Screen.xib */; };
 /* End PBXBuildFile section */
 
@@ -62,6 +66,10 @@
 		8098CD2C1A58367C009968EE /* GameState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameState.swift; sourceTree = "<group>"; };
 		8098CD2E1A5836E0009968EE /* Challenge.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Challenge.swift; sourceTree = "<group>"; };
 		80A0A0651A4F237A00122749 /* LevelPickerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LevelPickerViewController.swift; sourceTree = "<group>"; };
+		80CFFDE31A5BAE7F00E3640B /* GameResultViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameResultViewController.swift; sourceTree = "<group>"; };
+		80CFFDE51A5BBA8E00E3640B /* PlayerIdentityManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlayerIdentityManager.swift; sourceTree = "<group>"; };
+		80CFFDE71A5BBE0400E3640B /* Leaderboard.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Leaderboard.swift; sourceTree = "<group>"; };
+		80CFFDE91A5BC0DD00E3640B /* LocalPlayerIdentity.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocalPlayerIdentity.swift; sourceTree = "<group>"; };
 		80D712B619F4E0A600152F13 /* Launch Screen.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "Launch Screen.xib"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -104,11 +112,11 @@
 		80539B4519F4BCFD00C23F6D /* recollect */ = {
 			isa = PBXGroup;
 			children = (
-				8098CD2B1A58365D009968EE /* Model */,
-				80539B4A19F4BCFD00C23F6D /* BaseViewController.swift */,
 				8087FECB1A5496C100F3B3AD /* Gameplay UI Helpers */,
 				8087FEC51A5234E600F3B3AD /* HalfScreenController */,
+				8098CD2B1A58365D009968EE /* Model */,
 				80539B4819F4BCFD00C23F6D /* AppDelegate.swift */,
+				80539B4A19F4BCFD00C23F6D /* BaseViewController.swift */,
 				806B529A1A4B3BB6005F4DFA /* DesignLanguage.swift */,
 				80539B4F19F4BCFD00C23F6D /* Images.xcassets */,
 				806B529E1A4B459E005F4DFA /* MyPlayground.playground */,
@@ -151,6 +159,7 @@
 				80A0A0651A4F237A00122749 /* LevelPickerViewController.swift */,
 				8087FECC1A54998D00F3B3AD /* GameplayInputController.swift */,
 				805DE3E81A5646750072CB12 /* GameplayOutputViewController.swift */,
+				80CFFDE31A5BAE7F00E3640B /* GameResultViewController.swift */,
 			);
 			name = HalfScreenController;
 			sourceTree = "<group>";
@@ -181,6 +190,9 @@
 				8087FEC71A52355F00F3B3AD /* GameManager.swift */,
 				8098CD2C1A58367C009968EE /* GameState.swift */,
 				8098CD2E1A5836E0009968EE /* Challenge.swift */,
+				80CFFDE51A5BBA8E00E3640B /* PlayerIdentityManager.swift */,
+				80CFFDE71A5BBE0400E3640B /* Leaderboard.swift */,
+				80CFFDE91A5BC0DD00E3640B /* LocalPlayerIdentity.swift */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -290,8 +302,11 @@
 				808E20471A589A3D00580CE9 /* BlurView.swift in Sources */,
 				8098CD2D1A58367C009968EE /* GameState.swift in Sources */,
 				8087FECD1A54998D00F3B3AD /* GameplayInputController.swift in Sources */,
+				80CFFDE41A5BAE7F00E3640B /* GameResultViewController.swift in Sources */,
+				80CFFDE61A5BBA8E00E3640B /* PlayerIdentityManager.swift in Sources */,
 				805DE3EB1A564D550072CB12 /* ProgressViewController.swift in Sources */,
 				808E204A1A589B7100580CE9 /* GradientView.swift in Sources */,
+				80CFFDE81A5BBE0400E3640B /* Leaderboard.swift in Sources */,
 				8087FECA1A54968E00F3B3AD /* GameplayButton.swift in Sources */,
 				80539B4B19F4BCFD00C23F6D /* BaseViewController.swift in Sources */,
 				8098CD2F1A5836E0009968EE /* Challenge.swift in Sources */,
@@ -300,6 +315,7 @@
 				8087FEC21A5114BC00F3B3AD /* ManglableLabel.swift in Sources */,
 				8087FEC41A5114EA00F3B3AD /* HalfScreenViewController.swift in Sources */,
 				80A0A0661A4F237A00122749 /* LevelPickerViewController.swift in Sources */,
+				80CFFDEA1A5BC0DD00E3640B /* LocalPlayerIdentity.swift in Sources */,
 				805DE3E91A5646750072CB12 /* GameplayOutputViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
