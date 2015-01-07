@@ -123,6 +123,7 @@ class ProgressViewController: UIViewController {
             let secsInGame = Int(floor(timeInGame - NSTimeInterval(minsInGame*60)))
             let hundredthsOfSecsInGame = Int(floor((timeInGame - floor(timeInGame))*100))
             timeLabel?.text = NSString(format: "%02d:%02d:%02d", minsInGame, secsInGame, hundredthsOfSecsInGame)
+            timeLabel?.text = timeInGame.minuteSecondCentisecondString()
         } else {
             displayLink.invalidate()
         }

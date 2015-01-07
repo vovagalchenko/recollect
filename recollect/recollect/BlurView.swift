@@ -10,7 +10,7 @@ import UIKit
 
 class BlurView: UIView {
     
-    let blurRadius: CGFloat = 30
+    let blurRadius: CGFloat = 35
     let viewToBlur: UIView
     let blurredView: UIImageView
     let gradientView: GradientView

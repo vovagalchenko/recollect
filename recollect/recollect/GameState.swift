@@ -13,10 +13,10 @@ final class GameState: Streamable {
     var levelId: String {
         return "\(n)"
     }
-    var challenges: [Challenge]
-    var currentChallengeIndex: Int
-    var closedTimeIntervals: [TimeInterval]
-    var latestTimeStart: NSDate?
+    let challenges: [Challenge]
+    let currentChallengeIndex: Int
+    let closedTimeIntervals: [TimeInterval]
+    let latestTimeStart: NSDate?
     
     init(n: Int, numRounds: Int) {
         self.n = n
@@ -37,18 +37,14 @@ final class GameState: Streamable {
         self.n = n
         self.challenges = challenges
         self.currentChallengeIndex = currentChallengeIndex
-        self.closedTimeIntervals = closedTimeIntervals
-        self.latestTimeStart = latestTimeStart
         
-        if currentChallengeIndex > self.challenges.count && latestTimeStart != nil {
-            self.stop()
+        if currentChallengeIndex >= self.challenges.count && latestTimeStart != nil {
+            self.closedTimeIntervals = closedTimeIntervals + [TimeInterval(startTime: latestTimeStart!, endTime: NSDate())]
+            self.latestTimeStart = nil
+        } else {
+            self.closedTimeIntervals = closedTimeIntervals
+            self.latestTimeStart = latestTimeStart
         }
-    }
-    
-    func stop() {
-        assert(latestTimeStart != nil, "Can't stop a game that's not started.")
-        closedTimeIntervals.append(TimeInterval(startTime: latestTimeStart!, endTime: NSDate()))
-        latestTimeStart = nil
     }
     
     func advance(userInput: Int? = nil) -> GameState {
@@ -74,7 +70,7 @@ final class GameState: Streamable {
                 challenges: challenges,
                 currentChallengeIndex: currentChallengeIndex + 1,
                 closedTimeIntervals: closedTimeIntervals,
-                latestTimeStart: (currentChallengeIndex + 1 == 0) ? NSDate() : latestTimeStart)
+                latestTimeStart: (currentChallengeIndex + 1 == 0) ? NSDate() : nil)
         }
     }
     
@@ -93,7 +89,7 @@ final class GameState: Streamable {
     }
     
     func writeTo<Target : OutputStreamType>(inout target: Target) {
-        target.write("GAME STATE:\n\tn = \(n)\n\tchallenges = \(challenges)\n\tcurrentChallengeIndex = \(currentChallengeIndex)")
+        target.write("GAME STATE:\n\tn = \(n)\n\tchallenges = \(challenges)\n\tcurrentChallengeIndex = \(currentChallengeIndex)\n\tclosedTimeIntervals = \(closedTimeIntervals)\n\tlatestTimeStart = \(latestTimeStart)")
     }
 }
 

@@ -11,7 +11,12 @@ import UIKit
 class GameResultViewController: HalfScreenViewController {
     
     let gameState: GameState
+    
     var resultViewContainer: UIView?
+    var completionMsgLabel: ManglableLabel?
+    var mainTimeLabel: ManglableLabel?
+    var deltaTimeLabel: ManglableLabel?
+    var resultViewContainerVerticalConstraint: NSLayoutConstraint?
     
     init(gameState: GameState) {
         self.gameState = gameState
@@ -25,16 +30,157 @@ class GameResultViewController: HalfScreenViewController {
         resultViewContainer!.setTranslatesAutoresizingMaskIntoConstraints(false)
         view.addSubview(resultViewContainer!)
         
-        let mainTimeLabel = ManglableLabel()
+        let completionMsgLabelHeight = CGFloat(26.5)
+        let mainTimeLabelHeight = CGFloat(53.5)
+        let deltaTimeLabelHeight = CGFloat(25.0)
         
-        mainTimeLabel.font = UIFont(name: "AvenirNextCondensed-DemiBold", size: 53.5)
-        mainTimeLabel.textColor = DesignLanguage.NeverActiveTextColor
-        resultViewContainer!.addSubview(mainTimeLabel)
+        completionMsgLabel = ManglableLabel()
+        completionMsgLabel!.setTranslatesAutoresizingMaskIntoConstraints(false)
+        completionMsgLabel!.font = UIFont(name: "AvenirNextCondensed-DemiBold", size: completionMsgLabelHeight)
+        completionMsgLabel!.textColor = DesignLanguage.NeverActiveTextColor
+        completionMsgLabel!.adjustsFontSizeToFitWidth = true
+        completionMsgLabel!.minimumScaleFactor = 0.5
+        completionMsgLabel!.text = "Level \(gameState.levelId) completed!"
+        resultViewContainer!.addSubview(completionMsgLabel!)
         
-        let deltaTimeLabel = ManglableLabel()
-        deltaTimeLabel.font = UIFont(name: "AvenirNextCondensed-DemiBold", size: 25.0)
-        deltaTimeLabel.textAlignment = NSTextAlignment.Right
-        deltaTimeLabel.textColor = DesignLanguage.NeverActiveTextColor
-        resultViewContainer!.addSubview(deltaTimeLabel)
+        mainTimeLabel = ManglableLabel()
+        mainTimeLabel!.setTranslatesAutoresizingMaskIntoConstraints(false)
+        mainTimeLabel!.font = UIFont(name: "AvenirNextCondensed-DemiBold", size: mainTimeLabelHeight)
+        mainTimeLabel!.textColor = DesignLanguage.ActiveTextColor
+        mainTimeLabel!.text = gameState.finalTime().minuteSecondCentisecondString()
+        resultViewContainer!.addSubview(mainTimeLabel!)
+        
+        deltaTimeLabel = ManglableLabel()
+        deltaTimeLabel!.setTranslatesAutoresizingMaskIntoConstraints(false)
+        deltaTimeLabel!.font = UIFont(name: "AvenirNextCondensed-DemiBold", size: deltaTimeLabelHeight)
+        deltaTimeLabel!.textAlignment = NSTextAlignment.Right
+        deltaTimeLabel!.textColor = DesignLanguage.NeverActiveTextColor
+        deltaTimeLabel!.text = "- 00:00:00"
+        deltaTimeLabel!.alpha = 0.0
+        resultViewContainer!.addSubview(deltaTimeLabel!)
+        
+        let resultLabelsConstraints: [AnyObject] = [
+            NSLayoutConstraint(
+                item: completionMsgLabel!,
+                attribute: .Top,
+                relatedBy: .Equal,
+                toItem: resultViewContainer!,
+                attribute: .Top,
+                multiplier: 1.0,
+                constant: 0.0),
+            NSLayoutConstraint(
+                item: deltaTimeLabel!,
+                attribute: .Bottom,
+                relatedBy: .Equal,
+                toItem: resultViewContainer!,
+                attribute: .Bottom,
+                multiplier: 1.0,
+                constant: 0.0),
+            NSLayoutConstraint(
+                item: mainTimeLabel!,
+                attribute: .CenterY,
+                relatedBy: .Equal,
+                toItem: resultViewContainer!,
+                attribute: .CenterY,
+                multiplier: 1.0,
+                constant: 0.0),
+            NSLayoutConstraint(
+                item: deltaTimeLabel!,
+                attribute: .CenterY,
+                relatedBy: .Equal,
+                toItem: resultViewContainer!,
+                attribute: .CenterY,
+                multiplier: 1.0,
+                constant: mainTimeLabelHeight/2.0 + deltaTimeLabelHeight/3.0),
+            NSLayoutConstraint(
+                item: completionMsgLabel!,
+                attribute: .CenterY,
+                relatedBy: .Equal,
+                toItem: resultViewContainer!,
+                attribute: .CenterY,
+                multiplier: 1.0,
+                constant: -(mainTimeLabelHeight/2.0 + completionMsgLabelHeight/3.0))
+        ]
+        resultViewContainer!.addConstraints(
+            resultLabelsConstraints +
+            NSLayoutConstraint.constraintsWithVisualFormat(
+                "H:|[completionMsg]|",
+                options: NSLayoutFormatOptions(0),
+                metrics: nil,
+                views: [
+                    "completionMsg" : completionMsgLabel!,
+                ]) +
+            NSLayoutConstraint.constraintsWithVisualFormat(
+                "H:|[mainTime]|",
+                options: NSLayoutFormatOptions(0),
+                metrics: nil,
+                views: [
+                    "mainTime" : mainTimeLabel!,
+                ]) +
+            NSLayoutConstraint.constraintsWithVisualFormat(
+                "H:[deltaTime]|",
+                options: NSLayoutFormatOptions(0),
+                metrics: nil,
+                views: [
+                    "deltaTime" : deltaTimeLabel!,
+                ])
+        )
+        
+        view.addConstraint(
+            NSLayoutConstraint(
+                item: resultViewContainer!,
+                attribute: NSLayoutAttribute.CenterX,
+                relatedBy: NSLayoutRelation.Equal,
+                toItem: view,
+                attribute: NSLayoutAttribute.CenterX,
+                multiplier: 1.0,
+                constant: 0.0
+            )
+        )
+        refreshLayout(identity: PlayerIdentityManager.identity(), leaderboard: [])
+    }
+    
+    override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(animated)
+        refreshLayout()
+    }
+    
+    override func viewWillDisappear(animated: Bool) {
+        super.viewWillDisappear(animated)
+        PlayerIdentityManager.identity().flushBestGames(gameState)
+    }
+    
+    func refreshLayout() {
+        let identity = PlayerIdentityManager.identity()
+        identity.submit(gameState) { (leaderboard: [PlayerScore]) -> Void in
+            self.refreshLayout(identity: identity, leaderboard: leaderboard)
+        }
+    }
+    
+    func refreshLayout(#identity: PlayerIdentity, leaderboard: [PlayerScore]) {
+        view.layoutIfNeeded()
+        if let resultsContainerConstraint = resultViewContainerVerticalConstraint {
+            view.removeConstraint(resultsContainerConstraint)
+        }
+        resultViewContainerVerticalConstraint = NSLayoutConstraint(
+            item: resultViewContainer!,
+            attribute: NSLayoutAttribute.CenterY,
+            relatedBy: NSLayoutRelation.Equal,
+            toItem: view,
+            attribute: NSLayoutAttribute.CenterY,
+            multiplier: 1.0,
+            constant: 0.0)
+        view.addConstraint(resultViewContainerVerticalConstraint!)
+        
+        let delta = identity.deltaFromBest(gameState)
+        if delta > 0 {
+            deltaTimeLabel!.text = "+ " + delta.minuteSecondCentisecondString()
+        } else if delta < 0 {
+            deltaTimeLabel!.text = delta.minuteSecondCentisecondString()
+        }
+        
+        UIView.animateWithDuration(DesignLanguage.MinorAnimationDuration) {
+            self.view.layoutIfNeeded()
+        }
     }
 }

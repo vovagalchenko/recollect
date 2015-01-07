@@ -280,7 +280,7 @@ extension BaseViewController: GameStateChangeListener {
         } else if change.newGameState?.currentChallengeIndex >= change.newGameState?.challenges.count {
             queueTransition(
                 newTopViewControllerFunc: { return GameResultViewController(gameState: change.newGameState!) },
-                newBottomViewControllerFunc: { return nil }
+                newBottomViewControllerFunc: { return SharingViewController(gameState: change.newGameState!) }
             )
         }
     }

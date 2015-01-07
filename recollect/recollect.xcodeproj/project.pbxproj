@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		802EDE741A5CEC5F004EE1CC /* NSTimeInterval+PrettyPrint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 802EDE731A5CEC5F004EE1CC /* NSTimeInterval+PrettyPrint.swift */; };
+		802EDE761A5D1E6D004EE1CC /* SharingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 802EDE751A5D1E6D004EE1CC /* SharingViewController.swift */; };
+		802EDE781A5D2464004EE1CC /* RepeatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 802EDE771A5D2464004EE1CC /* RepeatView.swift */; };
 		80539B4919F4BCFD00C23F6D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80539B4819F4BCFD00C23F6D /* AppDelegate.swift */; };
 		80539B4B19F4BCFD00C23F6D /* BaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80539B4A19F4BCFD00C23F6D /* BaseViewController.swift */; };
 		80539B5019F4BCFD00C23F6D /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 80539B4F19F4BCFD00C23F6D /* Images.xcassets */; };
@@ -43,6 +46,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		802EDE731A5CEC5F004EE1CC /* NSTimeInterval+PrettyPrint.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSTimeInterval+PrettyPrint.swift"; sourceTree = "<group>"; };
+		802EDE751A5D1E6D004EE1CC /* SharingViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SharingViewController.swift; sourceTree = "<group>"; };
+		802EDE771A5D2464004EE1CC /* RepeatView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RepeatView.swift; sourceTree = "<group>"; };
 		80539B4319F4BCFD00C23F6D /* recollect.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = recollect.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		80539B4719F4BCFD00C23F6D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		80539B4819F4BCFD00C23F6D /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -160,6 +166,7 @@
 				8087FECC1A54998D00F3B3AD /* GameplayInputController.swift */,
 				805DE3E81A5646750072CB12 /* GameplayOutputViewController.swift */,
 				80CFFDE31A5BAE7F00E3640B /* GameResultViewController.swift */,
+				802EDE751A5D1E6D004EE1CC /* SharingViewController.swift */,
 			);
 			name = HalfScreenController;
 			sourceTree = "<group>";
@@ -180,6 +187,7 @@
 				805DE3EA1A564D550072CB12 /* ProgressViewController.swift */,
 				808E20461A589A3D00580CE9 /* BlurView.swift */,
 				808E20491A589B7100580CE9 /* GradientView.swift */,
+				802EDE771A5D2464004EE1CC /* RepeatView.swift */,
 			);
 			name = "Gameplay UI Helpers";
 			sourceTree = "<group>";
@@ -193,6 +201,7 @@
 				80CFFDE51A5BBA8E00E3640B /* PlayerIdentityManager.swift */,
 				80CFFDE71A5BBE0400E3640B /* Leaderboard.swift */,
 				80CFFDE91A5BC0DD00E3640B /* LocalPlayerIdentity.swift */,
+				802EDE731A5CEC5F004EE1CC /* NSTimeInterval+PrettyPrint.swift */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -303,12 +312,15 @@
 				8098CD2D1A58367C009968EE /* GameState.swift in Sources */,
 				8087FECD1A54998D00F3B3AD /* GameplayInputController.swift in Sources */,
 				80CFFDE41A5BAE7F00E3640B /* GameResultViewController.swift in Sources */,
+				802EDE781A5D2464004EE1CC /* RepeatView.swift in Sources */,
 				80CFFDE61A5BBA8E00E3640B /* PlayerIdentityManager.swift in Sources */,
+				802EDE741A5CEC5F004EE1CC /* NSTimeInterval+PrettyPrint.swift in Sources */,
 				805DE3EB1A564D550072CB12 /* ProgressViewController.swift in Sources */,
 				808E204A1A589B7100580CE9 /* GradientView.swift in Sources */,
 				80CFFDE81A5BBE0400E3640B /* Leaderboard.swift in Sources */,
 				8087FECA1A54968E00F3B3AD /* GameplayButton.swift in Sources */,
 				80539B4B19F4BCFD00C23F6D /* BaseViewController.swift in Sources */,
+				802EDE761A5D1E6D004EE1CC /* SharingViewController.swift in Sources */,
 				8098CD2F1A5836E0009968EE /* Challenge.swift in Sources */,
 				80539B4919F4BCFD00C23F6D /* AppDelegate.swift in Sources */,
 				806B529D1A4B3DFD005F4DFA /* LogoViewController.swift in Sources */,

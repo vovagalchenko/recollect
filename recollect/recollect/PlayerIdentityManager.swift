@@ -15,7 +15,8 @@ class PlayerIdentityManager {
 }
 
 protocol PlayerIdentity {
-    func submit(gameState: GameState) -> NSTimeInterval
-    func playerId() -> String
-    func leaderboards(completion: ([PlayerScore]?) -> Void)
+    var playerId: String { get }
+    func deltaFromBest(game: GameState) -> NSTimeInterval
+    func submit(gameState: GameState, completion: ([PlayerScore]) -> Void)
+    func flushBestGames(newGame: GameState)
 }

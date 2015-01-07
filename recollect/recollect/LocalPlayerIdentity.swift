@@ -15,43 +15,49 @@ class LocalPlayerIdentity: PlayerIdentity {
             sync()
         }
     }
+    let playerId = "local_player"
     
     init() {
-        let scoresFilePath = LocalPlayerIdentity.computeScoresFilePath()
+        bestGames = [String: GameState]()
+        let scoresFilePath = self.computeScoresFilePath()
         if NSFileManager.defaultManager().fileExistsAtPath(scoresFilePath) {
             bestGames = NSKeyedUnarchiver.unarchiveObjectWithFile(scoresFilePath) as [String: GameState]
-        } else {
-            bestGames = [String: GameState]()
         }
     }
     
-    private class func computeScoresFilePath() -> String {
+    func computeScoresFilePath() -> String {
         let documentDir = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)[0] as String
-        return documentDir.stringByAppendingPathComponent("local_player_scores")
+        return documentDir.stringByAppendingPathComponent(playerId + ".scores")
     }
     
-    func submit(gameState: GameState) -> NSTimeInterval {
-        if let bestGameForLevel = bestGames[gameState.levelId] {
-            if bestGameForLevel.finalTime() > gameState.finalTime() {
-                bestGames[gameState.levelId] = gameState
-            }
-            return gameState.finalTime() - bestGameForLevel.finalTime()
-        } else {
-            bestGames[gameState.levelId] = gameState
-            return 0.0
+    func deltaFromBest(game: GameState) -> NSTimeInterval {
+        var delta = 0.0
+        if let bestTimeForLevel = bestGames[game.levelId]?.finalTime() {
+            delta = game.finalTime() - bestTimeForLevel
         }
+        return delta
     }
     
-    func playerId() -> String {
-        return "local_player"
+    func submit(gameState: GameState, completion: ([PlayerScore]) -> Void) {
+        var leaderboard = [PlayerScore]()
+        if let bestTime = bestGames[gameState.levelId]?.finalTime() {
+            leaderboard.append(PlayerScore(playerId: playerId, time: bestTime, rank: 1))
+        }
+        completion(leaderboard)
     }
     
-    func leaderboards(completion: ([PlayerScore]?) -> Void) {
-        completion(nil)
+    func flushBestGames(newGame: GameState) {
+        if let bestGameForLevel = bestGames[newGame.levelId] {
+            if bestGameForLevel.finalTime() > newGame.finalTime() {
+                bestGames[newGame.levelId] = newGame
+            }
+        } else {
+            bestGames[newGame.levelId] = newGame
+        }
     }
     
     private func sync() {
-        if NSKeyedArchiver.archiveRootObject(bestGames, toFile: LocalPlayerIdentity.computeScoresFilePath()) {
+        if NSKeyedArchiver.archiveRootObject(bestGames, toFile: computeScoresFilePath()) {
             NSLog("Wrote local player's best scores successfully:\n\(bestGames)")
         } else {
             NSLog("Failed to write local player's best scores!")
