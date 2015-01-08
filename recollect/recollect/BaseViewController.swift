@@ -267,7 +267,7 @@ class BaseViewController: UIViewController {
 
 extension BaseViewController: GameStateChangeListener {
     func gameStateChanged(change: GameStateChange) {
-        if change.oldGameState == nil && change.newGameState != nil {
+        if change.newGameState != nil && (change.oldGameState?.gameId ?? "") != change.newGameState!.gameId {
             queueTransition(
                 newTopViewControllerFunc: { return GameplayOutputViewController(gameState: change.newGameState!) },
                 newBottomViewControllerFunc: { return GameplayInputController(delegate: GameManager.sharedInstance) }

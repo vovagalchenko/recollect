@@ -118,7 +118,8 @@ class ProgressViewController: UIViewController {
     }
     
     func refresh(displayLink: CADisplayLink) {
-        if let timeInGame = gameState?.time() {
+        if gameState?.latestTimeStart != nil {
+            let timeInGame = gameState!.time()
             let minsInGame = Int(floor(timeInGame/60.0))
             let secsInGame = Int(floor(timeInGame - NSTimeInterval(minsInGame*60)))
             let hundredthsOfSecsInGame = Int(floor((timeInGame - floor(timeInGame))*100))

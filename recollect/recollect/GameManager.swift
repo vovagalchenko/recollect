@@ -40,8 +40,8 @@ class GameManager: GameplayInputControllerDelegate {
     }
     
     func startGame(gameLevelId: String) {
-        assert(self.currentGameState == nil, "Can't start a game when one is already in progress!")
-        self.currentGameState = GameState(n: gameLevelId.toInt()!, numRounds: 5)
+        assert(self.currentGameState == nil || self.currentGameState!.latestTimeStart == nil, "Can't start a game when one is already in progress!")
+        self.currentGameState = GameState(n: gameLevelId.toInt()!, numRounds: 10)
     }
     
     func subscribeToGameStateChangeNotifications(listener: GameStateChangeListener) {
@@ -49,11 +49,11 @@ class GameManager: GameplayInputControllerDelegate {
             listener,
             selector: "gameStateChangeNotificationReceived:",
             name: GameManager.GameStateChangeNotificationName,
-            object: GameManager.sharedInstance)
+            object: self)
     }
     
     func unsubscribeFromGameStateChangeNotifications(listener: GameStateChangeListener) {
-        NSNotificationCenter.defaultCenter().removeObserver(listener, name: GameManager.GameStateChangeNotificationName, object: GameManager.sharedInstance)
+        NSNotificationCenter.defaultCenter().removeObserver(listener, name: GameManager.GameStateChangeNotificationName, object: self)
     }
 }
 
@@ -74,7 +74,21 @@ extension GameManager: GameplayInputControllerDelegate {
 
 extension GameManager: LevelPickerViewControllerDelegate {
     func pickedLevel(levelId: String) {
-        GameManager.sharedInstance.startGame(levelId)
+        startGame(levelId)
+    }
+}
+
+extension GameManager: SharingViewControllerDelegate {
+    func repeatButtonPressed(sharingVC: SharingViewController) {
+        if let levelId = currentGameState?.levelId {
+            startGame(levelId)
+        } else {
+            fatalError("Repeat button pressed when there isn't a game that just finished!")
+        }
+    }
+    
+    func menuButtonPressed(sharingVC: SharingViewController) {
+        currentGameState = nil
     }
 }
 

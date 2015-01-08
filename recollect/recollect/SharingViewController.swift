@@ -10,33 +10,20 @@ import UIKit
 
 class SharingViewController: HalfScreenViewController {
     let gameState: GameState
+    var delegate: SharingViewControllerDelegate?
     
     init(gameState: GameState) {
         self.gameState = gameState
+        self.delegate = GameManager.sharedInstance
         super.init(nibName: nil, bundle: nil)
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let backButton = UIButton.buttonWithType(UIButtonType.Custom) as UIButton
-        backButton.setTranslatesAutoresizingMaskIntoConstraints(false)
-        let backButtonBg = RepeatView(frame: CGRectZero)
-        backButton.addSubview(backButtonBg)
-        
-        backButton.addConstraints(
-            NSLayoutConstraint.constraintsWithVisualFormat(
-                "H:|[bg]|",
-                options: NSLayoutFormatOptions(0),
-                metrics: nil,
-                views: ["bg" : backButtonBg]) +
-            NSLayoutConstraint.constraintsWithVisualFormat(
-                "V:|[bg]|",
-                options: NSLayoutFormatOptions(0),
-                metrics: nil,
-                views: ["bg" : backButtonBg])
-        )
-        
+        let backButton = UIButton.buttonWithCustomBackground(RepeatView())
+        backButton.userInteractionEnabled = true
+        backButton.addTarget(self, action: "repeatButtonPressed:", forControlEvents: UIControlEvents.TouchUpInside)
         view.addSubview(backButton)
         
         view.addConstraints(
@@ -60,4 +47,23 @@ class SharingViewController: HalfScreenViewController {
             ]
         )
     }
+    
+    func withExistingDelegate(work: (SharingViewControllerDelegate) -> Void) {
+        if let existingDelegate = delegate {
+            work(existingDelegate)
+        }
+    }
+    
+    func repeatButtonPressed(button: UIButton) {
+        withExistingDelegate { $0.repeatButtonPressed(self) }
+    }
+    
+    func menuButtonPressed(button: UIButton) {
+        withExistingDelegate { $0.menuButtonPressed(self) }
+    }
+}
+
+protocol SharingViewControllerDelegate {
+    func repeatButtonPressed(sharingVC: SharingViewController)
+    func menuButtonPressed(sharingVC: SharingViewController)
 }

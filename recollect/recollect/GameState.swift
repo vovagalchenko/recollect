@@ -8,7 +8,8 @@
 
 import Foundation
 
-final class GameState: Streamable {
+final class GameState: NSObject, Streamable {
+    let gameId: String
     let n: Int
     var levelId: String {
         return "\(n)"
@@ -19,6 +20,7 @@ final class GameState: Streamable {
     let latestTimeStart: NSDate?
     
     init(n: Int, numRounds: Int) {
+        gameId = NSUUID().UUIDString
         self.n = n
         
         var newChallenges: [Challenge] = []
@@ -31,9 +33,11 @@ final class GameState: Streamable {
         self.challenges = newChallenges
         currentChallengeIndex = -n
         closedTimeIntervals = []
+        
     }
     
-    init(n: Int, challenges: [Challenge], currentChallengeIndex: Int, closedTimeIntervals: [TimeInterval], latestTimeStart: NSDate?) {
+    init(gameId: String, n: Int, challenges: [Challenge], currentChallengeIndex: Int, closedTimeIntervals: [TimeInterval], latestTimeStart: NSDate?) {
+        self.gameId = gameId
         self.n = n
         self.challenges = challenges
         self.currentChallengeIndex = currentChallengeIndex
@@ -56,6 +60,7 @@ final class GameState: Streamable {
             var mutableChallenges = challenges
             mutableChallenges[currentChallengeIndex] = fulfilledChallenge
             return GameState(
+                gameId: gameId,
                 n: n,
                 challenges: mutableChallenges,
                 currentChallengeIndex: shouldAdvance ? currentChallengeIndex + 1 : currentChallengeIndex,
@@ -66,6 +71,7 @@ final class GameState: Streamable {
             assert(currentChallengeIndex < 0,
                 "User should not be able to advance without giving a response to a valid challenge at index \(currentChallengeIndex)")
             return GameState(
+                gameId: gameId,
                 n: n,
                 challenges: challenges,
                 currentChallengeIndex: currentChallengeIndex + 1,
@@ -89,11 +95,16 @@ final class GameState: Streamable {
     }
     
     func writeTo<Target : OutputStreamType>(inout target: Target) {
-        target.write("GAME STATE:\n\tn = \(n)\n\tchallenges = \(challenges)\n\tcurrentChallengeIndex = \(currentChallengeIndex)\n\tclosedTimeIntervals = \(closedTimeIntervals)\n\tlatestTimeStart = \(latestTimeStart)")
+        target.write("GAME STATE:\n\tn = \(n)\n\tchallenges = \(challenges)\n\tcurrentChallengeIndex = \(currentChallengeIndex)\n\tclosedTimeIntervals = \(closedTimeIntervals)")
+        if let currentTimeIntervalStart = latestTimeStart {
+            target.write("\n\tlatestTimeStart = \(latestTimeStart)")
+        } else {
+            target.write("\n\tfinalTime = \(finalTime())")
+        }
     }
 }
 
-final class TimeInterval {
+final class TimeInterval: NSObject, NSCoding {
     let startTime: NSDate
     let endTime: NSDate
     
@@ -105,11 +116,24 @@ final class TimeInterval {
     func duration() -> NSTimeInterval {
         return endTime.timeIntervalSinceDate(startTime)
     }
+    
+    func encodeWithCoder(aCoder: NSCoder) {
+        aCoder.encodeObject(startTime, forKey: "startTime")
+        aCoder.encodeObject(endTime, forKey: "endTime")
+    }
+    
+    convenience init(coder aDecoder: NSCoder) {
+        self.init(
+            startTime: aDecoder.decodeObjectForKey("startTime") as NSDate,
+            endTime: aDecoder.decodeObjectForKey("endTime") as NSDate
+        )
+    }
 }
 
 extension GameState: NSCoding {
     
     func encodeWithCoder(aCoder: NSCoder) {
+        aCoder.encodeObject(gameId, forKey: "gameId")
         aCoder.encodeInteger(n, forKey: "n")
         aCoder.encodeObject(challenges, forKey: "challenges")
         aCoder.encodeInteger(currentChallengeIndex, forKey: "currentChallengeIndex")
@@ -120,6 +144,7 @@ extension GameState: NSCoding {
     }
     
     convenience init(coder aDecoder: NSCoder) {
+        let newGameId = aDecoder.decodeObjectForKey("gameId") as String
         let newN = aDecoder.decodeIntegerForKey("n")
         let newChallenges = aDecoder.decodeObjectForKey("challenges") as [Challenge]
         let newCurrentChallengeIndex = aDecoder.decodeIntegerForKey("currentChallengeIndex")
@@ -127,6 +152,7 @@ extension GameState: NSCoding {
         let newLatestTimeStart = aDecoder.containsValueForKey("latestTimeStart") ? aDecoder.decodeObjectForKey("latestTimeStart") as NSDate? : nil
         
         self.init(
+            gameId: newGameId,
             n: newN,
             challenges: newChallenges,
             currentChallengeIndex: newCurrentChallengeIndex,

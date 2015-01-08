@@ -173,14 +173,18 @@ class GameResultViewController: HalfScreenViewController {
         view.addConstraint(resultViewContainerVerticalConstraint!)
         
         let delta = identity.deltaFromBest(gameState)
+        var deltaAlpha: CGFloat = 0.0
         if delta > 0 {
             deltaTimeLabel!.text = "+ " + delta.minuteSecondCentisecondString()
+            deltaAlpha = 1.0
         } else if delta < 0 {
             deltaTimeLabel!.text = delta.minuteSecondCentisecondString()
+            deltaAlpha = 1.0
         }
         
         UIView.animateWithDuration(DesignLanguage.MinorAnimationDuration) {
             self.view.layoutIfNeeded()
+            self.deltaTimeLabel?.alpha = deltaAlpha
         }
     }
 }

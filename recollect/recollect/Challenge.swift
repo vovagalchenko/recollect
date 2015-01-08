@@ -8,7 +8,7 @@
 
 import Foundation
 
-class Challenge: Streamable {
+final class Challenge: NSObject, Streamable {
     let lOperand: Int
     let rOperand: Int
     let challengeOperator: ChallengeOperator = ChallengeOperator.Sum
@@ -25,6 +25,13 @@ class Challenge: Streamable {
         self.userResponses = userResponses
     }
     
+    init(left: Int, right: Int, challengeOperator: ChallengeOperator, userResponses: [Int]) {
+        lOperand = left
+        rOperand = right
+        self.userResponses = userResponses
+        self.challengeOperator = challengeOperator
+    }
+    
     func respond(response: Int) -> (Bool, Challenge) {
         var newResponses = userResponses
         newResponses.append(response)
@@ -36,7 +43,30 @@ class Challenge: Streamable {
     }
 }
 
-enum ChallengeOperator: Streamable {
+extension Challenge: NSCoding {
+    func encodeWithCoder(aCoder: NSCoder) {
+        aCoder.encodeInteger(lOperand, forKey: "lOperand")
+        aCoder.encodeInteger(rOperand, forKey: "rOperand")
+        aCoder.encodeInteger(challengeOperator.rawValue, forKey: "challengeOperator")
+        aCoder.encodeObject(userResponses, forKey: "userResponses")
+    }
+    
+    convenience init(coder aDecoder: NSCoder) {
+        let newLOperand = aDecoder.decodeIntegerForKey("lOperand")
+        let newROperand = aDecoder.decodeIntegerForKey("rOperand")
+        let newChallengeOperator = ChallengeOperator(rawValue: aDecoder.decodeIntegerForKey("challengeOperator"))!
+        let newUserResponses = aDecoder.decodeObjectForKey("userResponses") as [Int]
+        
+        self.init(
+            left: newLOperand,
+            right: newROperand,
+            challengeOperator: newChallengeOperator,
+            userResponses: newUserResponses
+        )
+    }
+}
+
+enum ChallengeOperator: Int, Streamable {
     case Sum
     
     func apply(lOperand: Int, rOperand: Int) -> Int {

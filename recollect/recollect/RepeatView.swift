@@ -8,39 +8,42 @@
 
 import UIKit
 
-class RepeatView: UIView {
-    
-    var arrowColor: UIColor = DesignLanguage.ActiveTextColor
-    
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        setTranslatesAutoresizingMaskIntoConstraints(false)
-        opaque = false
-        clearsContextBeforeDrawing = true
-    }
-
-    required init(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) isn't expected to be called, because we're not using xibs.")
-    }
+class RepeatView: ButtonBackground {
     
     override func drawRect(rect: CGRect) {
         let ctx = UIGraphicsGetCurrentContext()
         
-        let boundingBoxDimension = min(rect.height, rect.width)
-        let origin = CGPoint(x: CGRectGetMidX(rect) - boundingBoxDimension/2.0, y: CGRectGetMidY(rect) - boundingBoxDimension/2.0)
-        let arrowThickness = boundingBoxDimension/6.0
+        let boundingBoxDimension = min(bounds.height, bounds.width)
+        let arrowShaftThickness = boundingBoxDimension/6.0
+        let arrowThickness = (arrowShaftThickness*2.0)
         
+        CGContextTranslateCTM(ctx, bounds.width, 0.0)
+        CGContextScaleCTM(ctx, -1.0, 1.0)
+        
+        let arcEndingAngle = CGFloat(0.8*(M_PI*2.0))
         CGContextAddArc(
             ctx,
-            CGRectGetMidX(rect),
-            CGRectGetMidY(rect),
-            boundingBoxDimension/2.0 - arrowThickness,
+            CGRectGetMidX(bounds),
+            CGRectGetMidY(bounds),
+            boundingBoxDimension/2.0 - arrowShaftThickness*0.5 - ((arrowThickness - arrowShaftThickness)*0.5),
             0,
-            CGFloat(0.9*(M_PI*2.0)),
+            arcEndingAngle,
             0)
-        CGContextSetLineWidth(ctx, arrowThickness)
-        arrowColor.setStroke()
+        CGContextSetLineWidth(ctx, arrowShaftThickness)
+        baseColor.setStroke()
         CGContextStrokePath(ctx)
+        
+        CGContextTranslateCTM(ctx, CGRectGetMidX(bounds), CGRectGetMidY(bounds))
+        CGContextRotateCTM(ctx, arcEndingAngle)
+        CGContextTranslateCTM(ctx, -CGRectGetMidX(bounds), -CGRectGetMidY(bounds))
+
+        CGContextMoveToPoint(ctx, bounds.size.width - arrowThickness, CGRectGetMidY(bounds))
+        CGContextAddLineToPoint(ctx, bounds.size.width, CGRectGetMidY(bounds))
+        CGContextAddLineToPoint(ctx, bounds.size.width - arrowThickness*0.5, CGRectGetMidY(bounds) + (sqrt(3.0)/2.0)*arrowThickness)
+        CGContextClosePath(ctx)
+        baseColor.setFill()
+        CGContextSetLineWidth(ctx, 0.5)
+        CGContextDrawPath(ctx, kCGPathFillStroke)
     }
     
     override func intrinsicContentSize() -> CGSize {
