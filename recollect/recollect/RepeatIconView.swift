@@ -8,7 +8,7 @@
 
 import UIKit
 
-class RepeatView: ButtonBackground {
+class RepeatIconView: ButtonBackground {
     
     override func drawRect(rect: CGRect) {
         let ctx = UIGraphicsGetCurrentContext()

@@ -21,23 +21,42 @@ class SharingViewController: HalfScreenViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let backButton = UIButton.buttonWithCustomBackground(RepeatView())
-        backButton.userInteractionEnabled = true
-        backButton.addTarget(self, action: "repeatButtonPressed:", forControlEvents: UIControlEvents.TouchUpInside)
-        view.addSubview(backButton)
+        let repeatButton = UIButton.buttonWithCustomBackground(RepeatIconView())
+        repeatButton.addTarget(self, action: "repeatButtonPressed:", forControlEvents: UIControlEvents.TouchUpInside)
+        view.addSubview(repeatButton)
+        
+        let menuButton = UIButton.buttonWithCustomBackground(MenuIconView())
+        menuButton.addTarget(self, action: "menuButtonPressed:", forControlEvents: UIControlEvents.TouchUpInside)
+        view.addSubview(menuButton)
         
         view.addConstraints(
             [
                 NSLayoutConstraint(
-                    item: backButton,
+                    item: menuButton,
                     attribute: .CenterX,
                     relatedBy: .Equal,
                     toItem: view,
                     attribute: .CenterX,
+                    multiplier: 1.0 - 0.25,
+                    constant: 0.0),
+                NSLayoutConstraint(
+                    item: repeatButton,
+                    attribute: .CenterX,
+                    relatedBy: .Equal,
+                    toItem: view,
+                    attribute: .CenterX,
+                    multiplier: 1.0 + 0.25,
+                    constant: 0.0),
+                NSLayoutConstraint(
+                    item: repeatButton,
+                    attribute: .CenterY,
+                    relatedBy: .Equal,
+                    toItem: view,
+                    attribute: .CenterY,
                     multiplier: 1.0,
                     constant: 0.0),
                 NSLayoutConstraint(
-                    item: backButton,
+                    item: menuButton,
                     attribute: .CenterY,
                     relatedBy: .Equal,
                     toItem: view,

@@ -9,9 +9,10 @@
 /* Begin PBXBuildFile section */
 		802EDE741A5CEC5F004EE1CC /* NSTimeInterval+PrettyPrint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 802EDE731A5CEC5F004EE1CC /* NSTimeInterval+PrettyPrint.swift */; };
 		802EDE761A5D1E6D004EE1CC /* SharingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 802EDE751A5D1E6D004EE1CC /* SharingViewController.swift */; };
-		802EDE781A5D2464004EE1CC /* RepeatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 802EDE771A5D2464004EE1CC /* RepeatView.swift */; };
+		802EDE781A5D2464004EE1CC /* RepeatIconView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 802EDE771A5D2464004EE1CC /* RepeatIconView.swift */; };
 		802EDE7E1A5E68B0004EE1CC /* ButtonBackground.swift in Sources */ = {isa = PBXBuildFile; fileRef = 802EDE7D1A5E68B0004EE1CC /* ButtonBackground.swift */; };
 		802EDE801A5E6C16004EE1CC /* UIButton+CustomizableBackground.swift in Sources */ = {isa = PBXBuildFile; fileRef = 802EDE7F1A5E6C16004EE1CC /* UIButton+CustomizableBackground.swift */; };
+		8036714D1A5FA04C001A4D61 /* MenuIconView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8036714C1A5FA04C001A4D61 /* MenuIconView.swift */; };
 		80539B4919F4BCFD00C23F6D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80539B4819F4BCFD00C23F6D /* AppDelegate.swift */; };
 		80539B4B19F4BCFD00C23F6D /* BaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80539B4A19F4BCFD00C23F6D /* BaseViewController.swift */; };
 		80539B5019F4BCFD00C23F6D /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 80539B4F19F4BCFD00C23F6D /* Images.xcassets */; };
@@ -50,9 +51,10 @@
 /* Begin PBXFileReference section */
 		802EDE731A5CEC5F004EE1CC /* NSTimeInterval+PrettyPrint.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSTimeInterval+PrettyPrint.swift"; sourceTree = "<group>"; };
 		802EDE751A5D1E6D004EE1CC /* SharingViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SharingViewController.swift; sourceTree = "<group>"; };
-		802EDE771A5D2464004EE1CC /* RepeatView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RepeatView.swift; sourceTree = "<group>"; };
+		802EDE771A5D2464004EE1CC /* RepeatIconView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RepeatIconView.swift; sourceTree = "<group>"; };
 		802EDE7D1A5E68B0004EE1CC /* ButtonBackground.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ButtonBackground.swift; sourceTree = "<group>"; };
 		802EDE7F1A5E6C16004EE1CC /* UIButton+CustomizableBackground.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIButton+CustomizableBackground.swift"; sourceTree = "<group>"; };
+		8036714C1A5FA04C001A4D61 /* MenuIconView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MenuIconView.swift; sourceTree = "<group>"; };
 		80539B4319F4BCFD00C23F6D /* recollect.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = recollect.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		80539B4719F4BCFD00C23F6D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		80539B4819F4BCFD00C23F6D /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -191,7 +193,8 @@
 				805DE3EA1A564D550072CB12 /* ProgressViewController.swift */,
 				808E20461A589A3D00580CE9 /* BlurView.swift */,
 				808E20491A589B7100580CE9 /* GradientView.swift */,
-				802EDE771A5D2464004EE1CC /* RepeatView.swift */,
+				802EDE771A5D2464004EE1CC /* RepeatIconView.swift */,
+				8036714C1A5FA04C001A4D61 /* MenuIconView.swift */,
 				802EDE7D1A5E68B0004EE1CC /* ButtonBackground.swift */,
 				802EDE7F1A5E6C16004EE1CC /* UIButton+CustomizableBackground.swift */,
 			);
@@ -318,7 +321,8 @@
 				8098CD2D1A58367C009968EE /* GameState.swift in Sources */,
 				8087FECD1A54998D00F3B3AD /* GameplayInputController.swift in Sources */,
 				80CFFDE41A5BAE7F00E3640B /* GameResultViewController.swift in Sources */,
-				802EDE781A5D2464004EE1CC /* RepeatView.swift in Sources */,
+				802EDE781A5D2464004EE1CC /* RepeatIconView.swift in Sources */,
+				8036714D1A5FA04C001A4D61 /* MenuIconView.swift in Sources */,
 				80CFFDE61A5BBA8E00E3640B /* PlayerIdentityManager.swift in Sources */,
 				802EDE741A5CEC5F004EE1CC /* NSTimeInterval+PrettyPrint.swift in Sources */,
 				805DE3EB1A564D550072CB12 /* ProgressViewController.swift in Sources */,
