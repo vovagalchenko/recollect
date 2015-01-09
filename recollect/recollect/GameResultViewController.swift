@@ -8,7 +8,7 @@
 
 import UIKit
 
-class GameResultViewController: HalfScreenViewController {
+class GameResultViewController: HalfScreenViewController, UIGestureRecognizerDelegate {
     
     let gameState: GameState
     
@@ -16,6 +16,7 @@ class GameResultViewController: HalfScreenViewController {
     var completionMsgLabel: ManglableLabel?
     var mainTimeLabel: ManglableLabel?
     var deltaTimeLabel: ManglableLabel?
+    var gameCenterSolicitationLabel: ManglableLabel?
     var resultViewContainerVerticalConstraint: NSLayoutConstraint?
     
     init(gameState: GameState) {
@@ -35,7 +36,6 @@ class GameResultViewController: HalfScreenViewController {
         let deltaTimeLabelHeight = CGFloat(25.0)
         
         completionMsgLabel = ManglableLabel()
-        completionMsgLabel!.setTranslatesAutoresizingMaskIntoConstraints(false)
         completionMsgLabel!.font = UIFont(name: "AvenirNextCondensed-DemiBold", size: completionMsgLabelHeight)
         completionMsgLabel!.textColor = DesignLanguage.NeverActiveTextColor
         completionMsgLabel!.adjustsFontSizeToFitWidth = true
@@ -44,14 +44,12 @@ class GameResultViewController: HalfScreenViewController {
         resultViewContainer!.addSubview(completionMsgLabel!)
         
         mainTimeLabel = ManglableLabel()
-        mainTimeLabel!.setTranslatesAutoresizingMaskIntoConstraints(false)
         mainTimeLabel!.font = UIFont(name: "AvenirNextCondensed-DemiBold", size: mainTimeLabelHeight)
         mainTimeLabel!.textColor = DesignLanguage.ActiveTextColor
         mainTimeLabel!.text = gameState.finalTime().minuteSecondCentisecondString()
         resultViewContainer!.addSubview(mainTimeLabel!)
         
         deltaTimeLabel = ManglableLabel()
-        deltaTimeLabel!.setTranslatesAutoresizingMaskIntoConstraints(false)
         deltaTimeLabel!.font = UIFont(name: "AvenirNextCondensed-DemiBold", size: deltaTimeLabelHeight)
         deltaTimeLabel!.textAlignment = NSTextAlignment.Right
         deltaTimeLabel!.textColor = DesignLanguage.NeverActiveTextColor
@@ -126,7 +124,24 @@ class GameResultViewController: HalfScreenViewController {
                 ])
         )
         
-        view.addConstraint(
+        gameCenterSolicitationLabel = ManglableLabel()
+        gameCenterSolicitationLabel!.alpha = 0
+        gameCenterSolicitationLabel!.attributedText = NSAttributedString(
+            string: "Log in via Game Center",
+            attributes: [
+                NSFontAttributeName: UIFont(name: "AvenirNext-Regular", size: 17.5)!,
+                NSForegroundColorAttributeName: DesignLanguage.ActiveTextColor,
+                NSUnderlineStyleAttributeName: 1,
+            ]
+        )
+        gameCenterSolicitationLabel!.userInteractionEnabled = true
+        let tapRecognizer = UITapGestureRecognizer()
+        tapRecognizer.delegate = self
+        tapRecognizer.addTarget(self, action: "loginViaGameCenterLabelTapped:")
+        gameCenterSolicitationLabel!.addGestureRecognizer(tapRecognizer)
+        view.addSubview(gameCenterSolicitationLabel!)
+        
+        view.addConstraints([
             NSLayoutConstraint(
                 item: resultViewContainer!,
                 attribute: NSLayoutAttribute.CenterX,
@@ -135,9 +150,31 @@ class GameResultViewController: HalfScreenViewController {
                 attribute: NSLayoutAttribute.CenterX,
                 multiplier: 1.0,
                 constant: 0.0
-            )
-        )
+            ),
+            NSLayoutConstraint(
+                item: gameCenterSolicitationLabel!,
+                attribute: NSLayoutAttribute.CenterX,
+                relatedBy: NSLayoutRelation.Equal,
+                toItem: view,
+                attribute: NSLayoutAttribute.CenterX,
+                multiplier: 1.0,
+                constant: 0.0
+            ),
+            NSLayoutConstraint(
+                item: gameCenterSolicitationLabel!,
+                attribute: NSLayoutAttribute.Bottom,
+                relatedBy: NSLayoutRelation.Equal,
+                toItem: view,
+                attribute: NSLayoutAttribute.Bottom,
+                multiplier: 1.0,
+                constant: -5.0 // a little breathing room never hurt nobody
+            ),
+        ])
         refreshLayout(identity: PlayerIdentityManager.identity(), leaderboard: [])
+    }
+    
+    func loginViaGameCenterLabelTapped(tapRecognizer: UITapGestureRecognizer) {
+        UIApplication.sharedApplication().openURL(NSURL(string: "gamecenter:")!)
     }
     
     override func viewWillAppear(animated: Bool) {
@@ -185,6 +222,7 @@ class GameResultViewController: HalfScreenViewController {
         UIView.animateWithDuration(DesignLanguage.MinorAnimationDuration) {
             self.view.layoutIfNeeded()
             self.deltaTimeLabel?.alpha = deltaAlpha
+            self.gameCenterSolicitationLabel?.alpha = leaderboard.count <= 1 ? 1.0 : 0.0
         }
     }
 }

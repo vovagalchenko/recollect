@@ -180,7 +180,6 @@ class LevelPickerViewController: HalfScreenViewController, UIGestureRecognizerDe
     
     private func instructionsLabel() -> ManglableLabel {
         let instructionsLabel = ManglableLabel()
-        instructionsLabel.setTranslatesAutoresizingMaskIntoConstraints(false)
         instructionsLabel.font = UIFont(name: "AvenirNextCondensed-DemiBold", size: 18)
         instructionsLabel.textColor = DesignLanguage.NeverActiveTextColor
         instructionsLabel.textAlignment = NSTextAlignment.Center
@@ -190,7 +189,6 @@ class LevelPickerViewController: HalfScreenViewController, UIGestureRecognizerDe
     
     private func levelLabel(levelName: String) -> ManglableLabel {
         let levelLabel = ManglableLabel()
-        levelLabel.setTranslatesAutoresizingMaskIntoConstraints(false)
         levelLabel.font = UIFont(name: "AvenirNext-UltraLight", size: 100.75)
         levelLabel.textColor = DesignLanguage.InactiveTextColor
         levelLabel.numberOfLines = 1

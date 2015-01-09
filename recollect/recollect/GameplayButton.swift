@@ -76,7 +76,6 @@ class GameplayButton: UIControl {
     
     private lazy var label: ManglableLabel = {
         let label = ManglableLabel()
-        label.setTranslatesAutoresizingMaskIntoConstraints(false)
         label.backgroundColor = UIColor.clearColor()
         label.textColor = DesignLanguage.ActiveTextColor
         label.textAlignment = NSTextAlignment.Center

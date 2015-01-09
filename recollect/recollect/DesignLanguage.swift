@@ -19,6 +19,6 @@ struct DesignLanguage {
     
     static let ProgressBarHeight: CGFloat = 42.0
     
-    static let TransitionAnimationDuration: NSTimeInterval = 1
+    static let TransitionAnimationDuration: NSTimeInterval = 1.0
     static let MinorAnimationDuration: NSTimeInterval = 0.35
 }

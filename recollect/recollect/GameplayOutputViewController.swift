@@ -240,7 +240,6 @@ class GameplayOutputViewController: HalfScreenViewController {
     
     func challengeLabel(operand: Int) -> ManglableLabel {
         let label = ManglableLabel()
-        label.setTranslatesAutoresizingMaskIntoConstraints(false)
         label.backgroundColor = UIColor.clearColor()
         label.textColor = DesignLanguage.NeverActiveTextColor
         label.font = UIFont(name: "AvenirNext-Regular", size: 76.0)

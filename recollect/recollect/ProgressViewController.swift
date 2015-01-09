@@ -24,7 +24,6 @@ class ProgressViewController: UIViewController {
         
         let font = UIFont(name: "AvenirNextCondensed-DemiBold", size: 25.0)
         timeLabel = ManglableLabel()
-        timeLabel?.setTranslatesAutoresizingMaskIntoConstraints(false)
         timeLabel?.backgroundColor = UIColor.clearColor()
         timeLabel?.textColor = DesignLanguage.NeverActiveTextColor.colorWithAlphaComponent(0.30)
         timeLabel?.font = font

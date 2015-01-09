@@ -72,7 +72,6 @@ class LogoViewController: HalfScreenViewController {
                 characterView.textAlignment = NSTextAlignment.Center
                 characterView.font = logoFont(baseFontSize)
                 characterView.text = "\(character)"
-                characterView.setTranslatesAutoresizingMaskIntoConstraints(false);
                 logoContainer.addSubview(characterView)
                 
                 view.addConstraints([
