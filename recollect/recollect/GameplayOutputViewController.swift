@@ -314,6 +314,7 @@ class GameplayOutputViewController: HalfScreenViewController {
     
     override func animationWillBegin(beginningState: TransitionAnimationState, plannedAnimationDuration: NSTimeInterval) {
         super.animationWillBegin(beginningState, plannedAnimationDuration: plannedAnimationDuration)
+        view.superview?.bringSubviewToFront(view)
         configureForTransition(beginningState)
     }
     
