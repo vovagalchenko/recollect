@@ -31,6 +31,6 @@ class MenuIconView: ButtonBackground {
     }
     
     override func intrinsicContentSize() -> CGSize {
-        return CGSize(width: 30, height: 30)
+        return CGSize(width: 40, height: 40)
     }
 }
