@@ -10,7 +10,7 @@ import UIKit
 
 class ManglableLabel: UILabel {
     
-    private var originalText: String?
+    var originalText: String?
     private var originalAttributedText: NSAttributedString?
     private var originalTextColor: UIColor?
     
@@ -40,13 +40,13 @@ class ManglableLabel: UILabel {
             }
         }
         
-        var stringToMangle: NSMutableAttributedString? = nil
+        var mangledString: NSMutableAttributedString = NSMutableAttributedString(string: "")
         if let existingOriginalAttributedText = originalAttributedText {
-            stringToMangle = NSMutableAttributedString(attributedString: existingOriginalAttributedText)
+            mangledString = NSMutableAttributedString(attributedString: existingOriginalAttributedText)
         } else if originalText != nil && originalTextColor != nil {
-            stringToMangle = NSMutableAttributedString(string: originalText!, attributes: [NSForegroundColorAttributeName: originalTextColor!])
+            mangledString = NSMutableAttributedString(string: originalText!, attributes: [NSForegroundColorAttributeName: originalTextColor!])
         }
-        if let mangledString = stringToMangle {
+        if countElements(mangledString.string) > 0 {
             let strLength = countElements(mangledString.string)
             let numCharactersToLeaveUnmangled = Int(round(Float(strLength) * portionOfTextToLeaveUnmangled))
             let indexOfSplitChar = advance(mangledString.string.startIndex, numCharactersToLeaveUnmangled)

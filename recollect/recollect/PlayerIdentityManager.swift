@@ -19,4 +19,5 @@ protocol PlayerIdentity {
     func deltaFromBest(game: GameState) -> NSTimeInterval
     func submit(gameState: GameState, completion: ([PlayerScore]) -> Void)
     func flushBestGames(newGame: GameState)
+    func bestTime(levelId: String) -> NSTimeInterval?
 }

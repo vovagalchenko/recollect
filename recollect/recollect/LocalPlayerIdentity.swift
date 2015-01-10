@@ -10,9 +10,15 @@ import Foundation
 
 class LocalPlayerIdentity: PlayerIdentity {
     
+    class var BestScoreChangeNotificationName: String { return "BEST_SCORE_CHANGED" }
+    
     var bestGames: [String: GameState] {
         didSet {
             sync()
+            NSNotificationCenter.defaultCenter().postNotificationName(
+                LocalPlayerIdentity.BestScoreChangeNotificationName,
+                object: self,
+                userInfo: nil)
         }
     }
     let playerId = "local_player"
@@ -54,6 +60,10 @@ class LocalPlayerIdentity: PlayerIdentity {
         } else {
             bestGames[newGame.levelId] = newGame
         }
+    }
+    
+    func bestTime(levelId: String) -> NSTimeInterval? {
+        return bestGames[levelId]?.finalTime()
     }
     
     private func sync() {

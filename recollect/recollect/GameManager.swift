@@ -41,7 +41,7 @@ class GameManager: GameplayInputControllerDelegate {
     
     func startGame(gameLevelId: String) {
         assert(self.currentGameState == nil || self.currentGameState!.latestTimeStart == nil, "Can't start a game when one is already in progress!")
-        self.currentGameState = GameState(n: gameLevelId.toInt()!, numRounds: 5)
+        self.currentGameState = GameState(n: gameLevelId.toInt()!, numRounds: 10)
     }
     
     func subscribeToGameStateChangeNotifications(listener: GameStateChangeListener) {
