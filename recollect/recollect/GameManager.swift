@@ -65,7 +65,9 @@ extension GameManager: GameplayInputControllerDelegate {
             case GameplayInput.Forward:
                 currentGameState = currentGameState!.advance()
             case .Zero, .One, .Two, .Three, .Four, .Five, .Six, .Seven, .Eight, .Nine:
-                currentGameState = currentGameState!.advance(userInput: input.rawValue)
+                if currentGameState?.currentChallengeIndex >= 0 && currentGameState?.currentChallengeIndex < currentGameState?.challenges.count {
+                    currentGameState = currentGameState!.advance(userInput: input.rawValue)
+                }
             default:
                 fatalError("Can't understand user input <\(input)>.")
         }

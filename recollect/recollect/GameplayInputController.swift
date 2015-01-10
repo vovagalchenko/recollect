@@ -102,11 +102,9 @@ extension GameplayInputController: GameStateChangeListener {
     func gameStateChanged(change: GameStateChange) {
         if (change.oldGameState?.currentChallengeIndex ?? Int.min) < 0 &&
             (change.newGameState?.currentChallengeIndex ?? Int.min) >= 0 {
-                UIView.animateWithDuration(DesignLanguage.MinorAnimationDuration, animations: {
-                    for button in self.buttons {
-                        button.enabled = (button.text != "»")
-                    }
-                })
+                for button in self.buttons {
+                    button.enabled = (button.text != "»")
+                }
         }
     }
 }

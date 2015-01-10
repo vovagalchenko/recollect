@@ -295,27 +295,33 @@ class GameplayOutputViewController: HalfScreenViewController {
     private let shakeReductionFactor: NSTimeInterval = 0.01
     private let totalNumShakes = 8
     private func shakeChallenges(shakeNumber: Int = 0) {
-        UIView.animateWithDuration(initialShakeDuration - (NSTimeInterval(shakeNumber) * shakeReductionFactor), animations: {
-            let sign: CGFloat = (shakeNumber%2 == 0) ? -1.0 : 1.0
-            let initialShakeAmount = self.view.bounds.size.width/CGFloat(4*(self.gameState.n + 1))
-            let actualShakeAmount = initialShakeAmount - (initialShakeAmount*(CGFloat(shakeNumber)/CGFloat(self.totalNumShakes)))
-            let translation = CGAffineTransformMakeTranslation(sign*actualShakeAmount, 0.0)
-            self.challengeContainer?.transform = translation
-            self.blurView?.blurredView.transform = translation
-        }, completion: { (finished: Bool) -> Void in
-            if (shakeNumber == self.totalNumShakes - 1) {
-                self.challengeContainer?.transform = CGAffineTransformIdentity
-                self.blurView?.blurredView.transform = CGAffineTransformIdentity
-            } else {
-                self.shakeChallenges(shakeNumber: shakeNumber + 1)
-            }
-        })
+        if self.challengeContainer?.layer.animationKeys()?.count == 0 {
+            UIView.animateWithDuration(initialShakeDuration - (NSTimeInterval(shakeNumber) * shakeReductionFactor), animations: {
+                let sign: CGFloat = (shakeNumber%2 == 0) ? -1.0 : 1.0
+                let initialShakeAmount = self.view.bounds.size.width/CGFloat(4*(self.gameState.n + 1))
+                let actualShakeAmount = initialShakeAmount - (initialShakeAmount*(CGFloat(shakeNumber)/CGFloat(self.totalNumShakes)))
+                let translation = CGAffineTransformMakeTranslation(sign*actualShakeAmount, 0.0)
+                self.challengeContainer?.transform = translation
+                self.blurView?.blurredView.transform = translation
+            }, completion: { (finished: Bool) -> Void in
+                if (shakeNumber == self.totalNumShakes - 1) && finished {
+                    self.challengeContainer?.transform = CGAffineTransformIdentity
+                    self.blurView?.blurredView.transform = CGAffineTransformIdentity
+                } else if finished {
+                    self.shakeChallenges(shakeNumber: shakeNumber + 1)
+                }
+            })
+        }
     }
     
     override func animationWillBegin(beginningState: TransitionAnimationState, plannedAnimationDuration: NSTimeInterval) {
         super.animationWillBegin(beginningState, plannedAnimationDuration: plannedAnimationDuration)
         view.superview?.bringSubviewToFront(view)
         configureForTransition(beginningState)
+        
+        if beginningState == TransitionAnimationState.Active {
+            challengeContainer?.layer.removeAllAnimations()
+        }
     }
     
     override func addToAnimationBlock(endingState: TransitionAnimationState) {
