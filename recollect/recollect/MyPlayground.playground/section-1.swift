@@ -37,8 +37,13 @@ class Test {
     }
 }
 
-let t = Test()
-t.dict = ["asdf": 1234]
-t.dict["asdf"] = 3456
+class Something {
+    var t: Int? =  -1
+}
 
-t
+let s = Something()
+if s.t < 0 {
+    println("hello")
+}
+
+s.t < 0

@@ -94,6 +94,7 @@ class GameplayInputController: HalfScreenViewController {
         let button = GameplayButton()
         button.addTarget(self, action: "handleButtonPress:", forControlEvents: UIControlEvents.TouchUpInside)
         button.text = text
+        button.glowWhenEnabled = text == "»"
         return button
     }
 }

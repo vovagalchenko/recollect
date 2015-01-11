@@ -62,9 +62,9 @@ class LocalPlayerIdentity: PlayerIdentity {
         }
     }
     
-    func bestTime(levelId: String) -> NSTimeInterval? {
-        return bestGames[levelId]?.finalTime()
-    }
+    func bestTime(levelId: String) -> NSTimeInterval? { return bestGames[levelId]?.finalTime() }
+    
+    func finishedLevelBefore(levelId: String) -> Bool { return bestGames[levelId] != nil }
     
     private func sync() {
         if NSKeyedArchiver.archiveRootObject(bestGames, toFile: computeScoresFilePath()) {

@@ -18,6 +18,8 @@ class BaseViewController: UIViewController {
     
     var topHalfContainerView: UIView?
     var bottomHalfContainerView: UIView?
+    
+    var continueHelperOverlay: ContinueInstructionOverlayView?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -150,7 +152,7 @@ class BaseViewController: UIViewController {
                 existingNewController.animationWillBegin(.Inactive, plannedAnimationDuration: DesignLanguage.TransitionAnimationDuration)
             }
             if let existingOldController = oldController {
-                constraintsToRemove.extend(existingOldController.view.superview?.constraints() ?? [])
+                constraintsToRemove.extend(existingOldController.view.superview?.constraints(existingOldController.view) ?? [])
                 existingOldController.animationWillBegin(.Active, plannedAnimationDuration: DesignLanguage.TransitionAnimationDuration)
             }
         }
@@ -241,6 +243,31 @@ class BaseViewController: UIViewController {
             return (oldController, newController);
         }
     }
+    
+    func showContinueInstructionOverlayIfNeeded(timer: NSTimer) {
+        let gameState = timer.userInfo! as GameState
+        if GameManager.sharedInstance.currentGameState == gameState && continueHelperOverlay == nil {
+            continueHelperOverlay = ContinueInstructionOverlayView()
+            continueHelperOverlay!.alpha = 0
+            bottomHalfContainerView?.addSubview(continueHelperOverlay!)
+            bottomHalfContainerView?.addConstraints(
+                NSLayoutConstraint.constraintsWithVisualFormat(
+                    "H:|[overlay]|",
+                    options: NSLayoutFormatOptions(0),
+                    metrics: nil,
+                    views: ["overlay" : continueHelperOverlay!]) +
+                NSLayoutConstraint.constraintsWithVisualFormat(
+                    "V:|[overlay]|",
+                    options: NSLayoutFormatOptions(0),
+                    metrics: nil,
+                    views: ["overlay" : continueHelperOverlay!])
+            )
+            
+            UIView.animateWithDuration(DesignLanguage.MinorAnimationDuration) {
+                self.continueHelperOverlay!.alpha = 1
+            }
+        }
+    }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
@@ -273,6 +300,39 @@ extension BaseViewController: GameStateChangeListener {
                 newBottomViewControllerFunc: { return SharingViewController(gameState: change.newGameState!) },
                 rotationParams: (.None, .Clockwise)
             )
+        }
+        
+        if continueHelperOverlay?.superview != nil {
+            UIView.animateWithDuration(
+                DesignLanguage.MinorAnimationDuration,
+                animations: { () -> Void in
+                    self.continueHelperOverlay!.alpha = 0.0
+                }) { (finished: Bool) -> Void in
+                    self.bottomHalfContainerView!.removeConstraints(self.bottomHalfContainerView!.constraints(self.continueHelperOverlay!))
+                    self.continueHelperOverlay!.removeFromSuperview()
+                    self.continueHelperOverlay = nil
+            }
+        }
+        
+        if (change.newGameState?.currentChallengeIndex ?? 0) < 0 {
+            NSTimer.scheduledTimerWithTimeInterval(
+                PlayerIdentityManager.identity().finishedLevelBefore(change.newGameState!.levelId) ? 5.0 : 3.0,
+                target: self,
+                selector: "showContinueInstructionOverlayIfNeeded:",
+                userInfo: change.newGameState!,
+                repeats: false)
+        }
+    }
+}
+
+extension UIView {
+    func constraints(constrainedView: UIView) -> [AnyObject] {
+        return constraints().filter {
+            if let constraint = $0 as? NSLayoutConstraint {
+                return constraint.firstItem as NSObject == constrainedView || constraint.secondItem as NSObject == constrainedView
+            } else {
+                return false
+            }
         }
     }
 }

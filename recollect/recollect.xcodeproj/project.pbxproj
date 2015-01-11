@@ -36,6 +36,7 @@
 		80CFFDE81A5BBE0400E3640B /* Leaderboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80CFFDE71A5BBE0400E3640B /* Leaderboard.swift */; };
 		80CFFDEA1A5BC0DD00E3640B /* LocalPlayerIdentity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80CFFDE91A5BC0DD00E3640B /* LocalPlayerIdentity.swift */; };
 		80D712B719F4E0A600152F13 /* Launch Screen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 80D712B619F4E0A600152F13 /* Launch Screen.xib */; };
+		80F4CA451A62EB2500C5A0E8 /* ContinueInstructionOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80F4CA441A62EB2500C5A0E8 /* ContinueInstructionOverlayView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -83,6 +84,7 @@
 		80CFFDE71A5BBE0400E3640B /* Leaderboard.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Leaderboard.swift; sourceTree = "<group>"; };
 		80CFFDE91A5BC0DD00E3640B /* LocalPlayerIdentity.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocalPlayerIdentity.swift; sourceTree = "<group>"; };
 		80D712B619F4E0A600152F13 /* Launch Screen.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "Launch Screen.xib"; sourceTree = "<group>"; };
+		80F4CA441A62EB2500C5A0E8 /* ContinueInstructionOverlayView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContinueInstructionOverlayView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -197,6 +199,7 @@
 				8036714C1A5FA04C001A4D61 /* MenuIconView.swift */,
 				802EDE7D1A5E68B0004EE1CC /* ButtonBackground.swift */,
 				802EDE7F1A5E6C16004EE1CC /* UIButton+CustomizableBackground.swift */,
+				80F4CA441A62EB2500C5A0E8 /* ContinueInstructionOverlayView.swift */,
 			);
 			name = "Gameplay UI Helpers";
 			sourceTree = "<group>";
@@ -323,6 +326,7 @@
 				80CFFDE41A5BAE7F00E3640B /* GameResultViewController.swift in Sources */,
 				802EDE781A5D2464004EE1CC /* RepeatIconView.swift in Sources */,
 				8036714D1A5FA04C001A4D61 /* MenuIconView.swift in Sources */,
+				80F4CA451A62EB2500C5A0E8 /* ContinueInstructionOverlayView.swift in Sources */,
 				80CFFDE61A5BBA8E00E3640B /* PlayerIdentityManager.swift in Sources */,
 				802EDE741A5CEC5F004EE1CC /* NSTimeInterval+PrettyPrint.swift in Sources */,
 				805DE3EB1A564D550072CB12 /* ProgressViewController.swift in Sources */,

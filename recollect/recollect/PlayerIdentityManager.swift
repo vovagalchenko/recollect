@@ -20,4 +20,5 @@ protocol PlayerIdentity {
     func submit(gameState: GameState, completion: ([PlayerScore]) -> Void)
     func flushBestGames(newGame: GameState)
     func bestTime(levelId: String) -> NSTimeInterval?
+    func finishedLevelBefore(levelId: String) -> Bool
 }

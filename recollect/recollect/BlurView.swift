@@ -92,6 +92,7 @@ class BlurView: UIView {
         blurFilter.setValue(image, forKey: kCIInputImageKey)
         blurFilter.setValue(blurRadius, forKey: kCIInputRadiusKey)
         let blurredImage = blurFilter.outputImage
+        
         let croppedBlurredImage = blurredImage.imageByCroppingToRect(
             CGRectMake(blurredImage.extent().origin.x + blurRadius*2, blurredImage.extent().origin.y + blurRadius*2, blurredImage.extent().width - (blurRadius * 4), blurredImage.extent().height - (blurRadius * 4))
         )

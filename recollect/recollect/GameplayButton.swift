@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import QuartzCore
 
 class GameplayButton: UIControl {
     
@@ -28,6 +29,7 @@ class GameplayButton: UIControl {
             } else {
                 label.textColor = DesignLanguage.InactiveTextColor
             }
+            setUpGlow()
         }
     }
     
@@ -37,6 +39,12 @@ class GameplayButton: UIControl {
         }
         set {
             label.text = newValue
+        }
+    }
+    
+    var glowWhenEnabled: Bool = false {
+        didSet {
+            setUpGlow()
         }
     }
     
@@ -64,6 +72,42 @@ class GameplayButton: UIControl {
     
     override convenience init() {
         self.init(frame: CGRectZero)
+    }
+    
+    private func setUpGlow() {
+        label.layer.removeAllAnimations()
+        if (enabled && glowWhenEnabled) {
+            glow()
+        }
+    }
+    
+    private func glow() {
+        label.layer.shadowColor = label.textColor.CGColor
+        label.layer.shadowRadius = 0.0
+        label.layer.shadowOpacity = 1.0
+        label.layer.shadowOffset = CGSizeZero
+        
+        label.layer.transform = CATransform3DIdentity
+        
+        let scaleAnimation = CABasicAnimation(keyPath: "transform")
+        scaleAnimation.toValue = NSValue(CATransform3D: CATransform3DMakeScale(1.3, 1.3, 1.0))
+        
+        let glowAnimation = CABasicAnimation(keyPath: "shadowRadius")
+        glowAnimation.toValue = 5.0
+        
+        let animationGroup = CAAnimationGroup()
+        animationGroup.duration = 0.5
+        animationGroup.autoreverses = true
+        animationGroup.repeatCount = 1.0
+        animationGroup.delegate = self
+        animationGroup.animations = [scaleAnimation, glowAnimation]
+        label.layer.addAnimation(animationGroup, forKey: nil)
+    }
+    
+    override func animationDidStop(anim: CAAnimation!, finished flag: Bool) {
+        if flag {
+            setUpGlow()
+        }
     }
 
     required init(coder aDecoder: NSCoder) {

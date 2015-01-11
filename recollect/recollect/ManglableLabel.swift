@@ -28,9 +28,6 @@ class ManglableLabel: UILabel {
     }
     
     func mangle(portionOfTextToLeaveUnmangled: Float, canUseAlphaForAccents: Bool) {
-        
-        assert(self.numberOfLines == 1, "Mangling of a multiline label doesn't work exactly as expected!")
-        
         if originalText == nil && originalTextColor == nil && originalAttributedText == nil {
             if attributedText != nil {
                 originalAttributedText = attributedText

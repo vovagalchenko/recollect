@@ -19,7 +19,7 @@ class GameManager: GameplayInputControllerDelegate {
     }
     
     class var gameLevels: [String] {
-        return ["1", "2", "3", "4"]
+        return ["1", "2", "3", "4", "5"]
     }
     
     class var GameStateChangeNotificationName: String {
