@@ -220,13 +220,13 @@ class LevelPickerViewController: HalfScreenViewController, UIGestureRecognizerDe
     func handleTap(tapRecognizer: UITapGestureRecognizer) {
         let scrollView = tapRecognizer.view! as UIScrollView
         var minDistance = CGFloat.max
-        var labelClosestToCenter: ManglableLabel? = nil
+        var labelClosestToCenter: ManglableLabel?
         for label in scrollView.subviews {
             let labelCenter = CGPointMake(label.center.x - scrollView.contentOffset.x, label.center.y)
             let xDistance = labelCenter.x - scrollView.center.x
-            if (abs(xDistance) < abs(minDistance)) {
+            if (abs(xDistance) < abs(minDistance) && label is ManglableLabel) {
                 minDistance = xDistance
-                labelClosestToCenter = label as? ManglableLabel
+                labelClosestToCenter = (label as ManglableLabel)
             }
         }
         

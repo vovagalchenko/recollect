@@ -316,7 +316,7 @@ extension BaseViewController: GameStateChangeListener {
         
         if (change.newGameState?.currentChallengeIndex ?? 0) < 0 {
             NSTimer.scheduledTimerWithTimeInterval(
-                PlayerIdentityManager.identity().finishedLevelBefore(change.newGameState!.levelId) ? 5.0 : 3.0,
+                DesignLanguage.delayBeforeInstructionalOverlay(change.newGameState!.levelId),
                 target: self,
                 selector: "showContinueInstructionOverlayIfNeeded:",
                 userInfo: change.newGameState!,

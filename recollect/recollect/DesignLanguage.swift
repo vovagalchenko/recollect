@@ -18,8 +18,14 @@ struct DesignLanguage {
     static let ShadowColor = UIColor.blackColor().colorWithAlphaComponent(0.1)
     static let HighlightColor = UIColor.whiteColor().colorWithAlphaComponent(0.05)
     
+    static let obfuscationBlurRadius: CGFloat = 35
+    
     static let ProgressBarHeight: CGFloat = 42.0
     
     static let TransitionAnimationDuration: NSTimeInterval = 1.0
     static let MinorAnimationDuration: NSTimeInterval = 0.35
+    
+    static func delayBeforeInstructionalOverlay(levelId: String) -> NSTimeInterval {
+        return PlayerIdentityManager.identity().finishedLevelBefore(levelId) ? 5.0 : 3.0
+    }
 }

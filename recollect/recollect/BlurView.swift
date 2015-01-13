@@ -9,8 +9,6 @@
 import UIKit
 
 class BlurView: UIView {
-    
-    let blurRadius: CGFloat = 35
     let viewToBlur: UIView
     let blurredView: UIImageView
     let gradientView: GradientView
@@ -19,9 +17,9 @@ class BlurView: UIView {
         self.viewToBlur = viewToBlur
         blurredView = UIImageView()
         blurredView.setTranslatesAutoresizingMaskIntoConstraints(false)
-        blurredView.contentMode = UIViewContentMode.ScaleToFill
         gradientView = GradientView(frame: CGRectZero)
         super.init(frame: CGRectZero)
+        
         opaque = true
         clipsToBounds = true
         backgroundColor = DesignLanguage.TopHalfBGColor
@@ -90,14 +88,22 @@ class BlurView: UIView {
         
         let blurFilter = CIFilter(name: "CIGaussianBlur")
         blurFilter.setValue(image, forKey: kCIInputImageKey)
-        blurFilter.setValue(blurRadius, forKey: kCIInputRadiusKey)
+        blurFilter.setValue(DesignLanguage.obfuscationBlurRadius, forKey: kCIInputRadiusKey)
         let blurredImage = blurFilter.outputImage
+        let originalImageExtent = image.extent()
+        let blurredImageExtent = blurredImage.extent()
+        let centerOfImage = CGPoint(x: blurredImageExtent.midX, y: blurredImageExtent.midY)
         
         let croppedBlurredImage = blurredImage.imageByCroppingToRect(
-            CGRectMake(blurredImage.extent().origin.x + blurRadius*2, blurredImage.extent().origin.y + blurRadius*2, blurredImage.extent().width - (blurRadius * 4), blurredImage.extent().height - (blurRadius * 4))
+            CGRectMake(
+                centerOfImage.x - blurredImageExtent.width/2,
+                centerOfImage.y - originalImageExtent.height/2,
+                blurredImageExtent.width,
+                originalImageExtent.height
+            )
         )
         
-        return UIImage(CIImage: croppedBlurredImage)!
+        return UIImage(CIImage: croppedBlurredImage, scale: UIScreen.mainScreen().scale, orientation: UIImageOrientation.Up)!
     }
     
     required init(coder aDecoder: NSCoder) {

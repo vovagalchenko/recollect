@@ -131,13 +131,6 @@ class GameplayButton: UIControl {
         return label
     }()
     
-    private func lineInfo(lineWidthInPixels: CGFloat) -> (CGFloat, CGFloat) {
-        let scale = window!.screen.scale
-        let widthInPts = lineWidthInPixels/scale
-        let offset = widthInPts/2
-        return (widthInPts, offset)
-    }
-    
     override func drawRect(rect: CGRect) {
         let ctx = UIGraphicsGetCurrentContext()
         
@@ -145,25 +138,27 @@ class GameplayButton: UIControl {
             DesignLanguage.ShadowColor.setFill()
             CGContextFillRect(ctx, bounds)
         } else {
-            let (whiteLineWidth, whiteLineOffset) = lineInfo(1.0)
-            CGContextMoveToPoint(ctx, 0, whiteLineOffset)
-            CGContextAddLineToPoint(ctx, bounds.size.width, whiteLineOffset)
-            CGContextSetLineWidth(ctx, whiteLineWidth)
+            let (highlightPoints, highlightLineWidth) = pixelPerfectCoordinates(thicknessInPixels: 1, points: CGPoint(x: 0, y: 0), CGPoint(x: bounds.width, y: 0))
+            CGContextMoveToPoint(ctx, highlightPoints[0].x, highlightPoints[0].y)
+            CGContextAddLineToPoint(ctx, highlightPoints[1].x, highlightPoints[1].y)
+            CGContextSetLineWidth(ctx, highlightLineWidth)
             DesignLanguage.HighlightColor.setStroke()
             CGContextStrokePath(ctx)
         }
         
-        let (blackLineWidth, blackLineOffset) = lineInfo(2.0)
-        CGContextMoveToPoint(ctx, 0, ceil(bounds.size.height) - blackLineOffset)
-        CGContextAddLineToPoint(ctx, bounds.size.width, ceil(bounds.size.height) - blackLineOffset)
-        CGContextSetLineWidth(ctx, blackLineWidth)
+        
+        let (horizontalShadowPoints, horizontalShadowWidth) = pixelPerfectCoordinates(thicknessInPixels: 2, points: CGPoint(x: 0, y: bounds.size.height), CGPoint(x: bounds.size.width, y: bounds.size.height))
+        CGContextMoveToPoint(ctx, horizontalShadowPoints[0].x, horizontalShadowPoints[0].y)
+        CGContextAddLineToPoint(ctx, horizontalShadowPoints[1].x, horizontalShadowPoints[1].y)
+        CGContextSetLineWidth(ctx, horizontalShadowWidth)
         DesignLanguage.ShadowColor.setStroke()
         CGContextStrokePath(ctx)
         
-        let (blackVerticalLineWidth, blackVerticalLineOffset) = lineInfo(2.0)
-        CGContextMoveToPoint(ctx, blackVerticalLineOffset, 0)
-        CGContextAddLineToPoint(ctx, blackVerticalLineOffset, bounds.size.height)
-        CGContextSetLineWidth(ctx, blackVerticalLineWidth)
+        
+        let (verticalShadowPoints, verticalLineWidth) = pixelPerfectCoordinates(thicknessInPixels: 2, points: CGPoint(x: 0, y: 0), CGPoint(x: 0, y: bounds.height))
+        CGContextMoveToPoint(ctx, verticalShadowPoints[0].x, verticalShadowPoints[0].y)
+        CGContextAddLineToPoint(ctx, verticalShadowPoints[1].x, verticalShadowPoints[1].y)
+        CGContextSetLineWidth(ctx, verticalLineWidth)
         DesignLanguage.ShadowColor.setStroke()
         CGContextStrokePath(ctx)
     }

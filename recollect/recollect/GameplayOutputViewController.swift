@@ -18,6 +18,9 @@ class GameplayOutputViewController: HalfScreenViewController {
     private var blurView: BlurView?
     private var challengeContainerXPositionConstraint: NSLayoutConstraint?
     
+    // Instructional Overlay
+    private var borderOverlay: BorderView?
+    
     init(gameState: GameState) {
         self.gameState = gameState
         super.init(nibName: nil, bundle: nil)
@@ -145,21 +148,13 @@ class GameplayOutputViewController: HalfScreenViewController {
                 constant: 0.0),
             NSLayoutConstraint(
                 item: blurView!.blurredView,
-                attribute: NSLayoutAttribute.Left,
+                attribute: NSLayoutAttribute.CenterX,
                 relatedBy: NSLayoutRelation.Equal,
                 toItem: challengeContainer,
-                attribute: NSLayoutAttribute.Left,
+                attribute: NSLayoutAttribute.CenterX,
                 multiplier: 1.0,
                 constant: 0.0),
-            NSLayoutConstraint(
-                item: blurView!.blurredView,
-                attribute: NSLayoutAttribute.Right,
-                relatedBy: NSLayoutRelation.Equal,
-                toItem: challengeContainer,
-                attribute: NSLayoutAttribute.Right,
-                multiplier: 1.0,
-                constant: 0.0),
-            ])
+        ])
         
         view.addConstraints(
             [
@@ -302,14 +297,80 @@ class GameplayOutputViewController: HalfScreenViewController {
             let translation = CGAffineTransformMakeTranslation(sign*actualShakeAmount, 0.0)
             self.challengeContainer?.transform = translation
             self.blurView?.blurredView.transform = translation
+            self.borderOverlay?.transform = translation
         }, completion: { (finished: Bool) -> Void in
             if (shakeNumber == self.totalNumShakes - 1) && finished {
                 self.challengeContainer?.transform = CGAffineTransformIdentity
                 self.blurView?.blurredView.transform = CGAffineTransformIdentity
+                self.borderOverlay?.transform = CGAffineTransformIdentity
             } else if finished {
                 self.shakeChallenges(shakeNumber: shakeNumber + 1)
             }
         })
+    }
+    
+    func presentInstructionalOverlayIfNeeded(timer: NSTimer) {
+        let gameStateAtTimerSetup = timer.userInfo as GameState
+        
+        if gameStateAtTimerSetup.currentChallengeIndex == gameState.currentChallengeIndex && challengeContainer != nil {
+            var minYOrigin = CGFloat.max
+            var maxBottom = CGFloat.min
+            var maxWidth = CGFloat.min
+            for subview in challengeContainer!.subviews {
+                if subview.frame.origin.y < minYOrigin {
+                    minYOrigin = subview.frame.origin.y
+                }
+                if subview.frame.origin.y + subview.bounds.height > maxBottom {
+                    maxBottom = subview.frame.origin.y + subview.bounds.height
+                }
+                if subview.bounds.width > maxWidth {
+                    maxWidth = subview.bounds.width
+                }
+            }
+            
+            borderOverlay = BorderView()
+            borderOverlay!.alpha = 0.0
+            blurView?.addSubview(borderOverlay!)
+            let blurPadding: CGFloat = 10
+            view.addConstraints([
+                NSLayoutConstraint(
+                    item: borderOverlay!,
+                    attribute: NSLayoutAttribute.CenterX,
+                    relatedBy: NSLayoutRelation.Equal,
+                    toItem: blurView,
+                    attribute: NSLayoutAttribute.Right,
+                    multiplier: 1.0/CGFloat(2*gameState.n),
+                    constant: 0.0),
+                NSLayoutConstraint(
+                    item: borderOverlay!,
+                    attribute: NSLayoutAttribute.CenterY,
+                    relatedBy: NSLayoutRelation.Equal,
+                    toItem: challengeContainer!,
+                    attribute: NSLayoutAttribute.CenterY,
+                    multiplier: 1.0,
+                    constant: 0.0),
+                NSLayoutConstraint(
+                    item: borderOverlay!,
+                    attribute: NSLayoutAttribute.Width,
+                    relatedBy: NSLayoutRelation.Equal,
+                    toItem: nil,
+                    attribute: NSLayoutAttribute.NotAnAttribute,
+                    multiplier: 0.0,
+                    constant: maxWidth + blurPadding),
+                NSLayoutConstraint(
+                    item: borderOverlay!,
+                    attribute: NSLayoutAttribute.Height,
+                    relatedBy: NSLayoutRelation.Equal,
+                    toItem: nil,
+                    attribute: NSLayoutAttribute.NotAnAttribute,
+                    multiplier: 0.0,
+                    constant: maxBottom - minYOrigin)
+            ])
+            
+            UIView.animateWithDuration(DesignLanguage.MinorAnimationDuration) {
+                self.borderOverlay!.alpha = 1.0
+            }
+        }
     }
     
     override func animationWillBegin(beginningState: TransitionAnimationState, plannedAnimationDuration: NSTimeInterval) {
@@ -342,6 +403,24 @@ extension GameplayOutputViewController: GameStateChangeListener {
             } else if change.oldGameState != nil {
                 // Wrong answer was entered
                 shakeChallenges()
+            }
+            
+            if gameState.currentChallengeIndex >= 0 && gameState.currentChallengeIndex < gameState.challenges.count
+                && gameState.challenges[gameState.currentChallengeIndex].userResponses.count == 0 {
+                NSTimer.scheduledTimerWithTimeInterval(
+                    DesignLanguage.delayBeforeInstructionalOverlay(gameState.levelId),
+                    target: self,
+                    selector: "presentInstructionalOverlayIfNeeded:",
+                    userInfo: gameState,
+                    repeats: false)
+                if borderOverlay != nil {
+                    UIView.animateWithDuration(DesignLanguage.MinorAnimationDuration, animations: {
+                        self.borderOverlay!.alpha = 0.0
+                        }) { (finished: Bool) -> Void in
+                            self.blurView!.removeConstraints(self.blurView!.constraints(self.borderOverlay!))
+                            self.borderOverlay!.removeFromSuperview()
+                    }
+                }
             }
         }
     }
