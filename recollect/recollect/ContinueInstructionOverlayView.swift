@@ -24,7 +24,7 @@ class ContinueInstructionOverlayView: UIView {
         
         userInteractionEnabled = false
         setTranslatesAutoresizingMaskIntoConstraints(false)
-        backgroundColor = UIColor.whiteColor().colorWithAlphaComponent(0.3)
+        backgroundColor = UIColor.whiteColor().colorWithAlphaComponent(0.2)
         
         addSubview(instructionLabel)
         addConstraints([

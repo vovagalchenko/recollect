@@ -118,12 +118,7 @@ class ProgressViewController: UIViewController {
     
     func refresh(displayLink: CADisplayLink) {
         if gameState?.latestTimeStart != nil {
-            let timeInGame = gameState!.time()
-            let minsInGame = Int(floor(timeInGame/60.0))
-            let secsInGame = Int(floor(timeInGame - NSTimeInterval(minsInGame*60)))
-            let hundredthsOfSecsInGame = Int(floor((timeInGame - floor(timeInGame))*100))
-            timeLabel?.text = NSString(format: "%02d:%02d:%02d", minsInGame, secsInGame, hundredthsOfSecsInGame)
-            timeLabel?.text = timeInGame.minuteSecondCentisecondString()
+            timeLabel?.text = gameState!.time().minuteSecondCentisecondString()
         } else {
             displayLink.invalidate()
         }
@@ -133,10 +128,14 @@ class ProgressViewController: UIViewController {
 extension ProgressViewController: GameStateChangeListener {
     func gameStateChanged(change: GameStateChange) {
         gameState = change.newGameState
-        if change.oldGameState?.latestTimeStart == nil && change.newGameState?.latestTimeStart != nil {
-            let displayLink = CADisplayLink(target: self, selector: "refresh:")
-            displayLink.addToRunLoop(NSRunLoop.currentRunLoop(), forMode: NSDefaultRunLoopMode)
+        if let existingGameState = gameState {
+            timeLabel?.text = existingGameState.time().minuteSecondCentisecondString()
+            if change.oldGameState?.latestTimeStart == nil && existingGameState.latestTimeStart != nil {
+                let displayLink = CADisplayLink(target: self, selector: "refresh:")
+                displayLink.addToRunLoop(NSRunLoop.currentRunLoop(), forMode: NSDefaultRunLoopMode)
+            }
+            refreshDotViews()
         }
-        refreshDotViews()
+        
     }
 }

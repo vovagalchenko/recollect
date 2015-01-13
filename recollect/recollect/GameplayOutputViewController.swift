@@ -8,7 +8,7 @@
 
 import UIKit
 
-class GameplayOutputViewController: HalfScreenViewController {
+class GameplayOutputViewController: HalfScreenViewController, UIGestureRecognizerDelegate {
     
     var gameState: GameState
     
@@ -18,11 +18,14 @@ class GameplayOutputViewController: HalfScreenViewController {
     private var blurView: BlurView?
     private var challengeContainerXPositionConstraint: NSLayoutConstraint?
     
+    private let delegate: GameplayOutputViewControllerDelegate
+    
     // Instructional Overlay
     private var borderOverlay: BorderView?
     
     init(gameState: GameState) {
         self.gameState = gameState
+        self.delegate = GameManager.sharedInstance
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -127,6 +130,11 @@ class GameplayOutputViewController: HalfScreenViewController {
         }
         
         blurView = BlurView(viewToBlur: challengeContainer!)
+        blurView!.userInteractionEnabled = true
+        let panRecognizer = UIPanGestureRecognizer()
+        panRecognizer.delegate = self
+        panRecognizer.addTarget(self, action: "blurViewDragged:")
+        blurView!.addGestureRecognizer(panRecognizer)
         view.addSubview(blurView!)
         
         view.addConstraints([
@@ -231,6 +239,82 @@ class GameplayOutputViewController: HalfScreenViewController {
     
     deinit {
         GameManager.sharedInstance.unsubscribeFromGameStateChangeNotifications(self)
+    }
+    
+    func gestureRecognizerShouldBegin(gestureRecognizer: UIGestureRecognizer) -> Bool {
+        // Don't do anything if we don't have anything under the blur view
+        return gameState.currentChallengeIndex > -gameState.n
+    }
+    
+    var previousXTranslation: CGFloat = 0.0
+    func blurViewDragged(panGestureRecognizer: UIPanGestureRecognizer) {
+        if panGestureRecognizer.state == UIGestureRecognizerState.Began ||
+           panGestureRecognizer.state == UIGestureRecognizerState.Changed {
+            let xTranslation: CGFloat = panGestureRecognizer.translationInView(self.view).x
+            if xTranslation <= 0 {
+                blurView!.transform = CGAffineTransformMakeTranslation(xTranslation, 0.0)
+                blurView!.blurredView.transform = CGAffineTransformMakeTranslation(-xTranslation, 0.0)
+            }
+            
+            var labelXCenters = [CGFloat]()
+            var increment = blurView!.bounds.width/CGFloat(gameState.n)
+            var curr = -increment/2
+            while curr > -blurView!.bounds.width {
+                labelXCenters.append(curr)
+                curr -= increment
+            }
+            
+            var labelWidth: CGFloat = 0
+            for subview in challengeContainer!.subviews {
+                if let label = subview as? ManglableLabel {
+                    if label.text?.toInt() != nil {
+                        labelWidth = label.bounds.width
+                        break
+                    }
+                }
+            }
+            
+            let numLabelsUnderBlur = gameState.n + min(gameState.currentChallengeIndex, 0)
+            let labelEdges = labelXCenters[0..<numLabelsUnderBlur].map { $0 + labelWidth/2 }
+            
+            for labelEdge in labelEdges {
+                if previousXTranslation >= labelEdge && xTranslation < labelEdge {
+                    delegate.peeked()
+                }
+            }
+            
+            previousXTranslation = xTranslation
+        } else if panGestureRecognizer.state == UIGestureRecognizerState.Ended ||
+                  panGestureRecognizer.state == UIGestureRecognizerState.Cancelled {
+            let priorXTranslate = self.blurView!.transform.tx
+            UIView.animateWithDuration(
+                DesignLanguage.MinorAnimationDuration/2.0,
+                delay: 0.0,
+                options: UIViewAnimationOptions.CurveEaseIn,
+                animations: { () -> Void in
+                    self.blurView!.transform = CGAffineTransformIdentity
+                    self.blurView!.blurredView.transform = CGAffineTransformIdentity
+                    self.borderOverlay?.transform = CGAffineTransformIdentity
+                }) { (finished: Bool) -> Void in
+                UIView.animateWithDuration(
+                    DesignLanguage.MinorAnimationDuration/3.0,
+                    delay: 0.0,
+                    options: UIViewAnimationOptions.CurveEaseOut,
+                    animations: { () -> Void in
+                        self.blurView!.transform = CGAffineTransformMakeTranslation(priorXTranslate/CGFloat(8.0), 0.0)
+                        self.blurView!.blurredView.transform = CGAffineTransformMakeTranslation(-priorXTranslate/CGFloat(8.0), 0.0)
+                }) { (finished: Bool) -> Void in
+                    UIView.animateWithDuration(
+                        DesignLanguage.MinorAnimationDuration/3.0,
+                        delay: 0.0,
+                        options: UIViewAnimationOptions.CurveEaseIn,
+                        animations: { () -> Void in
+                            self.blurView!.transform = CGAffineTransformIdentity
+                            self.blurView!.blurredView.transform = CGAffineTransformIdentity
+                    }, completion: nil)
+                }
+            }
+        }
     }
     
     func challengeLabel(operand: Int) -> ManglableLabel {
@@ -400,7 +484,7 @@ extension GameplayOutputViewController: GameStateChangeListener {
                 if newGameState.currentChallengeIndex < newGameState.challenges.count {
                     setActiveChallenge(newGameState.currentChallengeIndex, animated: true)
                 }
-            } else if change.oldGameState != nil {
+            } else if change.oldGameState != nil && change.oldGameState!.currentChallengeIndex == (gameState.currentChallengeIndex - 1) {
                 // Wrong answer was entered
                 shakeChallenges()
             }
@@ -424,4 +508,8 @@ extension GameplayOutputViewController: GameStateChangeListener {
             }
         }
     }
+}
+
+protocol GameplayOutputViewControllerDelegate {
+    func peeked()
 }

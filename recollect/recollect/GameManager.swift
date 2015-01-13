@@ -57,6 +57,13 @@ class GameManager: GameplayInputControllerDelegate {
     }
 }
 
+extension GameManager: GameplayOutputViewControllerDelegate {
+    func peeked() {
+        assert(self.currentGameState != nil, "Can't add a peek, because there's no game in progress!")
+        currentGameState = currentGameState!.addPeek()
+    }
+}
+
 extension GameManager: GameplayInputControllerDelegate {
     func receivedInput(input: GameplayInput) {
         switch input {

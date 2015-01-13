@@ -8,6 +8,8 @@
 
 import Foundation
 
+let penaltyPerPeek: NSTimeInterval = 5
+
 final class GameState: NSObject, Streamable {
     let gameId: String
     let n: Int
@@ -18,6 +20,7 @@ final class GameState: NSObject, Streamable {
     let currentChallengeIndex: Int
     let closedTimeIntervals: [TimeInterval]
     let latestTimeStart: NSDate?
+    let peeks: [NSDate]
     
     init(n: Int, numRounds: Int) {
         gameId = NSUUID().UUIDString
@@ -33,14 +36,15 @@ final class GameState: NSObject, Streamable {
         self.challenges = newChallenges
         currentChallengeIndex = -n
         closedTimeIntervals = []
-        
+        peeks = []
     }
     
-    init(gameId: String, n: Int, challenges: [Challenge], currentChallengeIndex: Int, closedTimeIntervals: [TimeInterval], latestTimeStart: NSDate?) {
+    init(gameId: String, n: Int, challenges: [Challenge], currentChallengeIndex: Int, closedTimeIntervals: [TimeInterval], latestTimeStart: NSDate?, peeks: [NSDate]) {
         self.gameId = gameId
         self.n = n
         self.challenges = challenges
         self.currentChallengeIndex = currentChallengeIndex
+        self.peeks = peeks
         
         if currentChallengeIndex >= self.challenges.count && latestTimeStart != nil {
             self.closedTimeIntervals = closedTimeIntervals + [TimeInterval(startTime: latestTimeStart!, endTime: NSDate())]
@@ -65,7 +69,8 @@ final class GameState: NSObject, Streamable {
                 challenges: mutableChallenges,
                 currentChallengeIndex: shouldAdvance ? currentChallengeIndex + 1 : currentChallengeIndex,
                 closedTimeIntervals: closedTimeIntervals,
-                latestTimeStart: latestTimeStart
+                latestTimeStart: latestTimeStart,
+                peeks: peeks
             )
         } else {
             assert(currentChallengeIndex < 0,
@@ -76,17 +81,30 @@ final class GameState: NSObject, Streamable {
                 challenges: challenges,
                 currentChallengeIndex: currentChallengeIndex + 1,
                 closedTimeIntervals: closedTimeIntervals,
-                latestTimeStart: (currentChallengeIndex + 1 == 0) ? NSDate() : nil)
+                latestTimeStart: (currentChallengeIndex + 1 == 0) ? NSDate() : nil,
+                peeks: peeks
+            )
         }
     }
     
+    func addPeek() -> GameState {
+        var newPeeks = peeks
+        newPeeks.append(NSDate())
+        return GameState(
+            gameId: gameId,
+            n: n,
+            challenges: challenges,
+            currentChallengeIndex: currentChallengeIndex,
+            closedTimeIntervals: closedTimeIntervals,
+            latestTimeStart: latestTimeStart,
+            peeks: newPeeks
+        )
+    }
+    
     func time(atTime time: NSDate = NSDate()) -> NSTimeInterval {
-        let closedIntervalTime = closedTimeIntervals.reduce(0) { $0.0 + $0.1.duration() }
-        if let currentTimeIntervalStart = latestTimeStart {
-            return closedIntervalTime + time.timeIntervalSinceDate(currentTimeIntervalStart)
-        } else {
-            return closedIntervalTime
-        }
+        return closedTimeIntervals.reduce(0) { $0 + $1.duration() }
+             + NSTimeInterval(peeks.count) * penaltyPerPeek
+             + time.timeIntervalSinceDate(latestTimeStart ?? time)
     }
     
     func finalTime() -> NSTimeInterval {
@@ -141,6 +159,7 @@ extension GameState: NSCoding {
         if let currentTimeIntervalStart = latestTimeStart {
             aCoder.encodeObject(currentTimeIntervalStart, forKey: "latestTimeStart")
         }
+        aCoder.encodeObject(peeks, forKey: "peeks")
     }
     
     convenience init(coder aDecoder: NSCoder) {
@@ -150,6 +169,7 @@ extension GameState: NSCoding {
         let newCurrentChallengeIndex = aDecoder.decodeIntegerForKey("currentChallengeIndex")
         let newClosedTimeIntervals = aDecoder.decodeObjectForKey("closedTimeIntervals") as [TimeInterval]
         let newLatestTimeStart = aDecoder.containsValueForKey("latestTimeStart") ? aDecoder.decodeObjectForKey("latestTimeStart") as NSDate? : nil
+        let newPeeks = aDecoder.decodeObjectForKey("peeks") as [NSDate]
         
         self.init(
             gameId: newGameId,
@@ -157,7 +177,8 @@ extension GameState: NSCoding {
             challenges: newChallenges,
             currentChallengeIndex: newCurrentChallengeIndex,
             closedTimeIntervals: newClosedTimeIntervals,
-            latestTimeStart: newLatestTimeStart
+            latestTimeStart: newLatestTimeStart,
+            peeks: newPeeks
         )
     }
 }
