@@ -101,6 +101,14 @@ final class GameState: NSObject, Streamable {
         )
     }
     
+    func currentChallenge() -> Challenge? {
+        if currentChallengeIndex >= 0 && currentChallengeIndex < challenges.count {
+            return challenges[currentChallengeIndex]
+        } else {
+            return nil
+        }
+    }
+    
     func time(atTime time: NSDate = NSDate()) -> NSTimeInterval {
         return closedTimeIntervals.reduce(0) { $0 + $1.duration() }
              + NSTimeInterval(peeks.count) * penaltyPerPeek

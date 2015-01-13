@@ -412,9 +412,11 @@ class GameplayOutputViewController: HalfScreenViewController, UIGestureRecognize
                 }
             }
             
-            borderOverlay = BorderView()
-            borderOverlay!.alpha = 0.0
-            blurView?.addSubview(borderOverlay!)
+            if borderOverlay == nil {
+                borderOverlay = BorderView()
+                borderOverlay!.alpha = 0.0
+                blurView?.addSubview(borderOverlay!)
+            }
             let blurPadding: CGFloat = 10
             view.addConstraints([
                 NSLayoutConstraint(
@@ -484,26 +486,24 @@ extension GameplayOutputViewController: GameStateChangeListener {
                 if newGameState.currentChallengeIndex < newGameState.challenges.count {
                     setActiveChallenge(newGameState.currentChallengeIndex, animated: true)
                 }
-            } else if change.oldGameState != nil && change.oldGameState!.currentChallengeIndex == (gameState.currentChallengeIndex - 1) {
+            } else if change.oldGameState != nil &&
+                change.oldGameState!.currentChallenge()?.userResponses.count == ((newGameState.currentChallenge()?.userResponses.count ?? 0) - 1) {
                 // Wrong answer was entered
                 shakeChallenges()
             }
             
             if gameState.currentChallengeIndex >= 0 && gameState.currentChallengeIndex < gameState.challenges.count
-                && gameState.challenges[gameState.currentChallengeIndex].userResponses.count == 0 {
+                && gameState.currentChallengeIndex - 1 == change.oldGameState?.currentChallengeIndex {
                 NSTimer.scheduledTimerWithTimeInterval(
                     DesignLanguage.delayBeforeInstructionalOverlay(gameState.levelId),
                     target: self,
                     selector: "presentInstructionalOverlayIfNeeded:",
                     userInfo: gameState,
                     repeats: false)
-                if borderOverlay != nil {
+                if borderOverlay?.superview != nil {
                     UIView.animateWithDuration(DesignLanguage.MinorAnimationDuration, animations: {
                         self.borderOverlay!.alpha = 0.0
-                        }) { (finished: Bool) -> Void in
-                            self.blurView!.removeConstraints(self.blurView!.constraints(self.borderOverlay!))
-                            self.borderOverlay!.removeFromSuperview()
-                    }
+                    })
                 }
             }
         }
