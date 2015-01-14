@@ -9,14 +9,16 @@
 import Foundation
 
 extension NSTimeInterval {
-    func minuteSecondCentisecondString() -> NSString {
+    func minuteSecondCentisecondString(signed: Bool = false) -> NSString {
         let absoluteValue = abs(self)
         let mins = Int(floor(absoluteValue/60.0))
         let secs = Int(floor(absoluteValue - NSTimeInterval(mins*60)))
         let centiseconds = Int(floor((absoluteValue - floor(absoluteValue))*100))
-        var result = NSString(format: "%02d:%02d:%02d", mins, secs, centiseconds)
+        var result = NSString(format: "%02d:%02d.%02d", mins, secs, centiseconds)
         if self < 0 {
             result = "- " + result
+        } else if signed {
+            result = "+ " + result
         }
         return result
     }

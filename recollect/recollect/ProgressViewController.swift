@@ -15,6 +15,8 @@ class ProgressViewController: UIViewController {
     private let dotsSpread: CGFloat = 80.0
     private var timeLabel: ManglableLabel?
     private var dotViews: [UILabel] = [UILabel]()
+    private var penaltyLabel: UILabel?
+    private let penaltyLabelStartTranslation = CGAffineTransformMakeScale(0.9, 0.9)
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -27,7 +29,7 @@ class ProgressViewController: UIViewController {
         timeLabel?.backgroundColor = UIColor.clearColor()
         timeLabel?.textColor = DesignLanguage.NeverActiveTextColor.colorWithAlphaComponent(0.30)
         timeLabel?.font = font
-        timeLabel?.text = "00:00:00"
+        timeLabel?.text = NSTimeInterval(0).minuteSecondCentisecondString()
         view.addSubview(timeLabel!)
         
         view.addConstraints(
@@ -100,6 +102,29 @@ class ProgressViewController: UIViewController {
                 views: ["bottomShadow" : bottomShadow])
         )
         
+        penaltyLabel = UILabel()
+        penaltyLabel!.setTranslatesAutoresizingMaskIntoConstraints(false)
+        penaltyLabel!.backgroundColor = UIColor.clearColor()
+        penaltyLabel!.font = font
+        penaltyLabel!.textColor = DesignLanguage.AccentTextColor
+        penaltyLabel!.text = GameManager.penaltyPerPeek.minuteSecondCentisecondString(signed: true)
+        penaltyLabel!.alpha = 0.0
+        penaltyLabel!.transform = penaltyLabelStartTranslation
+        view.addSubview(penaltyLabel!)
+        
+        view.addConstraints(
+            NSLayoutConstraint.constraintsWithVisualFormat(
+                "V:|[penaltyLabel]|",
+                options: NSLayoutFormatOptions(0),
+                metrics: nil,
+                views: ["penaltyLabel" : penaltyLabel!]) +
+            NSLayoutConstraint.constraintsWithVisualFormat(
+                "H:[penaltyLabel]-|",
+                options: NSLayoutFormatOptions(0),
+                metrics: nil,
+                views: ["penaltyLabel" : penaltyLabel!])
+        )
+        
         GameManager.sharedInstance.subscribeToGameStateChangeNotifications(self)
         
         refreshDotViews()
@@ -107,6 +132,21 @@ class ProgressViewController: UIViewController {
     
     deinit {
         GameManager.sharedInstance.unsubscribeFromGameStateChangeNotifications(self)
+    }
+    
+    private func pulsePenaltyLabel() {
+        self.penaltyLabel?.transform = penaltyLabelStartTranslation
+        UIView.animateWithDuration(
+            DesignLanguage.MinorAnimationDuration,
+            animations: { () -> Void in
+                self.penaltyLabel!.alpha = 1.0
+                self.penaltyLabel!.transform = CGAffineTransformMakeScale(1.0, 1.0)
+            }) { (finished: Bool) -> Void in
+                
+                UIView.animateWithDuration(DesignLanguage.MinorAnimationDuration, delay: DesignLanguage.MinorAnimationDuration, options: nil, animations: { () -> Void in
+                    self.penaltyLabel!.alpha = 0.0
+                }, completion: nil)
+        }
     }
     
     private func refreshDotViews() {
@@ -133,6 +173,9 @@ extension ProgressViewController: GameStateChangeListener {
             if change.oldGameState?.latestTimeStart == nil && existingGameState.latestTimeStart != nil {
                 let displayLink = CADisplayLink(target: self, selector: "refresh:")
                 displayLink.addToRunLoop(NSRunLoop.currentRunLoop(), forMode: NSDefaultRunLoopMode)
+            }
+            if change.oldGameState?.peeks.count < existingGameState.peeks.count {
+                pulsePenaltyLabel()
             }
             refreshDotViews()
         }

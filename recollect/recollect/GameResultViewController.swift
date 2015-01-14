@@ -53,7 +53,7 @@ class GameResultViewController: HalfScreenViewController, UIGestureRecognizerDel
         deltaTimeLabel!.font = UIFont(name: "AvenirNextCondensed-DemiBold", size: deltaTimeLabelHeight)
         deltaTimeLabel!.textAlignment = NSTextAlignment.Right
         deltaTimeLabel!.textColor = DesignLanguage.NeverActiveTextColor
-        deltaTimeLabel!.text = "- 00:00:00"
+        deltaTimeLabel!.text = NSTimeInterval(0).minuteSecondCentisecondString(signed: true)
         deltaTimeLabel!.alpha = 0.0
         resultViewContainer!.addSubview(deltaTimeLabel!)
         
@@ -211,11 +211,8 @@ class GameResultViewController: HalfScreenViewController, UIGestureRecognizerDel
         
         let delta = identity.deltaFromBest(gameState)
         var deltaAlpha: CGFloat = 0.0
-        if delta > 0 {
-            deltaTimeLabel!.text = "+ " + delta.minuteSecondCentisecondString()
-            deltaAlpha = 1.0
-        } else if delta < 0 {
-            deltaTimeLabel!.text = delta.minuteSecondCentisecondString()
+        if delta != 0 {
+            deltaTimeLabel!.text = delta.minuteSecondCentisecondString(signed: true)
             deltaAlpha = 1.0
         }
         

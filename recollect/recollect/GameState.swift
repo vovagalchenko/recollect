@@ -8,8 +8,6 @@
 
 import Foundation
 
-let penaltyPerPeek: NSTimeInterval = 5
-
 final class GameState: NSObject, Streamable {
     let gameId: String
     let n: Int
@@ -111,7 +109,7 @@ final class GameState: NSObject, Streamable {
     
     func time(atTime time: NSDate = NSDate()) -> NSTimeInterval {
         return closedTimeIntervals.reduce(0) { $0 + $1.duration() }
-             + NSTimeInterval(peeks.count) * penaltyPerPeek
+             + NSTimeInterval(peeks.count) * GameManager.penaltyPerPeek
              + time.timeIntervalSinceDate(latestTimeStart ?? time)
     }
     

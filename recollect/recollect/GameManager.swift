@@ -30,6 +30,10 @@ class GameManager: GameplayInputControllerDelegate {
         return "change"
     }
     
+    class var penaltyPerPeek: NSTimeInterval {
+        return 5
+    }
+    
     var currentGameState: GameState? {
         didSet {
             NSNotificationCenter.defaultCenter().postNotificationName(
