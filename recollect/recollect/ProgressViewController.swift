@@ -143,7 +143,7 @@ class ProgressViewController: UIViewController {
                 self.penaltyLabel!.transform = CGAffineTransformMakeScale(1.0, 1.0)
             }) { (finished: Bool) -> Void in
                 
-                UIView.animateWithDuration(DesignLanguage.MinorAnimationDuration, delay: DesignLanguage.MinorAnimationDuration, options: nil, animations: { () -> Void in
+                UIView.animateWithDuration(DesignLanguage.MinorAnimationDuration, delay: DesignLanguage.MinorAnimationDuration/2.0, options: nil, animations: { () -> Void in
                     self.penaltyLabel!.alpha = 0.0
                 }, completion: nil)
         }

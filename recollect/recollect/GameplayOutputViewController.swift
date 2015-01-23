@@ -16,6 +16,7 @@ class GameplayOutputViewController: HalfScreenViewController, UIGestureRecognize
     private var progressVC: ProgressViewController?
     private var challengeContainer: UIView?
     private var blurView: BlurView?
+    private var blurPanGestureRecognizer: UIPanGestureRecognizer?
     private var challengeContainerXPositionConstraint: NSLayoutConstraint?
     
     private let delegate: GameplayOutputViewControllerDelegate
@@ -131,10 +132,10 @@ class GameplayOutputViewController: HalfScreenViewController, UIGestureRecognize
         
         blurView = BlurView(viewToBlur: challengeContainer!)
         blurView!.userInteractionEnabled = true
-        let panRecognizer = UIPanGestureRecognizer()
-        panRecognizer.delegate = self
-        panRecognizer.addTarget(self, action: "blurViewDragged:")
-        blurView!.addGestureRecognizer(panRecognizer)
+        blurPanGestureRecognizer = UIPanGestureRecognizer()
+        blurPanGestureRecognizer!.delegate = self
+        blurPanGestureRecognizer!.addTarget(self, action: "blurViewDragged:")
+        blurView!.addGestureRecognizer(blurPanGestureRecognizer!)
         view.addSubview(blurView!)
         
         view.addConstraints([
@@ -250,6 +251,10 @@ class GameplayOutputViewController: HalfScreenViewController, UIGestureRecognize
     func blurViewDragged(panGestureRecognizer: UIPanGestureRecognizer) {
         if panGestureRecognizer.state == UIGestureRecognizerState.Began ||
            panGestureRecognizer.state == UIGestureRecognizerState.Changed {
+            if panGestureRecognizer.state == UIGestureRecognizerState.Began {
+                currentSlidingHighlightId = nil
+                blurView!.layer.removeAllAnimations()
+            }
             let xTranslation: CGFloat = panGestureRecognizer.translationInView(self.view).x
             if xTranslation <= 0 {
                 blurView!.transform = CGAffineTransformMakeTranslation(xTranslation, 0.0)
@@ -294,7 +299,6 @@ class GameplayOutputViewController: HalfScreenViewController, UIGestureRecognize
                 animations: { () -> Void in
                     self.blurView!.transform = CGAffineTransformIdentity
                     self.blurView!.blurredView.transform = CGAffineTransformIdentity
-                    self.borderOverlay?.transform = CGAffineTransformIdentity
                 }) { (finished: Bool) -> Void in
                 UIView.animateWithDuration(
                     DesignLanguage.MinorAnimationDuration/3.0,
@@ -373,7 +377,7 @@ class GameplayOutputViewController: HalfScreenViewController, UIGestureRecognize
     private let initialShakeDuration: NSTimeInterval = 0.1
     private let shakeReductionFactor: NSTimeInterval = 0.01
     private let totalNumShakes = 8
-    private func shakeChallenges(shakeNumber: Int = 0) {
+    private func shakeChallenges(slideHighlightId: NSUUID, shakeNumber: Int = 0) {
         UIView.animateWithDuration(initialShakeDuration - (NSTimeInterval(shakeNumber) * shakeReductionFactor), animations: {
             let sign: CGFloat = (shakeNumber%2 == 0) ? -1.0 : 1.0
             let initialShakeAmount = self.view.bounds.size.width/CGFloat(4*(self.gameState.n + 1))
@@ -387,10 +391,72 @@ class GameplayOutputViewController: HalfScreenViewController, UIGestureRecognize
                 self.challengeContainer?.transform = CGAffineTransformIdentity
                 self.blurView?.blurredView.transform = CGAffineTransformIdentity
                 self.borderOverlay?.transform = CGAffineTransformIdentity
+                let dispatchTime = dispatch_time(
+                    DISPATCH_TIME_NOW,
+                    Int64(1.0 * Double(NSEC_PER_SEC))
+                )
+                self.currentSlidingHighlightId = (slideHighlightId.copy() as NSUUID)
+                dispatch_after(dispatchTime, dispatch_get_main_queue()) {
+                    self.highlightSlidingIfNeeded(slideHighlightId)
+                }
+                
             } else if finished {
-                self.shakeChallenges(shakeNumber: shakeNumber + 1)
+                self.shakeChallenges(slideHighlightId, shakeNumber: shakeNumber + 1)
             }
         })
+    }
+    
+    private var currentSlidingHighlightId: NSUUID? = nil
+    private func highlightSlidingIfNeeded(highlightId: NSUUID) {
+        if highlightId == currentSlidingHighlightId {
+            let slidingAmount: CGFloat = 20
+            UIView.animateWithDuration(
+                DesignLanguage.MinorAnimationDuration/2.0,
+                delay: 0.0,
+                options: UIViewAnimationOptions.CurveEaseOut,
+                animations: { () -> Void in
+                    self.blurView!.transform = CGAffineTransformMakeTranslation(-slidingAmount, 0.0)
+                    self.blurView!.blurredView.transform = CGAffineTransformMakeTranslation(slidingAmount, 0.0)
+                }) { (finished: Bool) -> Void in
+                    if !finished { return }
+                    UIView.animateWithDuration(
+                        DesignLanguage.MinorAnimationDuration/2.0,
+                        delay: 0.0,
+                        options: UIViewAnimationOptions.CurveEaseIn,
+                        animations: { () -> Void in
+                            self.blurView!.transform = CGAffineTransformIdentity
+                            self.blurView!.blurredView.transform = CGAffineTransformIdentity
+                        }) { (finished: Bool) -> Void in
+                            if !finished { return }
+                            UIView.animateWithDuration(
+                                DesignLanguage.MinorAnimationDuration/3.0,
+                                delay: 0.0,
+                                options: UIViewAnimationOptions.CurveEaseOut,
+                                animations: { () -> Void in
+                                    self.blurView!.transform = CGAffineTransformMakeTranslation(-slidingAmount/8.0, 0.0)
+                                    self.blurView!.blurredView.transform = CGAffineTransformMakeTranslation(slidingAmount/8.0, 0.0)
+                                }) { (finished: Bool) -> Void in
+                                if !finished { return }
+                                UIView.animateWithDuration(
+                                    DesignLanguage.MinorAnimationDuration/3.0,
+                                    delay: 0.0,
+                                    options: UIViewAnimationOptions.CurveEaseIn,
+                                    animations: { () -> Void in
+                                        self.blurView!.transform = CGAffineTransformIdentity
+                                        self.blurView!.blurredView.transform = CGAffineTransformIdentity
+                                    }) { (finished: Bool) -> Void in
+                                    let dispatchTime = dispatch_time(
+                                        DISPATCH_TIME_NOW,
+                                        Int64(3.0 * Double(NSEC_PER_SEC))
+                                    )
+                                    dispatch_after(dispatchTime, dispatch_get_main_queue()) {
+                                        self.highlightSlidingIfNeeded(highlightId)
+                                    }
+                                }
+                            }
+                    }
+            }
+        }
     }
     
     func presentInstructionalOverlayIfNeeded(timer: NSTimer) {
@@ -484,12 +550,13 @@ extension GameplayOutputViewController: GameStateChangeListener {
             gameState = newGameState
             if change.oldGameState?.currentChallengeIndex != newGameState.currentChallengeIndex {
                 if newGameState.currentChallengeIndex < newGameState.challenges.count {
+                    currentSlidingHighlightId = nil
                     setActiveChallenge(newGameState.currentChallengeIndex, animated: true)
                 }
             } else if change.oldGameState != nil &&
                 change.oldGameState!.currentChallenge()?.userResponses.count == ((newGameState.currentChallenge()?.userResponses.count ?? 0) - 1) {
                 // Wrong answer was entered
-                shakeChallenges()
+                shakeChallenges(NSUUID())
             }
             
             if gameState.currentChallengeIndex >= 0 && gameState.currentChallengeIndex < gameState.challenges.count
