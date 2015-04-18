@@ -8,7 +8,7 @@
 
 import Foundation
 
-class LocalPlayerIdentity: PlayerIdentity {
+@objc class PlayerIdentity {
     
     class var BestScoreChangeNotificationName: String { return "BEST_SCORE_CHANGED" }
     
@@ -16,23 +16,24 @@ class LocalPlayerIdentity: PlayerIdentity {
         didSet {
             sync()
             NSNotificationCenter.defaultCenter().postNotificationName(
-                LocalPlayerIdentity.BestScoreChangeNotificationName,
+                PlayerIdentity.BestScoreChangeNotificationName,
                 object: self,
                 userInfo: nil)
         }
     }
-    let playerId = "local_player"
+    var playerId: String { return "local_player" }
     
     init() {
         bestGames = [String: GameState]()
         let scoresFilePath = self.computeScoresFilePath()
+        NSLog("READING FROM: \(scoresFilePath)")
         if NSFileManager.defaultManager().fileExistsAtPath(scoresFilePath) {
-            bestGames = NSKeyedUnarchiver.unarchiveObjectWithFile(scoresFilePath) as [String: GameState]
+            bestGames = NSKeyedUnarchiver.unarchiveObjectWithFile(scoresFilePath) as! [String: GameState]
         }
     }
     
     func computeScoresFilePath() -> String {
-        let documentDir = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)[0] as String
+        let documentDir = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)[0] as! String
         return documentDir.stringByAppendingPathComponent(playerId + ".scores")
     }
     
@@ -44,7 +45,7 @@ class LocalPlayerIdentity: PlayerIdentity {
         return delta
     }
     
-    func submit(gameState: GameState, completion: ([PlayerScore]) -> Void) {
+    func getLeaderboard(gameState: GameState, completion: ([PlayerScore]) -> Void) {
         var leaderboard = [PlayerScore]()
         if let bestTime = bestGames[gameState.levelId]?.finalTime() {
             leaderboard.append(PlayerScore(playerId: playerId, time: bestTime, rank: 1))
@@ -67,6 +68,7 @@ class LocalPlayerIdentity: PlayerIdentity {
     func finishedLevelBefore(levelId: String) -> Bool { return bestGames[levelId] != nil }
     
     private func sync() {
+        NSLog("SAVING TO: \(computeScoresFilePath())")
         if NSKeyedArchiver.archiveRootObject(bestGames, toFile: computeScoresFilePath()) {
             NSLog("Wrote local player's best scores successfully:\n\(bestGames)")
         } else {

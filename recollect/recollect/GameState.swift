@@ -35,6 +35,7 @@ final class GameState: NSObject, Streamable {
         currentChallengeIndex = -n
         closedTimeIntervals = []
         peeks = []
+        latestTimeStart = nil
     }
     
     init(gameId: String, n: Int, challenges: [Challenge], currentChallengeIndex: Int, closedTimeIntervals: [TimeInterval], latestTimeStart: NSDate?, peeks: [NSDate]) {
@@ -148,8 +149,8 @@ final class TimeInterval: NSObject, NSCoding {
     
     convenience init(coder aDecoder: NSCoder) {
         self.init(
-            startTime: aDecoder.decodeObjectForKey("startTime") as NSDate,
-            endTime: aDecoder.decodeObjectForKey("endTime") as NSDate
+            startTime: aDecoder.decodeObjectForKey("startTime") as! NSDate,
+            endTime: aDecoder.decodeObjectForKey("endTime") as! NSDate
         )
     }
 }
@@ -169,13 +170,13 @@ extension GameState: NSCoding {
     }
     
     convenience init(coder aDecoder: NSCoder) {
-        let newGameId = aDecoder.decodeObjectForKey("gameId") as String
+        let newGameId = aDecoder.decodeObjectForKey("gameId") as! String
         let newN = aDecoder.decodeIntegerForKey("n")
-        let newChallenges = aDecoder.decodeObjectForKey("challenges") as [Challenge]
+        let newChallenges = aDecoder.decodeObjectForKey("challenges") as! [Challenge]
         let newCurrentChallengeIndex = aDecoder.decodeIntegerForKey("currentChallengeIndex")
-        let newClosedTimeIntervals = aDecoder.decodeObjectForKey("closedTimeIntervals") as [TimeInterval]
-        let newLatestTimeStart = aDecoder.containsValueForKey("latestTimeStart") ? aDecoder.decodeObjectForKey("latestTimeStart") as NSDate? : nil
-        let newPeeks = aDecoder.decodeObjectForKey("peeks") as [NSDate]
+        let newClosedTimeIntervals = aDecoder.decodeObjectForKey("closedTimeIntervals") as! [TimeInterval]
+        let newLatestTimeStart = aDecoder.containsValueForKey("latestTimeStart") ? aDecoder.decodeObjectForKey("latestTimeStart") as! NSDate? : nil
+        let newPeeks = aDecoder.decodeObjectForKey("peeks") as! [NSDate]
         
         self.init(
             gameId: newGameId,

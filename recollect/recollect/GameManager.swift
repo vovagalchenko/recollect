@@ -110,9 +110,9 @@ extension GameManager: SharingViewControllerDelegate {
     func gameStateChangeNotificationReceived(notification: NSNotification!)
 }
 
-extension UIViewController {
+extension NSObject {
     func gameStateChangeNotificationReceived(notification: NSNotification!) {
-        let change = notification!.userInfo![GameManager.GameStateChangeUserInfoKey]! as GameStateChange
+        let change = notification!.userInfo![GameManager.GameStateChangeUserInfoKey]! as! GameStateChange
         if let gameChangeListener = self as? GameStateChangeListener {
             gameChangeListener.gameStateChanged(change)
         }

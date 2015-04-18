@@ -70,7 +70,7 @@ class GameplayButton: UIControl {
         )
     }
     
-    override convenience init() {
+    convenience init() {
         self.init(frame: CGRectZero)
     }
     

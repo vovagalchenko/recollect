@@ -10,7 +10,7 @@ import UIKit
 
 extension UIButton {
     class func buttonWithCustomBackground(bg: ButtonBackground) -> UIButton {
-        let button = UIButton.buttonWithType(UIButtonType.Custom) as UIButton
+        let button = UIButton.buttonWithType(UIButtonType.Custom) as! UIButton
         button.addTarget(button, action: "didBecomePressed:", forControlEvents: .TouchDown | .TouchDragEnter)
         button.addTarget(button, action: "didBecomeUnpressed:", forControlEvents: .TouchDragExit | .TouchUpInside)
         button.setTranslatesAutoresizingMaskIntoConstraints(false)

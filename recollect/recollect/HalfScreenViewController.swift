@@ -28,33 +28,35 @@ class HalfScreenViewController: UIViewController, TransitionAnimationDelegate {
     private func subviewsWalk(root: UIView, work: (UIView) -> Void) {
         work(root)
         for subview in root.subviews {
-            subviewsWalk(subview as UIView, work: work)
+            subviewsWalk(subview as! UIView, work: work)
         }
     }
     
     func refreshFrame(displayLink: CADisplayLink) {
-        let timeElapsed = NSDate().timeIntervalSinceDate(displayLinkStartDate!)
-        let timeLeft = displayLinkDuration! - timeElapsed
-        subviewsWalk(view) {
-            if let label = $0 as? ManglableLabel {
-                var portionToLeaveUnmangled: Float = 0
-                if (timeLeft <= self.labelSettlingDuration) {
-                    let portionOfScreenToLeaveUnmangled = CGFloat((self.labelSettlingDuration - timeLeft)/self.labelSettlingDuration)
-                    let rectToLeaveUnmangled = CGRectMake(0, 0, self.view.bounds.size.width*portionOfScreenToLeaveUnmangled, self.view.bounds.size.height)
-                    let labelRect = label.superview!.convertRect(label.frame, toView: self.view)
-                    let labelRectToLeaveUnmangled = CGRectIntersection(rectToLeaveUnmangled, labelRect)
-                    if (labelRect.width > 0) {
-                        portionToLeaveUnmangled = Float(labelRectToLeaveUnmangled.width/labelRect.width)
-                    } else {
-                        portionToLeaveUnmangled = 0
+        if let existingDisplayLinkStartDate = displayLinkStartDate {
+            let timeElapsed = NSDate().timeIntervalSinceDate(existingDisplayLinkStartDate)
+            let timeLeft = displayLinkDuration! - timeElapsed
+            subviewsWalk(view) {
+                if let label = $0 as? ManglableLabel {
+                    var portionToLeaveUnmangled: Float = 0
+                    if (timeLeft <= self.labelSettlingDuration) {
+                        let portionOfScreenToLeaveUnmangled = CGFloat((self.labelSettlingDuration - timeLeft)/self.labelSettlingDuration)
+                        let rectToLeaveUnmangled = CGRectMake(0, 0, self.view.bounds.size.width*portionOfScreenToLeaveUnmangled, self.view.bounds.size.height)
+                        let labelRect = label.superview!.convertRect(label.frame, toView: self.view)
+                        let labelRectToLeaveUnmangled = CGRectIntersection(rectToLeaveUnmangled, labelRect)
+                        if (labelRect.width > 0) {
+                            portionToLeaveUnmangled = Float(labelRectToLeaveUnmangled.width/labelRect.width)
+                        } else {
+                            portionToLeaveUnmangled = 0
+                        }
                     }
+                    label.mangle(portionToLeaveUnmangled,
+                        canUseAlphaForAccents: self.transitionBeginningState! == TransitionAnimationState.Inactive)
                 }
-                label.mangle(portionToLeaveUnmangled,
-                    canUseAlphaForAccents: self.transitionBeginningState! == TransitionAnimationState.Inactive)
             }
         }
         
-        if timeElapsed >= displayLinkDuration {
+        if displayLinkStartDate == nil || NSDate().timeIntervalSinceDate(displayLinkStartDate!) >= displayLinkDuration {
             displayLink.invalidate()
             displayLinkDuration = nil
             displayLinkStartDate = nil

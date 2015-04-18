@@ -26,6 +26,6 @@ struct DesignLanguage {
     static let MinorAnimationDuration: NSTimeInterval = 0.35
     
     static func delayBeforeInstructionalOverlay(levelId: String) -> NSTimeInterval {
-        return PlayerIdentityManager.identity().finishedLevelBefore(levelId) ? 5.0 : 3.0
+        return PlayerIdentityManager.sharedInstance.currentIdentity.finishedLevelBefore(levelId) ? 5.0 : 3.0
     }
 }

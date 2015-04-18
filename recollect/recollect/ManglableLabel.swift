@@ -11,6 +11,30 @@ import UIKit
 class ManglableLabel: UILabel {
     
     var originalText: String?
+    override var text: String? {
+        set(newText) {
+            if let existingUnmangledText = originalText {
+                originalText = newText
+            } else if let existingUnmangledAttributedText = originalAttributedText {
+                if let existingNewText = newText {
+                    originalAttributedText = NSAttributedString(string: existingNewText, attributes: [NSForegroundColorAttributeName: originalTextColor ?? textColor])
+                } else {
+                    originalAttributedText = nil
+                }
+            } else {
+                super.text = newText
+            }
+        }
+        get {
+            if let existingUnmangledText = originalText {
+                return existingUnmangledText
+            } else if let existingUnmangledAttributedText = originalAttributedText {
+                return existingUnmangledAttributedText.string
+            } else {
+                return super.text
+            }
+        }
+    }
     private var originalAttributedText: NSAttributedString?
     private var originalTextColor: UIColor?
     
@@ -18,7 +42,7 @@ class ManglableLabel: UILabel {
     private let aToZLowercase = Array(0x61...0x7A).map {UnicodeScalar($0)}
     private let zeroToNine = Array(0x30...0x39).map {UnicodeScalar($0)}
     
-    override init() {
+    init() {
         super.init(frame: CGRectZero)
         setTranslatesAutoresizingMaskIntoConstraints(false)
     }
@@ -33,8 +57,8 @@ class ManglableLabel: UILabel {
                 originalAttributedText = attributedText
             } else {
                 originalText = text
-                originalTextColor = textColor
             }
+            originalTextColor = textColor
         }
         
         var mangledString: NSMutableAttributedString = NSMutableAttributedString(string: "")
@@ -43,8 +67,8 @@ class ManglableLabel: UILabel {
         } else if originalText != nil && originalTextColor != nil {
             mangledString = NSMutableAttributedString(string: originalText!, attributes: [NSForegroundColorAttributeName: originalTextColor!])
         }
-        if countElements(mangledString.string) > 0 {
-            let strLength = countElements(mangledString.string)
+        if count(mangledString.string) > 0 {
+            let strLength = count(mangledString.string)
             let numCharactersToLeaveUnmangled = Int(round(Float(strLength) * portionOfTextToLeaveUnmangled))
             let indexOfSplitChar = advance(mangledString.string.startIndex, numCharactersToLeaveUnmangled)
             var stringToPrepend = ""
@@ -59,12 +83,12 @@ class ManglableLabel: UILabel {
                 }
                 stringToPrepend.append(replacement)
             }
-            let mangledStringRange = NSRange(location: countElements(mangledString.string) - countElements(stringToPrepend), length: countElements(stringToPrepend))
+            let mangledStringRange = NSRange(location: count(mangledString.string) - count(stringToPrepend), length: count(stringToPrepend))
             mangledString.mutableString.replaceCharactersInRange(mangledStringRange, withString: stringToPrepend)
             
             if canUseAlphaForAccents {
                 // TODO: ManglableLabel animation probably looks weird if the original attributedText isn't of uniform color, but we don't have that case for now.
-                var color = originalTextColor ?? mangledString.attribute(NSForegroundColorAttributeName, atIndex: 0, effectiveRange: nil) as UIColor
+                var color = originalTextColor ?? mangledString.attribute(NSForegroundColorAttributeName, atIndex: 0, effectiveRange: nil) as! UIColor
                 var alpha: CGFloat = 0
                 color.getRed(nil, green: nil, blue: nil, alpha: &alpha)
                 let mangledStringColor = canUseAlphaForAccents ? color.colorWithAlphaComponent(alpha * 0.5) : color
@@ -78,7 +102,7 @@ class ManglableLabel: UILabel {
         if let existingOriginalAttributedText = originalAttributedText {
             attributedText = existingOriginalAttributedText
         } else if let existingOriginalText = originalText {
-            text = existingOriginalText
+            super.text = existingOriginalText
             textColor = originalTextColor
         }
         originalTextColor = nil

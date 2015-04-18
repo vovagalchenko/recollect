@@ -41,7 +41,8 @@ class BaseViewController: UIViewController {
         
         queueTransition(
             newTopViewControllerFunc: { return LogoViewController() },
-            newBottomViewControllerFunc: { return LevelPickerViewController(delegate: GameManager.sharedInstance) }
+            newBottomViewControllerFunc: { return LevelPickerViewController(delegate: GameManager.sharedInstance) },
+            rotationParams: (.None, .None)
         )
         
         GameManager.sharedInstance.subscribeToGameStateChangeNotifications(self)
@@ -85,10 +86,10 @@ class BaseViewController: UIViewController {
     }
     
     // Ewwww, I really should turn these into objects
-    private var transitionQueue: [((() -> HalfScreenViewController?)?, (() -> HalfScreenViewController?)?, HalfScreenViewController?, HalfScreenViewController?, (TransitionRotation, TransitionRotation))] = Array()
+    private var transitionQueue: [((() -> HalfScreenViewController?)?, (() -> HalfScreenViewController?)?, HalfScreenViewController?, HalfScreenViewController?, (TransitionRotation, TransitionRotation))] = []
     
     func queueTransition(newTopViewControllerFunc: (() -> HalfScreenViewController?)? = nil, newBottomViewControllerFunc: (() -> HalfScreenViewController?)? = nil,
-        checkTopViewController: HalfScreenViewController? = nil, checkBottomViewController: HalfScreenViewController? = nil, rotationParams: (TransitionRotation, TransitionRotation) = (.None, .None)) {
+        checkTopViewController: HalfScreenViewController? = nil, checkBottomViewController: HalfScreenViewController? = nil, rotationParams: (TransitionRotation, TransitionRotation)) {
         assert(NSThread.isMainThread(), "queueTransition(...) has to be called on the main thread")
         transitionQueue.append((newTopViewControllerFunc, newBottomViewControllerFunc, checkTopViewController, checkBottomViewController, rotationParams))
         if transitionQueue.count == 1 {
@@ -245,7 +246,7 @@ class BaseViewController: UIViewController {
     }
     
     func showContinueInstructionOverlayIfNeeded(timer: NSTimer) {
-        let gameState = timer.userInfo! as GameState
+        let gameState = timer.userInfo! as! GameState
         if GameManager.sharedInstance.currentGameState == gameState && continueHelperOverlay == nil {
             continueHelperOverlay = ContinueInstructionOverlayView()
             continueHelperOverlay!.alpha = 0
@@ -329,7 +330,7 @@ extension UIView {
     func constraints(constrainedView: UIView) -> [AnyObject] {
         return constraints().filter {
             if let constraint = $0 as? NSLayoutConstraint {
-                return constraint.firstItem as NSObject == constrainedView || constraint.secondItem as NSObject == constrainedView
+                return constraint.firstItem as! NSObject == constrainedView || constraint.secondItem as! NSObject == constrainedView
             } else {
                 return false
             }

@@ -18,7 +18,7 @@ class BorderView: UIView {
         setTranslatesAutoresizingMaskIntoConstraints(false)
     }
     
-    convenience override init() {
+    convenience init() {
         self.init(frame: CGRectZero)
     }
     

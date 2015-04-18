@@ -11,6 +11,7 @@ import Foundation
 class PlayerScore {
     let playerId: String
     let time: NSTimeInterval
+    var name: String? = nil
     var rank: Int?
     
     init(playerId: String, time: NSTimeInterval, rank: Int? = nil) {

@@ -8,7 +8,7 @@
 
 import UIKit
 
-class GameResultViewController: HalfScreenViewController, UIGestureRecognizerDelegate {
+class GameResultViewController: HalfScreenViewController, UIGestureRecognizerDelegate, PlayerIdentityChangeListener {
     
     let gameState: GameState
     
@@ -22,6 +22,16 @@ class GameResultViewController: HalfScreenViewController, UIGestureRecognizerDel
     init(gameState: GameState) {
         self.gameState = gameState
         super.init(nibName: nil, bundle: nil)
+        
+        PlayerIdentityManager.sharedInstance.subscribeToPlayerIdentityChangeNotifications(self)
+    }
+    
+    required init(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) won't be implemented because I ain't using xibs")
+    }
+    
+    deinit {
+        PlayerIdentityManager.sharedInstance.unsubscribeFromPlayerIdentityChangeNotifications(self)
     }
     
     override func viewDidLoad() {
@@ -126,14 +136,6 @@ class GameResultViewController: HalfScreenViewController, UIGestureRecognizerDel
         
         gameCenterSolicitationLabel = ManglableLabel()
         gameCenterSolicitationLabel!.alpha = 0
-        gameCenterSolicitationLabel!.attributedText = NSAttributedString(
-            string: "Log in via Game Center",
-            attributes: [
-                NSFontAttributeName: UIFont(name: "AvenirNext-Regular", size: 17.5)!,
-                NSForegroundColorAttributeName: DesignLanguage.ActiveTextColor,
-                NSUnderlineStyleAttributeName: 1,
-            ]
-        )
         gameCenterSolicitationLabel!.userInteractionEnabled = true
         let tapRecognizer = UITapGestureRecognizer()
         tapRecognizer.delegate = self
@@ -170,32 +172,29 @@ class GameResultViewController: HalfScreenViewController, UIGestureRecognizerDel
                 constant: -5.0 // a little breathing room never hurt nobody
             ),
         ])
-        refreshLayout(identity: PlayerIdentityManager.identity(), leaderboard: [])
+        refreshLayout()
+        PlayerIdentityManager.sharedInstance.presentGameCenterLoginViewControllerIfAvailable()
+    }
+    
+    func playerIdentityChanged(oldIdentity: PlayerIdentity, newIdentity: PlayerIdentity) {
+        NSLog("NEW IDENTITY: \(oldIdentity)")
+        if isViewLoaded() { refreshLayout() }
     }
     
     func loginViaGameCenterLabelTapped(tapRecognizer: UITapGestureRecognizer) {
         UIApplication.sharedApplication().openURL(NSURL(string: "gamecenter:")!)
     }
     
-    override func viewWillAppear(animated: Bool) {
-        super.viewWillAppear(animated)
-        refreshLayout()
-    }
-    
-    override func viewWillDisappear(animated: Bool) {
-        super.viewWillDisappear(animated)
-        PlayerIdentityManager.identity().flushBestGames(gameState)
-    }
-    
     func refreshLayout() {
-        let identity = PlayerIdentityManager.identity()
-        identity.submit(gameState) { (leaderboard: [PlayerScore]) -> Void in
+        let identity = PlayerIdentityManager.sharedInstance.currentIdentity
+        identity.getLeaderboard(gameState) { (leaderboard: [PlayerScore]) -> Void in
             self.refreshLayout(identity: identity, leaderboard: leaderboard)
         }
     }
     
     func refreshLayout(#identity: PlayerIdentity, leaderboard: [PlayerScore]) {
         view.layoutIfNeeded()
+        NSLog("REFRESHING LAYOUT WITH LEADERBOARD: \(leaderboard)")
         if let resultsContainerConstraint = resultViewContainerVerticalConstraint {
             view.removeConstraint(resultsContainerConstraint)
         }
@@ -216,10 +215,21 @@ class GameResultViewController: HalfScreenViewController, UIGestureRecognizerDel
             deltaAlpha = 1.0
         }
         
+        gameCenterSolicitationLabel?.attributedText = NSAttributedString(
+            string: PlayerIdentityManager.sharedInstance.currentIdentity is GameCenterPlayerIdentity ? "See the full leaderboard" : "Log in via Game Center",
+            attributes: [
+                NSFontAttributeName: UIFont(name: "AvenirNext-Regular", size: 17.5)!,
+                NSForegroundColorAttributeName: DesignLanguage.ActiveTextColor,
+                NSUnderlineStyleAttributeName: 1,
+            ]
+        )
+        
         UIView.animateWithDuration(DesignLanguage.MinorAnimationDuration) {
             self.view.layoutIfNeeded()
             self.deltaTimeLabel?.alpha = deltaAlpha
             self.gameCenterSolicitationLabel?.alpha = leaderboard.count <= 1 ? 1.0 : 0.0
         }
+        
+        PlayerIdentityManager.sharedInstance.currentIdentity.flushBestGames(gameState)
     }
 }

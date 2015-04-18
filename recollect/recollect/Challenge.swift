@@ -11,18 +11,20 @@ import Foundation
 final class Challenge: NSObject, Streamable {
     let lOperand: Int
     let rOperand: Int
-    let challengeOperator: ChallengeOperator = ChallengeOperator.Sum
+    let challengeOperator: ChallengeOperator
     var userResponses: [Int] = []
     
     init(left: Int, right: Int) {
         lOperand = left
         rOperand = right
+        challengeOperator = .Sum
     }
     
     init(left: Int, right: Int, userResponses: [Int]) {
         lOperand = left
         rOperand = right
         self.userResponses = userResponses
+        challengeOperator = .Sum
     }
     
     init(left: Int, right: Int, challengeOperator: ChallengeOperator, userResponses: [Int]) {
@@ -55,7 +57,7 @@ extension Challenge: NSCoding {
         let newLOperand = aDecoder.decodeIntegerForKey("lOperand")
         let newROperand = aDecoder.decodeIntegerForKey("rOperand")
         let newChallengeOperator = ChallengeOperator(rawValue: aDecoder.decodeIntegerForKey("challengeOperator"))!
-        let newUserResponses = aDecoder.decodeObjectForKey("userResponses") as [Int]
+        let newUserResponses = aDecoder.decodeObjectForKey("userResponses") as! [Int]
         
         self.init(
             left: newLOperand,

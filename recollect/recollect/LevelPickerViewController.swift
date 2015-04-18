@@ -8,7 +8,7 @@
 
 import UIKit
 
-class LevelPickerViewController: HalfScreenViewController, UIGestureRecognizerDelegate {
+class LevelPickerViewController: HalfScreenViewController, UIGestureRecognizerDelegate, PlayerIdentityChangeListener {
     
     let horizontalPadding: CGFloat = 50
     let verticalPadding: CGFloat = 20
@@ -23,10 +23,17 @@ class LevelPickerViewController: HalfScreenViewController, UIGestureRecognizerDe
     init(delegate: LevelPickerViewControllerDelegate) {
         self.delegate = delegate
         super.init(nibName: nil, bundle: nil)
+        
+        PlayerIdentityManager.sharedInstance.subscribeToPlayerIdentityChangeNotifications(self)
+    }
+
+    required init(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) won't be implemented because I ain't using xibs")
     }
     
     deinit {
         scrollView.delegate = nil
+        PlayerIdentityManager.sharedInstance.unsubscribeFromPlayerIdentityChangeNotifications(self)
         NSNotificationCenter.defaultCenter().removeObserver(self)
     }
     
@@ -203,8 +210,15 @@ class LevelPickerViewController: HalfScreenViewController, UIGestureRecognizerDe
         NSNotificationCenter.defaultCenter().addObserver(
             self,
             selector: "bestScoreChanged:",
-            name: LocalPlayerIdentity.BestScoreChangeNotificationName,
+            name: PlayerIdentity.BestScoreChangeNotificationName,
             object: nil)
+    }
+    
+    func playerIdentityChanged(oldIdentity: PlayerIdentity, newIdentity: PlayerIdentity) {
+        assert(NSThread.isMainThread(), "We are relying on player identity changes happening on the main thread.")
+        if !scrollView.dragging {
+            fadeInTimeLabels()
+        }
     }
     
     func bestScoreChanged(notification: NSNotification) {
@@ -218,7 +232,7 @@ class LevelPickerViewController: HalfScreenViewController, UIGestureRecognizerDe
     }
     
     func handleTap(tapRecognizer: UITapGestureRecognizer) {
-        let scrollView = tapRecognizer.view! as UIScrollView
+        let scrollView = tapRecognizer.view! as! UIScrollView
         var minDistance = CGFloat.max
         var labelClosestToCenter: ManglableLabel?
         for label in scrollView.subviews {
@@ -226,7 +240,7 @@ class LevelPickerViewController: HalfScreenViewController, UIGestureRecognizerDe
             let xDistance = labelCenter.x - scrollView.center.x
             if (abs(xDistance) < abs(minDistance) && label is ManglableLabel) {
                 minDistance = xDistance
-                labelClosestToCenter = (label as ManglableLabel)
+                labelClosestToCenter = (label as! ManglableLabel)
             }
         }
         
@@ -269,7 +283,7 @@ extension LevelPickerViewController: UIScrollViewDelegate {
     
     private func fadeInTimeLabels() {
         refreshBestTimeLabels()
-        if countElements(self.bestTimeValueLabel?.text ?? "") > 0 {
+        if count(self.bestTimeValueLabel?.text ?? "") > 0 {
             UIView.animateWithDuration(
                 DesignLanguage.MinorAnimationDuration,
                 delay: 0.0,
@@ -340,7 +354,7 @@ extension LevelPickerViewController: UIScrollViewDelegate {
             }
         }
         
-        let playerIdentity = PlayerIdentityManager.identity()
+        let playerIdentity = PlayerIdentityManager.sharedInstance.currentIdentity
         if let bestTime = playerIdentity.bestTime(levelId) {
             bestTimeValueLabel?.text = bestTime.minuteSecondCentisecondString()
         } else {

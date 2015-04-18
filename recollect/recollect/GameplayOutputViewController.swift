@@ -29,6 +29,10 @@ class GameplayOutputViewController: HalfScreenViewController, UIGestureRecognize
         self.delegate = GameManager.sharedInstance
         super.init(nibName: nil, bundle: nil)
     }
+
+    required init(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -350,7 +354,7 @@ class GameplayOutputViewController: HalfScreenViewController, UIGestureRecognize
             relatedBy: NSLayoutRelation.Equal,
             toItem: view,
             attribute: NSLayoutAttribute.Right,
-            multiplier: -CGFloat(challengeIndex)/CGFloat(gameState.n + 1),
+            multiplier: UIView.sanitizeLocationConstraintMultiplier(-CGFloat(challengeIndex)/CGFloat(gameState.n + 1)),
             constant: 0.0)
         view.addConstraint(challengeContainerXPositionConstraint!)
     }
@@ -395,7 +399,7 @@ class GameplayOutputViewController: HalfScreenViewController, UIGestureRecognize
                     DISPATCH_TIME_NOW,
                     Int64(1.0 * Double(NSEC_PER_SEC))
                 )
-                self.currentSlidingHighlightId = (slideHighlightId.copy() as NSUUID)
+                self.currentSlidingHighlightId = (slideHighlightId.copy() as! NSUUID)
                 dispatch_after(dispatchTime, dispatch_get_main_queue()) {
                     self.highlightSlidingIfNeeded(slideHighlightId)
                 }
@@ -460,7 +464,7 @@ class GameplayOutputViewController: HalfScreenViewController, UIGestureRecognize
     }
     
     func presentInstructionalOverlayIfNeeded(timer: NSTimer) {
-        let gameStateAtTimerSetup = timer.userInfo as GameState
+        let gameStateAtTimerSetup = timer.userInfo as! GameState
         
         if gameStateAtTimerSetup.currentChallengeIndex == gameState.currentChallengeIndex && challengeContainer != nil {
             var minYOrigin = CGFloat.max

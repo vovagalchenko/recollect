@@ -15,7 +15,7 @@ class ButtonBackground: UIView {
         }
     }
     
-    override init() {
+    init() {
         self.baseColor = DesignLanguage.ActiveTextColor
         super.init(frame: CGRectZero)
         setTranslatesAutoresizingMaskIntoConstraints(false)
