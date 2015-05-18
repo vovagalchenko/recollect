@@ -11,12 +11,30 @@ import Foundation
 class PlayerScore {
     let playerId: String
     let time: NSTimeInterval
-    var name: String? = nil
-    var rank: Int?
     
-    init(playerId: String, time: NSTimeInterval, rank: Int? = nil) {
+    init(playerId: String, time: NSTimeInterval) {
         self.playerId = playerId
         self.time = time
+    }
+}
+
+class LeaderboardEntry: PlayerScore {
+    let playerName: String
+    let rank: Int
+    
+    init(playerId: String, time: NSTimeInterval, playerName: String = "You", rank: Int) {
+        self.playerName = playerName
         self.rank = rank
+        super.init(playerId: playerId, time: time)
+    }
+}
+
+@objc class Leaderboard {
+    let entries: [LeaderboardEntry]
+    let leaderboardId: String
+    
+    init(entries: [LeaderboardEntry], leaderboardId: String) {
+        self.entries = entries
+        self.leaderboardId = leaderboardId
     }
 }

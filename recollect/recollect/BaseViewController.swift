@@ -316,12 +316,14 @@ extension BaseViewController: GameStateChangeListener {
         }
         
         if (change.newGameState?.currentChallengeIndex ?? 0) < 0 {
-            NSTimer.scheduledTimerWithTimeInterval(
-                DesignLanguage.delayBeforeInstructionalOverlay(change.newGameState!.levelId),
-                target: self,
-                selector: "showContinueInstructionOverlayIfNeeded:",
-                userInfo: change.newGameState!,
-                repeats: false)
+            PlayerIdentityManager.sharedInstance.currentIdentity.getMyBestScores { bestScores in
+                NSTimer.scheduledTimerWithTimeInterval(
+                    DesignLanguage.delayBeforeInstructionalOverlay(change.newGameState!.levelId, finishedLevelBefore: bestScores[change.newGameState!.levelId] != nil),
+                    target: self,
+                    selector: "showContinueInstructionOverlayIfNeeded:",
+                    userInfo: change.newGameState!,
+                    repeats: false)
+            }
         }
     }
 }

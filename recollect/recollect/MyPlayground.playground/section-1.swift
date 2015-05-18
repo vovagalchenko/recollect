@@ -1,57 +1,20 @@
-// Playground - noun: a place where people can play
+import Foundation
 
-func lineInfo(lineWidthInPixels: Float) -> (Float, Float) {
-    let scale: Float = 1.0
-    let widthInPts = lineWidthInPixels/scale
-    let offset = widthInPts/2
-    return (widthInPts, offset)
-}
-
-lineInfo(1.0)
-lineInfo(2.0)
-
-func banana(dotsSpread: Float, i: Int) -> Float {
-    return -(dotsSpread/2.0) + ((dotsSpread*Float(i))/Float(10 - 1))
-}
-
-banana(50, 0)
-
-
-let arr = [1, 2, 3, 4, 5]
-var mutableArr = arr
-var anotherArr = [1, 2, 3, 4]
-
-class Test {
-    var dict: [String: Int] {
-        didSet {
-            println("HERRO: \(dict)")
-            woah = dict
-        }
+let total = 100
+let start = 0
+let startTime = NSTimeInterval(start)
+let totalLength = NSTimeInterval(total)
+for elapsed in start...total {
+    let elapsedTime = NSTimeInterval(elapsed)
+    let portionElapsed = Float(elapsedTime/totalLength)
+    var value: Float
+    // Simple quadratic ease-in/ease-out.
+    if portionElapsed < 0.5 {
+        // We are accelerating
+        value = portionElapsed * portionElapsed * 2.0
+    } else {
+        // We are decelerating
+        value = 1.0 - 2.0*pow(portionElapsed - 1.0, 2)
     }
-    
-    var woah: [String: Int]
-    
-    init() {
-        dict = [String: Int]()
-        woah = dict
-    }
+    value
 }
-
-class Something {
-    var t: Int? =  -1
-}
-
-let s = Something()
-if s.t < 0 {
-    println("hello")
-}
-
-s.t < 0
-
-let h = [0, 1, 2, 3, 4, 5, 6]
-
-((-2) % 2)
-
-let t = 0...1
-t.startIndex
-t.endIndex

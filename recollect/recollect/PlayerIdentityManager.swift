@@ -25,26 +25,21 @@ class PlayerIdentityManager {
                     PlayerIdentityManager.playerIdentityChangeNotificationName,
                     object: self,
                     userInfo: [
-                        PlayerIdentityManager.playerIdentityChangeNotificationOldValueKey: oldValue,
-                        PlayerIdentityManager.playerIdentityChangeNotificationNewValueKey: currentIdentity
+                        PlayerIdentityManager.PlayerIdentityChangeNotificationOldValueKey: oldValue,
+                        PlayerIdentityManager.PlayerIdentityChangeNotificationNewValueKey: currentIdentity
                     ])
             }
         }
     }
     private var gameCenterLoginViewController: UIViewController? = nil
     
-    class var playerIdentityChangeNotificationName: String {
-        return "PLAYER_IDENTITY_CHANGED_NOTIFICATION"
-    }
-    class var playerIdentityChangeNotificationOldValueKey: String {
-        return "OLD_VALUE"
-    }
-    class var playerIdentityChangeNotificationNewValueKey: String {
-        return "NEW_VALUE"
-    }
+    static let playerIdentityChangeNotificationName: String = "PLAYER_IDENTITY_CHANGED_NOTIFICATION"
+    static let PlayerIdentityChangeNotificationOldValueKey: String = "OLD_VALUE"
+    static let PlayerIdentityChangeNotificationNewValueKey: String = "NEW_VALUE"
+    static let BestScoresChangeNotificationName: String = "BEST_SCORES_CHANGED"
     
     init() {
-        currentIdentity = PlayerIdentity()
+        currentIdentity = LocalPlayerIdentity()
         authenticateGameCenterPlayer()
     }
     
@@ -65,7 +60,7 @@ class PlayerIdentityManager {
             if let existingLoginVC = loginVC {
                 self.gameCenterLoginViewController = existingLoginVC
                 if self.currentIdentity is GameCenterPlayerIdentity {
-                    self.currentIdentity = PlayerIdentity()
+                    self.currentIdentity = LocalPlayerIdentity()
                 }
             } else if localGCPlayer.authenticated {
                 self.gameCenterLoginViewController = nil
@@ -76,7 +71,7 @@ class PlayerIdentityManager {
                     NSLog("RECEIVED GAME CENTER ERROR: \(gkError)")
                 }
                 self.setGameCenterDisabled(true)
-                self.currentIdentity = PlayerIdentity()
+                self.currentIdentity = LocalPlayerIdentity()
             }
         }
     }
@@ -114,8 +109,8 @@ class PlayerIdentityManager {
 extension NSObject {
     @objc func playerIdentityChangeNotificationReceived(notification: NSNotification!) {
         let userInfo = notification!.userInfo!
-        let oldPlayerIdentity = userInfo[PlayerIdentityManager.playerIdentityChangeNotificationOldValueKey]! as! PlayerIdentity
-        let newPlayerIdentity = userInfo[PlayerIdentityManager.playerIdentityChangeNotificationNewValueKey]! as! PlayerIdentity
+        let oldPlayerIdentity = userInfo[PlayerIdentityManager.PlayerIdentityChangeNotificationOldValueKey]! as! PlayerIdentity
+        let newPlayerIdentity = userInfo[PlayerIdentityManager.PlayerIdentityChangeNotificationNewValueKey]! as! PlayerIdentity
         if let playerIdentityChangeListener = self as? PlayerIdentityChangeListener {
             playerIdentityChangeListener.playerIdentityChanged(oldPlayerIdentity, newIdentity: newPlayerIdentity)
         }

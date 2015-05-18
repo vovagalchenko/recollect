@@ -8,25 +8,28 @@
 
 import Foundation
 
-@objc class PlayerIdentity {
-    
-    class var BestScoreChangeNotificationName: String { return "BEST_SCORE_CHANGED" }
+@objc class LocalPlayerIdentity: PlayerIdentity {
     
     var bestGames: [String: GameState] {
         didSet {
-            sync()
+            NSLog("SAVING TO: \(computeScoresFilePath())")
+            if NSKeyedArchiver.archiveRootObject(bestGames, toFile: computeScoresFilePath()) {
+                NSLog("Wrote local player's best scores successfully:\n\(bestGames)")
+            } else {
+                NSLog("Failed to write local player's best scores!")
+            }
+            
             NSNotificationCenter.defaultCenter().postNotificationName(
-                PlayerIdentity.BestScoreChangeNotificationName,
+                PlayerIdentityManager.BestScoresChangeNotificationName,
                 object: self,
                 userInfo: nil)
         }
     }
-    var playerId: String { return "local_player" }
+    let playerId: String = "local_player"
     
     init() {
         bestGames = [String: GameState]()
         let scoresFilePath = self.computeScoresFilePath()
-        NSLog("READING FROM: \(scoresFilePath)")
         if NSFileManager.defaultManager().fileExistsAtPath(scoresFilePath) {
             bestGames = NSKeyedUnarchiver.unarchiveObjectWithFile(scoresFilePath) as! [String: GameState]
         }
@@ -45,15 +48,23 @@ import Foundation
         return delta
     }
     
-    func getLeaderboard(gameState: GameState, completion: ([PlayerScore]) -> Void) {
-        var leaderboard = [PlayerScore]()
-        if let bestTime = bestGames[gameState.levelId]?.finalTime() {
-            leaderboard.append(PlayerScore(playerId: playerId, time: bestTime, rank: 1))
+    func getLeaderboard(levelId: String, completion: Leaderboard -> Void) {
+        var leaderboard = [LeaderboardEntry]()
+        if let bestTime = bestGames[levelId]?.finalTime() {
+            leaderboard.append(LeaderboardEntry(playerId: playerId, time: bestTime, rank: 1))
         }
-        completion(leaderboard)
+        completion(Leaderboard(entries: leaderboard, leaderboardId: levelId))
     }
     
-    func flushBestGames(newGame: GameState) {
+    func getMyBestScores(completion: [String: PlayerScore] -> Void) {
+        var myBestScores = [String: PlayerScore]()
+        for (levelId, bestGameState) in bestGames {
+            myBestScores[levelId] = PlayerScore(playerId: playerId, time: bestGameState.finalTime())
+        }
+        completion(myBestScores)
+    }
+    
+    func recordNewGame(newGame: GameState, completion: () -> Void) {
         if let bestGameForLevel = bestGames[newGame.levelId] {
             if bestGameForLevel.finalTime() > newGame.finalTime() {
                 bestGames[newGame.levelId] = newGame
@@ -61,18 +72,6 @@ import Foundation
         } else {
             bestGames[newGame.levelId] = newGame
         }
-    }
-    
-    func bestTime(levelId: String) -> NSTimeInterval? { return bestGames[levelId]?.finalTime() }
-    
-    func finishedLevelBefore(levelId: String) -> Bool { return bestGames[levelId] != nil }
-    
-    private func sync() {
-        NSLog("SAVING TO: \(computeScoresFilePath())")
-        if NSKeyedArchiver.archiveRootObject(bestGames, toFile: computeScoresFilePath()) {
-            NSLog("Wrote local player's best scores successfully:\n\(bestGames)")
-        } else {
-            NSLog("Failed to write local player's best scores!")
-        }
+        completion()
     }
 }

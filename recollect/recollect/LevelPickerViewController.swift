@@ -210,7 +210,7 @@ class LevelPickerViewController: HalfScreenViewController, UIGestureRecognizerDe
         NSNotificationCenter.defaultCenter().addObserver(
             self,
             selector: "bestScoreChanged:",
-            name: PlayerIdentity.BestScoreChangeNotificationName,
+            name: PlayerIdentityManager.BestScoresChangeNotificationName,
             object: nil)
     }
     
@@ -339,26 +339,26 @@ extension LevelPickerViewController: UIScrollViewDelegate {
     }
     
     private func refreshBestTimeLabels() {
-        // TODO: All of this looking for the closest label shit can be improved
-        // by using the scrollview offset to figure out the closest label.
-        var minDistanceToLabel = CGFloat.max
-        var levelId = ""
-        for subview in scrollView.subviews {
-            if let manglableLabel = subview as? ManglableLabel {
-                let labelCenter = CGPointMake(manglableLabel.center.x - scrollView.contentOffset.x, manglableLabel.center.y)
-                let xDistance = abs(labelCenter.x - scrollView.center.x)
-                if (xDistance < minDistanceToLabel) {
-                    minDistanceToLabel = xDistance
-                    levelId = manglableLabel.originalText ?? manglableLabel.text!
+        PlayerIdentityManager.sharedInstance.currentIdentity.getMyBestScores() { bestScores in
+            // TODO: All of this looking for the closest label shit can be improved
+            // by using the scrollview offset to figure out the closest label.
+            var minDistanceToLabel = CGFloat.max
+            var levelId = ""
+            for subview in self.scrollView.subviews {
+                if let manglableLabel = subview as? ManglableLabel {
+                    let labelCenter = CGPointMake(manglableLabel.center.x - self.scrollView.contentOffset.x, manglableLabel.center.y)
+                    let xDistance = abs(labelCenter.x - self.scrollView.center.x)
+                    if (xDistance < minDistanceToLabel) {
+                        minDistanceToLabel = xDistance
+                        levelId = manglableLabel.originalText ?? manglableLabel.text!
+                    }
                 }
             }
-        }
-        
-        let playerIdentity = PlayerIdentityManager.sharedInstance.currentIdentity
-        if let bestTime = playerIdentity.bestTime(levelId) {
-            bestTimeValueLabel?.text = bestTime.minuteSecondCentisecondString()
-        } else {
-            bestTimeValueLabel?.text = ""
+            if let bestTime = bestScores[levelId] {
+                self.bestTimeValueLabel?.text = bestTime.time.minuteSecondCentisecondString()
+            } else {
+                self.bestTimeValueLabel?.text = ""
+            }
         }
     }
     

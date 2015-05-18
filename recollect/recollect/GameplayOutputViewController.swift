@@ -565,17 +565,20 @@ extension GameplayOutputViewController: GameStateChangeListener {
             
             if gameState.currentChallengeIndex >= 0 && gameState.currentChallengeIndex < gameState.challenges.count
                 && gameState.currentChallengeIndex - 1 == change.oldGameState?.currentChallengeIndex {
-                NSTimer.scheduledTimerWithTimeInterval(
-                    DesignLanguage.delayBeforeInstructionalOverlay(gameState.levelId),
-                    target: self,
-                    selector: "presentInstructionalOverlayIfNeeded:",
-                    userInfo: gameState,
-                    repeats: false)
-                if borderOverlay?.superview != nil {
-                    UIView.animateWithDuration(DesignLanguage.MinorAnimationDuration, animations: {
-                        self.borderOverlay!.alpha = 0.0
-                    })
-                }
+                    if borderOverlay?.superview != nil {
+                        UIView.animateWithDuration(DesignLanguage.MinorAnimationDuration, animations: {
+                            self.borderOverlay!.alpha = 0.0
+                        })
+                    }
+                    PlayerIdentityManager.sharedInstance.currentIdentity.getMyBestScores { bestScores in
+                        NSTimer.scheduledTimerWithTimeInterval(
+                            DesignLanguage.delayBeforeInstructionalOverlay(gameState.levelId, finishedLevelBefore: bestScores[gameState.levelId] != nil),
+                            target: self,
+                            selector: "presentInstructionalOverlayIfNeeded:",
+                            userInfo: gameState,
+                            repeats: false)
+                    }
+                    
             }
         }
     }

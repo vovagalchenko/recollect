@@ -18,6 +18,7 @@ class GameResultViewController: HalfScreenViewController, UIGestureRecognizerDel
     var deltaTimeLabel: ManglableLabel?
     var gameCenterSolicitationLabel: ManglableLabel?
     var resultViewContainerVerticalConstraint: NSLayoutConstraint?
+    var leaderboardVC: LeaderboardViewController!
     
     init(gameState: GameState) {
         self.gameState = gameState
@@ -38,7 +39,9 @@ class GameResultViewController: HalfScreenViewController, UIGestureRecognizerDel
         super.viewDidLoad()
         
         resultViewContainer = UIView()
+        resultViewContainer!.backgroundColor = UIColor.clearColor()
         resultViewContainer!.setTranslatesAutoresizingMaskIntoConstraints(false)
+        resultViewContainer!.setContentHuggingPriority(1000, forAxis: UILayoutConstraintAxis.Vertical)
         view.addSubview(resultViewContainer!)
         
         let completionMsgLabelHeight = CGFloat(26.5)
@@ -46,6 +49,7 @@ class GameResultViewController: HalfScreenViewController, UIGestureRecognizerDel
         let deltaTimeLabelHeight = CGFloat(25.0)
         
         completionMsgLabel = ManglableLabel()
+        completionMsgLabel!.setContentHuggingPriority(1000, forAxis: UILayoutConstraintAxis.Vertical)
         completionMsgLabel!.font = UIFont(name: "AvenirNextCondensed-DemiBold", size: completionMsgLabelHeight)
         completionMsgLabel!.textColor = DesignLanguage.NeverActiveTextColor
         completionMsgLabel!.adjustsFontSizeToFitWidth = true
@@ -54,12 +58,14 @@ class GameResultViewController: HalfScreenViewController, UIGestureRecognizerDel
         resultViewContainer!.addSubview(completionMsgLabel!)
         
         mainTimeLabel = ManglableLabel()
+        mainTimeLabel!.setContentHuggingPriority(1000, forAxis: UILayoutConstraintAxis.Vertical)
         mainTimeLabel!.font = UIFont(name: "AvenirNextCondensed-DemiBold", size: mainTimeLabelHeight)
         mainTimeLabel!.textColor = DesignLanguage.ActiveTextColor
         mainTimeLabel!.text = gameState.finalTime().minuteSecondCentisecondString()
         resultViewContainer!.addSubview(mainTimeLabel!)
         
         deltaTimeLabel = ManglableLabel()
+        deltaTimeLabel!.setContentHuggingPriority(1000, forAxis: UILayoutConstraintAxis.Vertical)
         deltaTimeLabel!.font = UIFont(name: "AvenirNextCondensed-DemiBold", size: deltaTimeLabelHeight)
         deltaTimeLabel!.textAlignment = NSTextAlignment.Right
         deltaTimeLabel!.textColor = DesignLanguage.NeverActiveTextColor
@@ -143,7 +149,43 @@ class GameResultViewController: HalfScreenViewController, UIGestureRecognizerDel
         gameCenterSolicitationLabel!.addGestureRecognizer(tapRecognizer)
         view.addSubview(gameCenterSolicitationLabel!)
         
+        leaderboardVC = LeaderboardViewController()
+        addChildViewController(leaderboardVC)
+        view.addSubview(leaderboardVC.view)
+        leaderboardVC.didMoveToParentViewController(self)
+        
+        view.addConstraints(
+            NSLayoutConstraint.constraintsWithVisualFormat(
+                "H:|[leaderboardView]|",
+                options: NSLayoutFormatOptions(0),
+                metrics: nil,
+                views: ["leaderboardView": leaderboardVC.view]) +
+            NSLayoutConstraint.constraintsWithVisualFormat(
+                "V:[leaderboardView]|",
+                options: NSLayoutFormatOptions(0),
+                metrics: nil,
+                views: ["leaderboardView": leaderboardVC.view])
+        )
+        
+        resultViewContainerVerticalConstraint = NSLayoutConstraint(
+            item: resultViewContainer!,
+            attribute: NSLayoutAttribute.CenterY,
+            relatedBy: NSLayoutRelation.Equal,
+            toItem: view,
+            attribute: NSLayoutAttribute.CenterY,
+            multiplier: 1.0,
+            constant: 0.0)
         view.addConstraints([
+            resultViewContainerVerticalConstraint!,
+            NSLayoutConstraint(
+                item: leaderboardVC.view,
+                attribute: .Top,
+                relatedBy: .Equal,
+                toItem: resultViewContainer!,
+                attribute: .Bottom,
+                multiplier: 1.0,
+                constant: 0.0
+            ),
             NSLayoutConstraint(
                 item: resultViewContainer!,
                 attribute: NSLayoutAttribute.CenterX,
@@ -187,33 +229,31 @@ class GameResultViewController: HalfScreenViewController, UIGestureRecognizerDel
     
     func refreshLayout() {
         let identity = PlayerIdentityManager.sharedInstance.currentIdentity
-        identity.getLeaderboard(gameState) { (leaderboard: [PlayerScore]) -> Void in
-            self.refreshLayout(identity: identity, leaderboard: leaderboard)
+        identity.getMyBestScores { usersOldBestScores in
+            self.refreshThisGameInfo(usersOldBestScores[self.gameState.levelId])
+            identity.recordNewGame(self.gameState) {
+                identity.getLeaderboard(self.gameState.levelId) { (leaderboard: Leaderboard) -> Void in
+                    self.refreshLeaderboard(identity: identity, leaderboard: leaderboard)
+                }
+            }
         }
     }
     
-    func refreshLayout(#identity: PlayerIdentity, leaderboard: [PlayerScore]) {
-        view.layoutIfNeeded()
-        NSLog("REFRESHING LAYOUT WITH LEADERBOARD: \(leaderboard)")
-        if let resultsContainerConstraint = resultViewContainerVerticalConstraint {
-            view.removeConstraint(resultsContainerConstraint)
-        }
-        resultViewContainerVerticalConstraint = NSLayoutConstraint(
-            item: resultViewContainer!,
-            attribute: NSLayoutAttribute.CenterY,
-            relatedBy: NSLayoutRelation.Equal,
-            toItem: view,
-            attribute: NSLayoutAttribute.CenterY,
-            multiplier: 1.0,
-            constant: 0.0)
-        view.addConstraint(resultViewContainerVerticalConstraint!)
-        
-        let delta = identity.deltaFromBest(gameState)
+    func refreshThisGameInfo(oldBestScore: PlayerScore?) {
+        let delta = gameState.finalTime() - (oldBestScore?.time ?? gameState.finalTime())
         var deltaAlpha: CGFloat = 0.0
         if delta != 0 {
             deltaTimeLabel!.text = delta.minuteSecondCentisecondString(signed: true)
             deltaAlpha = 1.0
         }
+        UIView.animateWithDuration(DesignLanguage.MinorAnimationDuration) {
+            self.deltaTimeLabel?.alpha = deltaAlpha
+        }
+    }
+    
+    func refreshLeaderboard(#identity: PlayerIdentity, leaderboard: Leaderboard) {
+        NSLog("REFRESHING LAYOUT WITH LEADERBOARD: \(leaderboard)")
+        view.layoutIfNeeded()
         
         gameCenterSolicitationLabel?.attributedText = NSAttributedString(
             string: PlayerIdentityManager.sharedInstance.currentIdentity is GameCenterPlayerIdentity ? "See the full leaderboard" : "Log in via Game Center",
@@ -225,11 +265,33 @@ class GameResultViewController: HalfScreenViewController, UIGestureRecognizerDel
         )
         
         UIView.animateWithDuration(DesignLanguage.MinorAnimationDuration) {
+            if let resultsContainerConstraint = self.resultViewContainerVerticalConstraint {
+                self.view.removeConstraint(resultsContainerConstraint)
+            }
+            self.resultViewContainerVerticalConstraint = leaderboard.entries.count > 1 ?
+                NSLayoutConstraint(
+                    item: self.resultViewContainer!,
+                    attribute: .Top,
+                    relatedBy: .Equal,
+                    toItem: self.view,
+                    attribute: .Top,
+                    multiplier: 1.0,
+                    constant: self.topLayoutGuide.length) :
+                NSLayoutConstraint(
+                    item: self.resultViewContainer!,
+                    attribute: NSLayoutAttribute.CenterY,
+                    relatedBy: NSLayoutRelation.Equal,
+                    toItem: self.view,
+                    attribute: NSLayoutAttribute.CenterY,
+                    multiplier: 1.0,
+                    constant: 0.0)
+            self.view.addConstraint(self.resultViewContainerVerticalConstraint!)
+            if 2...4 ~= leaderboard.entries.count {
+                self.leaderboardVC.setLeaderboard(leaderboard)
+            }
             self.view.layoutIfNeeded()
-            self.deltaTimeLabel?.alpha = deltaAlpha
-            self.gameCenterSolicitationLabel?.alpha = leaderboard.count <= 1 ? 1.0 : 0.0
+            self.gameCenterSolicitationLabel?.alpha = leaderboard.entries.count <= 1 ? 1.0 : 0.0
+            self.leaderboardVC.view.alpha = 2...4 ~= leaderboard.entries.count ? 1.0 : 0.0
         }
-        
-        PlayerIdentityManager.sharedInstance.currentIdentity.flushBestGames(gameState)
     }
 }
