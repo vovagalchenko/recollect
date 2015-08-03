@@ -9,7 +9,7 @@
 import UIKit
 
 enum LeaderboardEntryViewPosition {
-    case Top, Middle, Bottom
+    case Top, Middle, Bottom, Gap
 }
 
 class LeaderboardEntryView: UIView {
@@ -18,6 +18,11 @@ class LeaderboardEntryView: UIView {
     private var timeLabel: ManglableLabel!
     private var avatarImageView: UIImageView!
     private let position: LeaderboardEntryViewPosition
+    var rank: Int {
+        get {
+            return rankLabel.text!.toInt()!
+        }
+    }
     
     init(pos: LeaderboardEntryViewPosition = .Middle) {
         position = pos
@@ -34,6 +39,7 @@ class LeaderboardEntryView: UIView {
         avatarImageView.layer.masksToBounds = true
         avatarImageView.contentMode = UIViewContentMode.ScaleAspectFill
         avatarImageView.setTranslatesAutoresizingMaskIntoConstraints(false)
+        avatarImageView.alpha = 0.0
         let padding: CGFloat = 15.0
         for subview in [rankLabel, nameLabel, timeLabel, avatarImageView] {
             addSubview(subview)
@@ -81,6 +87,7 @@ class LeaderboardEntryView: UIView {
         nameLabel.text = entry.playerName
         rankLabel.text = "\(entry.rank)"
         timeLabel.text = entry.time.minuteSecondCentisecondString()
+        avatarImageView.alpha = 1.0
         
         let labels = [nameLabel, rankLabel, timeLabel]
         for label in labels {
@@ -107,26 +114,32 @@ class LeaderboardEntryView: UIView {
     override func drawRect(rect: CGRect) {
         let ctx = UIGraphicsGetCurrentContext()
         
-        let (points, thickness) = pixelPerfectCoordinates(
-            thicknessInPixels: 1,
-            points: CGPoint(x: 0, y: 0),
-            CGPoint(x: bounds.size.width, y: 0),
-            CGPoint(x: 0, y: bounds.size.height),
-            CGPoint(x: bounds.size.width, y: bounds.size.height))
-        
-        if position != .Top {
-            CGContextMoveToPoint(ctx, points[0].x, points[0].y)
-            CGContextAddLineToPoint(ctx, points[1].x, points[1].y)
+        if position == .Gap {
+            DesignLanguage.ShadowColor.setFill()
+            CGContextFillRect(ctx, bounds)
+        } else {
+            let (points, thickness) = pixelPerfectCoordinates(
+                thicknessInPixels: 1,
+                points: CGPoint(x: 0, y: 0),
+                CGPoint(x: bounds.size.width, y: 0),
+                CGPoint(x: 0, y: bounds.size.height),
+                CGPoint(x: bounds.size.width, y: bounds.size.height)
+            )
             
-            DesignLanguage.HighlightColor.setStroke()
-            CGContextDrawPath(ctx, kCGPathStroke)
-        }
-        if position != .Bottom {
-            CGContextMoveToPoint(ctx, points[2].x, points[2].y)
-            CGContextAddLineToPoint(ctx, points[3].x, points[3].y)
-            
-            DesignLanguage.ShadowColor.setStroke()
-            CGContextDrawPath(ctx, kCGPathStroke)
+            if position != .Top {
+                CGContextMoveToPoint(ctx, points[0].x, points[0].y)
+                CGContextAddLineToPoint(ctx, points[1].x, points[1].y)
+                
+                DesignLanguage.HighlightColor.setStroke()
+                CGContextDrawPath(ctx, kCGPathStroke)
+            }
+            if position != .Bottom {
+                CGContextMoveToPoint(ctx, points[2].x, points[2].y)
+                CGContextAddLineToPoint(ctx, points[3].x, points[3].y)
+                
+                DesignLanguage.ShadowColor.setStroke()
+                CGContextDrawPath(ctx, kCGPathStroke)
+            }
         }
     }
     

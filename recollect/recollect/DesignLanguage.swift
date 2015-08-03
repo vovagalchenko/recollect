@@ -15,6 +15,8 @@ struct DesignLanguage {
     static let InactiveTextColor = UIColor(red: 48.0/255.0, green: 66.0/255.0, blue: 68.0/255.0, alpha: 1.0)
     static let ActiveTextColor = UIColor(red: 239.0/255.0, green: 239.0/255.0, blue: 239.0/255.0, alpha: 1.0)
     static let AccentTextColor = UIColor(red: 220.0/255.0, green: 99.0/255.0, blue: 86.0/255.0, alpha: 1.0)
+    static let NegativeAccentTextColor = UIColor(red: 220.0/255.0, green: 99.0/255.0, blue: 86.0/255.0, alpha: 1.0)
+    static let PositiveAccentTextColor = UIColor(red: 99.0/255.0, green: 220.0/255.0, blue: 86.0/255.0, alpha: 1.0)
     static let ShadowColor = UIColor.blackColor().colorWithAlphaComponent(0.1)
     static let HighlightColor = UIColor.whiteColor().colorWithAlphaComponent(0.05)
     

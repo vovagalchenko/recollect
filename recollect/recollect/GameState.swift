@@ -119,6 +119,8 @@ final class GameState: NSObject, Streamable {
         return time()
     }
     
+    func isFlawless() -> Bool { return challenges.reduce(peeks.count == 0) { $0 && $1.userResponses.count <= 1 } }
+    
     func writeTo<Target : OutputStreamType>(inout target: Target) {
         target.write("GAME STATE:\n\tn = \(n)\n\tchallenges = \(challenges)\n\tcurrentChallengeIndex = \(currentChallengeIndex)\n\tclosedTimeIntervals = \(closedTimeIntervals)")
         if let currentTimeIntervalStart = latestTimeStart {

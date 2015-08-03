@@ -241,13 +241,19 @@ class GameResultViewController: HalfScreenViewController, UIGestureRecognizerDel
     
     func refreshThisGameInfo(oldBestScore: PlayerScore?) {
         let delta = gameState.finalTime() - (oldBestScore?.time ?? gameState.finalTime())
-        var deltaAlpha: CGFloat = 0.0
+        let deltaAlpha: CGFloat
+        let deltaTextColor: UIColor
         if delta != 0 {
             deltaTimeLabel!.text = delta.minuteSecondCentisecondString(signed: true)
             deltaAlpha = 1.0
+            deltaTextColor = delta > 0 ? DesignLanguage.NegativeAccentTextColor : DesignLanguage.NeverActiveTextColor
+        } else {
+            deltaAlpha = 0.0
+            deltaTextColor = UIColor.blackColor()
         }
         UIView.animateWithDuration(DesignLanguage.MinorAnimationDuration) {
             self.deltaTimeLabel?.alpha = deltaAlpha
+            self.deltaTimeLabel?.textColor = deltaTextColor
         }
     }
     

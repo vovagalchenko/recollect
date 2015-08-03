@@ -9,13 +9,16 @@
 import Foundation
 import GameKit
 
-@objc class GameCenterPlayerIdentity: PlayerIdentity {
+@objc class GameCenterPlayerIdentity: NSObject, PlayerIdentity {
     let gameKitPlayer: GKPlayer
     let playerId: String
     
     init(gameCenterLocalPlayer: GKPlayer) {
         gameKitPlayer = gameCenterLocalPlayer
         playerId = gameKitPlayer.playerID
+        super.init()
+        
+        GameManager.sharedInstance.subscribeToGameStateChangeNotifications(self)
     }
     
     private var bestScoreCompletions: [[String: PlayerScore] -> Void] = []
@@ -131,11 +134,55 @@ import GameKit
                 NSLog("GAME CENTER ERROR WHILE REPORTING SCORE:\n\(error)")
             }
             self.cachedBestScores = nil
-            dispatch_async(dispatch_get_main_queue()) {
+            
+            // At least in the sandbox environment, queries for leadboards inside this completionHandler
+            // don't observe the score reported by this call. This is really fucking stupid actually, and
+            // this 3 second timeout is an ugly hack to get around this limitation.
+            let dispatchTime = dispatch_time(
+                DISPATCH_TIME_NOW,
+                Int64(3.0 * Double(NSEC_PER_SEC))
+            )
+            dispatch_after(dispatchTime, dispatch_get_main_queue()) {
                 completion()
             }
+//            dispatch_async(dispatch_get_main_queue()) {
+//                completion()
+//            }
         }
     }
     
     private func leaderboardIdentifier(levelId: String) -> String { return "level_\(levelId)_time" }
+}
+
+extension GameCenterPlayerIdentity: GameStateChangeListener {
+    func gameStateChanged(change: GameStateChange) {
+        if change.newGameState != nil &&
+           change.newGameState!.currentChallengeIndex >= change.newGameState!.challenges.count {
+            let levelClearedAchievement = GKAchievement(
+                identifier: "level_\(change.newGameState!.levelId)_cleared",
+                forPlayer: playerId
+            )
+            let achievementsToReport: [GKAchievement]
+            if change.newGameState!.isFlawless() {
+                let flawlessAchievement = GKAchievement(
+                    identifier: "level_\(change.newGameState!.levelId)_cleared_flawlessly",
+                    forPlayer: playerId
+                )
+                flawlessAchievement.showsCompletionBanner = true
+                achievementsToReport = [
+                    levelClearedAchievement,
+                    flawlessAchievement
+                ]
+            } else {
+                achievementsToReport = [levelClearedAchievement]
+            }
+            GKAchievement.reportAchievements(achievementsToReport) { error -> Void in
+                if error != nil {
+                    NSLog("Error reporting achievements: \(error)")
+                } else {
+                    NSLog("Reported achievements \(achievementsToReport)")
+                }
+            }
+        }
+    }
 }

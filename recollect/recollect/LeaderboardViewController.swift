@@ -48,6 +48,39 @@ class LeaderboardViewController: UIViewController, GKGameCenterControllerDelegat
                     views: ["entry": entryView])
             )
             if let existingPrevEntryView = prevEntryView {
+                let viewToStickTo: UIView
+                if existingPrevEntryView.rank < entry.rank - 1 {
+                    let gapEntryView = LeaderboardEntryView(pos: .Gap)
+                    view.addSubview(gapEntryView)
+                    view.addConstraints(
+                        NSLayoutConstraint.constraintsWithVisualFormat(
+                            "H:|[entry]|",
+                            options: NSLayoutFormatOptions(0),
+                            metrics: nil,
+                            views: ["entry": gapEntryView]) +
+                        [
+                            NSLayoutConstraint(
+                                item: gapEntryView,
+                                attribute: .Height,
+                                relatedBy: .Equal,
+                                toItem: existingPrevEntryView,
+                                attribute: .Height,
+                                multiplier: 0.5,
+                                constant: 0.0),
+                            NSLayoutConstraint(
+                                item: gapEntryView,
+                                attribute: .Top,
+                                relatedBy: .Equal,
+                                toItem: existingPrevEntryView,
+                                attribute: .Bottom,
+                                multiplier: 1.0,
+                                constant: 0.0)
+                        ]
+                    )
+                    viewToStickTo = gapEntryView
+                } else {
+                    viewToStickTo = existingPrevEntryView
+                }
                 view.addConstraints([
                     NSLayoutConstraint(
                         item: entryView,
@@ -61,7 +94,7 @@ class LeaderboardViewController: UIViewController, GKGameCenterControllerDelegat
                         item: entryView,
                         attribute: .Top,
                         relatedBy: .Equal,
-                        toItem: existingPrevEntryView,
+                        toItem: viewToStickTo,
                         attribute: .Bottom,
                         multiplier: 1.0,
                         constant: 0.0)

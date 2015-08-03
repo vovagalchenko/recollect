@@ -36,6 +36,9 @@ class GameManager: GameplayInputControllerDelegate {
     
     var currentGameState: GameState? {
         didSet {
+            if currentGameState?.currentChallengeIndex >= currentGameState?.challenges.count {
+                
+            }
             NSNotificationCenter.defaultCenter().postNotificationName(
                 GameManager.GameStateChangeNotificationName,
                 object: self,

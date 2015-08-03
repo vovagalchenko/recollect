@@ -283,16 +283,15 @@ extension LevelPickerViewController: UIScrollViewDelegate {
     
     private func fadeInTimeLabels() {
         refreshBestTimeLabels()
-        if count(self.bestTimeValueLabel?.text ?? "") > 0 {
-            UIView.animateWithDuration(
-                DesignLanguage.MinorAnimationDuration,
-                delay: 0.0,
-                options: UIViewAnimationOptions.BeginFromCurrentState,
-                animations: { () -> Void in
-                    self.bestTimeKeyLabel?.alpha = 1.0
-                    self.bestTimeValueLabel?.alpha = 1.0
-                }, completion: nil)
-        }
+        let haveBestScore = count(self.bestTimeValueLabel?.text ?? "") > 0
+        UIView.animateWithDuration(
+            DesignLanguage.MinorAnimationDuration,
+            delay: 0.0,
+            options: UIViewAnimationOptions.BeginFromCurrentState,
+            animations: { () -> Void in
+                self.bestTimeKeyLabel?.alpha = haveBestScore ? 1.0 : 0.0
+                self.bestTimeValueLabel?.alpha = haveBestScore ? 1.0 : 0.0
+            }, completion: nil)
     }
     
     private func refreshLevelLabelColors() {

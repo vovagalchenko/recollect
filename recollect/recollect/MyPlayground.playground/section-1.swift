@@ -18,3 +18,11 @@ for elapsed in start...total {
     }
     value
 }
+
+
+let t = -11 % 10
+
+(0...4).endIndex
+for i in (0...4) {
+    print(i)
+}
