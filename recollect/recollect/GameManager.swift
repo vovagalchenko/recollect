@@ -60,6 +60,18 @@ class GameManager: GameplayInputControllerDelegate {
         }
     }
     
+    init() {
+        NSNotificationCenter
+            .defaultCenter()
+            .addObserver(self, selector: "appDidEnterBackground:", name: UIApplicationDidEnterBackgroundNotification, object: nil)
+    }
+    
+    @objc private func appDidEnterBackground(notification: NSNotification) {
+        if currentGameState != nil && !currentGameState!.isFinished() {
+            currentGameState = nil
+        }
+    }
+    
     func startGame(gameLevelId: String) {
         assert(self.currentGameState == nil || self.currentGameState!.latestTimeStart == nil, "Can't start a game when one is already in progress!")
         self.currentGameState = GameState(n: gameLevelId.toInt()!, numRounds: 10)
