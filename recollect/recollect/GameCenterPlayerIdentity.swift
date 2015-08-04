@@ -19,6 +19,7 @@ import GameKit
         super.init()
         
         GameManager.sharedInstance.subscribeToGameStateChangeNotifications(self)
+        logAppLifecycleEvent("game_center_authenticated", ["player_id": playerId, "player_username": gameKitPlayer.description])
     }
     
     private var bestScoreCompletions: [[String: PlayerScore] -> Void] = []
@@ -45,7 +46,7 @@ import GameKit
                 leaderboardRequest.identifier = leaderboardIdentifier(levelId)
                 leaderboardRequest.loadScoresWithCompletionHandler() { (scores, error) -> Void in
                     if error != nil {
-                        NSLog("ERROR ATTEMPTING GETTING MY BEST SCORES:\n\(error)")
+                        logWarning("game_center_best_score_fetch_error", ["error": error])
                     }
                     let receivedScores = (scores ?? []) as! [GKScore]
                     let playerScore: PlayerScore?
@@ -78,7 +79,6 @@ import GameKit
         leaderboard.loadScoresWithCompletionHandler({ (scores: [AnyObject]!, error: NSError!) -> Void in
             if error == nil {
                 var needToAddOwnScore = true
-                NSLog("GOT \(scores.count) SCORES: \(scores)")
                 let playerScores = (scores ?? []).map { s -> LeaderboardEntry in
                     let score = (s as! GKScore)
                     if score.player.playerID == self.gameKitPlayer.playerID {
@@ -90,7 +90,6 @@ import GameKit
                     let myScoreRequest = GKLeaderboard(players: [self.gameKitPlayer])
                     myScoreRequest.identifier = leaderboardId
                     myScoreRequest.loadScoresWithCompletionHandler({ (myScoreArray: [AnyObject]!, error: NSError!) -> Void in
-                        NSLog("GOT MY SCORE: \(myScoreArray)")
                         let myScore = ((myScoreArray ?? []) as! [GKScore]).filter { $0.player.playerID == self.gameKitPlayer.playerID }.map {
                             self.gkScoreToLeaderboardEntry($0)
                         }
@@ -101,7 +100,7 @@ import GameKit
                 }
                 
             } else {
-                NSLog("GAME CENTER ERROR WHILE GETTING LEADERBOARD:\n\(error)")
+                logWarning("game_center_leaderboard_fetch_error", ["error": error])
                 completion(Leaderboard(entries: [LeaderboardEntry](), leaderboardId: leaderboardId))
                 
             }
@@ -130,8 +129,9 @@ import GameKit
         GKScore.reportScores([newScore]) { (error: NSError!) -> Void in
             if error == nil {
                 NSLog("SUCCESFULLY REPORTED SCORE: \(newScore)")
+                logDebug("game_center_score_report", ["final_time": newGame.finalTime(), "level": newGame.levelId])
             } else {
-                NSLog("GAME CENTER ERROR WHILE REPORTING SCORE:\n\(error)")
+                logWarning("game_center_score_report_error", ["error": error])
             }
             self.cachedBestScores = nil
             
@@ -140,7 +140,7 @@ import GameKit
             // this 3 second timeout is an ugly hack to get around this limitation.
             let dispatchTime = dispatch_time(
                 DISPATCH_TIME_NOW,
-                Int64(3.0 * Double(NSEC_PER_SEC))
+                Int64(5.0 * Double(NSEC_PER_SEC))
             )
             dispatch_after(dispatchTime, dispatch_get_main_queue()) {
                 completion()
@@ -156,8 +156,7 @@ import GameKit
 
 extension GameCenterPlayerIdentity: GameStateChangeListener {
     func gameStateChanged(change: GameStateChange) {
-        if change.newGameState != nil &&
-           change.newGameState!.currentChallengeIndex >= change.newGameState!.challenges.count {
+        if change.newGameState?.isFinished() ?? false {
             let levelClearedAchievement = GKAchievement(
                 identifier: "level_\(change.newGameState!.levelId)_cleared",
                 forPlayer: playerId
@@ -178,8 +177,9 @@ extension GameCenterPlayerIdentity: GameStateChangeListener {
             }
             GKAchievement.reportAchievements(achievementsToReport) { error -> Void in
                 if error != nil {
-                    NSLog("Error reporting achievements: \(error)")
+                    logWarning("game_center_achievement_report_error", ["error": error])
                 } else {
+                    logDebug("game_center_achievement_report", ["achievements": achievementsToReport.map({ $0.identifier })])
                     NSLog("Reported achievements \(achievementsToReport)")
                 }
             }

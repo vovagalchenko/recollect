@@ -36,9 +36,23 @@ class GameManager: GameplayInputControllerDelegate {
     
     var currentGameState: GameState? {
         didSet {
-            if currentGameState?.currentChallengeIndex >= currentGameState?.challenges.count {
-                
+            let logEventAttributes: [NSObject: AnyObject]
+            if let newGs = currentGameState {
+                logEventAttributes = [
+                    "no_game": false,
+                    "level": newGs.levelId,
+                    "time_start": newGs.latestTimeStart?.description ?? "nil",
+                    "time_so_far": newGs.time(),
+                    "peeks": newGs.peeks.map({ $0.description }),
+                    "is_finished": newGs.isFinished(),
+                    "is_flawless": newGs.isFlawless(),
+                    "challenges": newGs.challenges.map({ "\($0)" })
+                ]
+            } else {
+                logEventAttributes = ["no_game": true]
             }
+            logDebug("curr_game_state_change", logEventAttributes)
+            
             NSNotificationCenter.defaultCenter().postNotificationName(
                 GameManager.GameStateChangeNotificationName,
                 object: self,
@@ -67,12 +81,14 @@ class GameManager: GameplayInputControllerDelegate {
 extension GameManager: GameplayOutputViewControllerDelegate {
     func peeked() {
         assert(self.currentGameState != nil, "Can't add a peek, because there's no game in progress!")
+        logUserAction("peek", nil)
         currentGameState = currentGameState!.addPeek()
     }
 }
 
 extension GameManager: GameplayInputControllerDelegate {
     func receivedInput(input: GameplayInput) {
+        logUserAction("gameplay_input", ["value": input.description])
         switch input {
             case GameplayInput.Back:
                 currentGameState = nil

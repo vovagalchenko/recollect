@@ -16,7 +16,7 @@ import Foundation
             if NSKeyedArchiver.archiveRootObject(bestGames, toFile: computeScoresFilePath()) {
                 NSLog("Wrote local player's best scores successfully:\n\(bestGames)")
             } else {
-                NSLog("Failed to write local player's best scores!")
+                logWarning("local_score_save_fail", nil)
             }
             
             NSNotificationCenter.defaultCenter().postNotificationName(

@@ -114,8 +114,18 @@ extension GameplayInputController: GameStateChangeListener {
     }
 }
 
-enum GameplayInput: Int {
+enum GameplayInput: Int, Printable {
     case Zero, One, Two, Three, Four, Five, Six, Seven, Eight, Nine, Back, Forward
+    
+    var description: String {
+        get {
+            switch self {
+            case Zero, One, Two, Three, Four, Five, Six, Seven, Eight, Nine: return "\(rawValue)"
+            case Back: return "back"
+            case Forward: return "forward"
+            }
+        }
+    }
     
     static func fromString(str: String) -> GameplayInput {
         switch(str) {

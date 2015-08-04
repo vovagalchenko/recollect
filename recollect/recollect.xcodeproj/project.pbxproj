@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		800551051B6EECB000996A08 /* libVGAnalytics.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 800550FB1B6EEB9C00996A08 /* libVGAnalytics.a */; };
+		800551081B6EEDDE00996A08 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 800551071B6EEDDE00996A08 /* libz.dylib */; };
 		802EDE741A5CEC5F004EE1CC /* NSTimeInterval+PrettyPrint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 802EDE731A5CEC5F004EE1CC /* NSTimeInterval+PrettyPrint.swift */; };
 		802EDE761A5D1E6D004EE1CC /* SharingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 802EDE751A5D1E6D004EE1CC /* SharingViewController.swift */; };
 		802EDE781A5D2464004EE1CC /* RepeatIconView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 802EDE771A5D2464004EE1CC /* RepeatIconView.swift */; };
@@ -48,6 +50,27 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		800550FA1B6EEB9C00996A08 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 800550F51B6EEB9C00996A08 /* VGAnalytics.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 80629C0D18D4A03100106131;
+			remoteInfo = VGAnalytics;
+		};
+		800550FC1B6EEB9C00996A08 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 800550F51B6EEB9C00996A08 /* VGAnalytics.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 80629C1D18D4A03100106131;
+			remoteInfo = VGAnalyticsTests;
+		};
+		800551031B6EECAA00996A08 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 800550F51B6EEB9C00996A08 /* VGAnalytics.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 80629C0C18D4A03100106131;
+			remoteInfo = VGAnalytics;
+		};
 		80539B5919F4BCFE00C23F6D /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 80539B3B19F4BCFD00C23F6D /* Project object */;
@@ -58,6 +81,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		800550F51B6EEB9C00996A08 /* VGAnalytics.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = VGAnalytics.xcodeproj; path = "../ios-analytics/iOS Analytics/VGAnalytics.xcodeproj"; sourceTree = "<group>"; };
+		800550FF1B6EEC4900996A08 /* recollect-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "recollect-Bridging-Header.h"; sourceTree = "<group>"; };
+		800551071B6EEDDE00996A08 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		802EDE731A5CEC5F004EE1CC /* NSTimeInterval+PrettyPrint.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSTimeInterval+PrettyPrint.swift"; sourceTree = "<group>"; };
 		802EDE751A5D1E6D004EE1CC /* SharingViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SharingViewController.swift; sourceTree = "<group>"; };
 		802EDE771A5D2464004EE1CC /* RepeatIconView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RepeatIconView.swift; sourceTree = "<group>"; };
@@ -108,6 +134,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				800551081B6EEDDE00996A08 /* libz.dylib in Frameworks */,
+				800551051B6EECB000996A08 /* libVGAnalytics.a in Frameworks */,
 				80BE1F311A7422A800D741CA /* GameKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -122,9 +150,20 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		800550F61B6EEB9C00996A08 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				800550FB1B6EEB9C00996A08 /* libVGAnalytics.a */,
+				800550FD1B6EEB9C00996A08 /* VGAnalyticsTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		80539B3A19F4BCFD00C23F6D = {
 			isa = PBXGroup;
 			children = (
+				800551071B6EEDDE00996A08 /* libz.dylib */,
+				800550F51B6EEB9C00996A08 /* VGAnalytics.xcodeproj */,
 				80539B4519F4BCFD00C23F6D /* recollect */,
 				80539B5B19F4BCFE00C23F6D /* recollectTests */,
 				80539B4419F4BCFD00C23F6D /* Products */,
@@ -152,6 +191,7 @@
 				80539B4F19F4BCFD00C23F6D /* Images.xcassets */,
 				806B529E1A4B459E005F4DFA /* MyPlayground.playground */,
 				80539B4619F4BCFD00C23F6D /* Supporting Files */,
+				800550FF1B6EEC4900996A08 /* recollect-Bridging-Header.h */,
 			);
 			path = recollect;
 			sourceTree = "<group>";
@@ -265,6 +305,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				800551041B6EECAA00996A08 /* PBXTargetDependency */,
 			);
 			name = recollect;
 			productName = recollect;
@@ -324,6 +365,12 @@
 			mainGroup = 80539B3A19F4BCFD00C23F6D;
 			productRefGroup = 80539B4419F4BCFD00C23F6D /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = 800550F61B6EEB9C00996A08 /* Products */;
+					ProjectRef = 800550F51B6EEB9C00996A08 /* VGAnalytics.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				80539B4219F4BCFD00C23F6D /* recollect */,
@@ -331,6 +378,23 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		800550FB1B6EEB9C00996A08 /* libVGAnalytics.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libVGAnalytics.a;
+			remoteRef = 800550FA1B6EEB9C00996A08 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		800550FD1B6EEB9C00996A08 /* VGAnalyticsTests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = VGAnalyticsTests.xctest;
+			remoteRef = 800550FC1B6EEB9C00996A08 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		80539B4119F4BCFD00C23F6D /* Resources */ = {
@@ -404,6 +468,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		800551041B6EECAA00996A08 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = VGAnalytics;
+			targetProxy = 800551031B6EECAA00996A08 /* PBXContainerItemProxy */;
+		};
 		80539B5A19F4BCFE00C23F6D /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 80539B4219F4BCFD00C23F6D /* recollect */;
@@ -494,6 +563,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				INFOPLIST_FILE = recollect/Info.plist;
@@ -501,6 +571,8 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
+				SWIFT_OBJC_BRIDGING_HEADER = "recollect/recollect-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
 		};
@@ -509,6 +581,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				INFOPLIST_FILE = recollect/Info.plist;
@@ -516,6 +589,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
+				SWIFT_OBJC_BRIDGING_HEADER = "recollect/recollect-Bridging-Header.h";
 			};
 			name = Release;
 		};

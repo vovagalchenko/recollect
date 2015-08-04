@@ -295,7 +295,7 @@ extension BaseViewController: GameStateChangeListener {
                 newBottomViewControllerFunc: { return LevelPickerViewController(delegate: GameManager.sharedInstance) },
                 rotationParams: (.None, self.bottomViewController is GameplayInputController ? .Anticlockwise : .None)
             )
-        } else if change.newGameState?.currentChallengeIndex >= change.newGameState?.challenges.count {
+        } else if change.newGameState?.isFinished() ?? false {
             queueTransition(
                 newTopViewControllerFunc: { return GameResultViewController(gameState: change.newGameState!) },
                 newBottomViewControllerFunc: { return SharingViewController(gameState: change.newGameState!) },

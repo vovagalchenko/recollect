@@ -115,11 +115,12 @@ final class GameState: NSObject, Streamable {
     }
     
     func finalTime() -> NSTimeInterval {
-        assert(latestTimeStart == nil, "Can't get the final time while the game is still in progress.")
+        assert(isFinished(), "Can't get the final time while the game is still in progress.")
         return time()
     }
     
     func isFlawless() -> Bool { return challenges.reduce(peeks.count == 0) { $0 && $1.userResponses.count <= 1 } }
+    func isFinished() -> Bool { return currentChallengeIndex >= challenges.count && latestTimeStart == nil }
     
     func writeTo<Target : OutputStreamType>(inout target: Target) {
         target.write("GAME STATE:\n\tn = \(n)\n\tchallenges = \(challenges)\n\tcurrentChallengeIndex = \(currentChallengeIndex)\n\tclosedTimeIntervals = \(closedTimeIntervals)")

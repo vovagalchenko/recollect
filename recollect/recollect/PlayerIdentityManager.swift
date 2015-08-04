@@ -68,7 +68,7 @@ class PlayerIdentityManager {
             } else {
                 self.gameCenterLoginViewController = nil
                 if let gkError = error {
-                    NSLog("RECEIVED GAME CENTER ERROR: \(gkError)")
+                    logWarning("game_center_auth_error", ["error": gkError])
                 }
                 self.setGameCenterDisabled(true)
                 self.currentIdentity = LocalPlayerIdentity()

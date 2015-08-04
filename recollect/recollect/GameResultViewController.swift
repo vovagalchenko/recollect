@@ -219,7 +219,6 @@ class GameResultViewController: HalfScreenViewController, UIGestureRecognizerDel
     }
     
     func playerIdentityChanged(oldIdentity: PlayerIdentity, newIdentity: PlayerIdentity) {
-        NSLog("NEW IDENTITY: \(oldIdentity)")
         if isViewLoaded() { refreshLayout() }
     }
     
@@ -258,7 +257,6 @@ class GameResultViewController: HalfScreenViewController, UIGestureRecognizerDel
     }
     
     func refreshLeaderboard(#identity: PlayerIdentity, leaderboard: Leaderboard) {
-        NSLog("REFRESHING LAYOUT WITH LEADERBOARD: \(leaderboard)")
         view.layoutIfNeeded()
         
         gameCenterSolicitationLabel?.attributedText = NSAttributedString(

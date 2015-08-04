@@ -26,3 +26,18 @@ let t = -11 % 10
 for i in (0...4) {
     print(i)
 }
+
+enum GameplayInput: Int {
+    case Zero, One, Two, Three, Four, Five, Six, Seven, Eight, Nine, Back, Forward
+    
+    static func fromString(str: String) -> GameplayInput {
+        switch(str) {
+        case "0", "1", "2", "3", "4", "5", "6", "7", "8", "9": return GameplayInput(rawValue: str.toInt()!)!
+        case "«": return GameplayInput.Back
+        case "»": return GameplayInput.Forward
+        default: fatalError("Unexpected string to create a GameplayInput from: \(str)")
+        }
+    }
+}
+
+println("\(GameplayInput.Back)")

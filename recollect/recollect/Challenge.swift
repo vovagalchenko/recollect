@@ -42,6 +42,9 @@ final class Challenge: NSObject, Streamable {
     
     func writeTo<Target : OutputStreamType>(inout target: Target) {
         target.write("\(lOperand) \(challengeOperator) \(rOperand)")
+        if userResponses.count > 0 {
+            target.write(" = \(userResponses)")
+        }
     }
 }
 
