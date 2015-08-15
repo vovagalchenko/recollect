@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		800551051B6EECB000996A08 /* libVGAnalytics.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 800550FB1B6EEB9C00996A08 /* libVGAnalytics.a */; };
 		800551081B6EEDDE00996A08 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 800551071B6EEDDE00996A08 /* libz.dylib */; };
+		802702021B7FF87F000F3D95 /* GameKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 802702011B7FF87F000F3D95 /* GameKit.framework */; };
 		802EDE741A5CEC5F004EE1CC /* NSTimeInterval+PrettyPrint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 802EDE731A5CEC5F004EE1CC /* NSTimeInterval+PrettyPrint.swift */; };
 		802EDE761A5D1E6D004EE1CC /* SharingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 802EDE751A5D1E6D004EE1CC /* SharingViewController.swift */; };
 		802EDE781A5D2464004EE1CC /* RepeatIconView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 802EDE771A5D2464004EE1CC /* RepeatIconView.swift */; };
@@ -35,7 +36,6 @@
 		80A0A0661A4F237A00122749 /* LevelPickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80A0A0651A4F237A00122749 /* LevelPickerViewController.swift */; };
 		80B1E8C41AE180C000DF5C9B /* UIView+ConstraintSanitizing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80B1E8C31AE180C000DF5C9B /* UIView+ConstraintSanitizing.swift */; };
 		80B1E8C71AE2075600DF5C9B /* PlayerIdentity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80B1E8C61AE2075600DF5C9B /* PlayerIdentity.swift */; };
-		80BE1F311A7422A800D741CA /* GameKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 80BE1F301A7422A800D741CA /* GameKit.framework */; settings = {ATTRIBUTES = (Required, ); }; };
 		80BE1F331A74475F00D741CA /* GameCenterPlayerIdentity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80BE1F321A74475F00D741CA /* GameCenterPlayerIdentity.swift */; };
 		80CFFDE41A5BAE7F00E3640B /* GameResultViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80CFFDE31A5BAE7F00E3640B /* GameResultViewController.swift */; };
 		80CFFDE61A5BBA8E00E3640B /* PlayerIdentityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80CFFDE51A5BBA8E00E3640B /* PlayerIdentityManager.swift */; };
@@ -84,13 +84,14 @@
 		800550F51B6EEB9C00996A08 /* VGAnalytics.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = VGAnalytics.xcodeproj; path = "../ios-analytics/iOS Analytics/VGAnalytics.xcodeproj"; sourceTree = "<group>"; };
 		800550FF1B6EEC4900996A08 /* recollect-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "recollect-Bridging-Header.h"; sourceTree = "<group>"; };
 		800551071B6EEDDE00996A08 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
+		802702011B7FF87F000F3D95 /* GameKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GameKit.framework; path = System/Library/Frameworks/GameKit.framework; sourceTree = SDKROOT; };
 		802EDE731A5CEC5F004EE1CC /* NSTimeInterval+PrettyPrint.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSTimeInterval+PrettyPrint.swift"; sourceTree = "<group>"; };
 		802EDE751A5D1E6D004EE1CC /* SharingViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SharingViewController.swift; sourceTree = "<group>"; };
 		802EDE771A5D2464004EE1CC /* RepeatIconView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RepeatIconView.swift; sourceTree = "<group>"; };
 		802EDE7D1A5E68B0004EE1CC /* ButtonBackground.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ButtonBackground.swift; sourceTree = "<group>"; };
 		802EDE7F1A5E6C16004EE1CC /* UIButton+CustomizableBackground.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIButton+CustomizableBackground.swift"; sourceTree = "<group>"; };
 		8036714C1A5FA04C001A4D61 /* MenuIconView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MenuIconView.swift; sourceTree = "<group>"; };
-		80539B4319F4BCFD00C23F6D /* recollect.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = recollect.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		80539B4319F4BCFD00C23F6D /* Recollect.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Recollect.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		80539B4719F4BCFD00C23F6D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		80539B4819F4BCFD00C23F6D /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		80539B4A19F4BCFD00C23F6D /* BaseViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseViewController.swift; sourceTree = "<group>"; };
@@ -115,7 +116,6 @@
 		80A0A0651A4F237A00122749 /* LevelPickerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LevelPickerViewController.swift; sourceTree = "<group>"; };
 		80B1E8C31AE180C000DF5C9B /* UIView+ConstraintSanitizing.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIView+ConstraintSanitizing.swift"; sourceTree = "<group>"; };
 		80B1E8C61AE2075600DF5C9B /* PlayerIdentity.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlayerIdentity.swift; sourceTree = "<group>"; };
-		80BE1F301A7422A800D741CA /* GameKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GameKit.framework; path = System/Library/Frameworks/GameKit.framework; sourceTree = SDKROOT; };
 		80BE1F321A74475F00D741CA /* GameCenterPlayerIdentity.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameCenterPlayerIdentity.swift; sourceTree = "<group>"; };
 		80CFFDE31A5BAE7F00E3640B /* GameResultViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameResultViewController.swift; sourceTree = "<group>"; };
 		80CFFDE51A5BBA8E00E3640B /* PlayerIdentityManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlayerIdentityManager.swift; sourceTree = "<group>"; };
@@ -134,9 +134,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				802702021B7FF87F000F3D95 /* GameKit.framework in Frameworks */,
 				800551081B6EEDDE00996A08 /* libz.dylib in Frameworks */,
 				800551051B6EECB000996A08 /* libVGAnalytics.a in Frameworks */,
-				80BE1F311A7422A800D741CA /* GameKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -162,6 +162,7 @@
 		80539B3A19F4BCFD00C23F6D = {
 			isa = PBXGroup;
 			children = (
+				802702011B7FF87F000F3D95 /* GameKit.framework */,
 				800551071B6EEDDE00996A08 /* libz.dylib */,
 				800550F51B6EEB9C00996A08 /* VGAnalytics.xcodeproj */,
 				80539B4519F4BCFD00C23F6D /* recollect */,
@@ -173,7 +174,7 @@
 		80539B4419F4BCFD00C23F6D /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				80539B4319F4BCFD00C23F6D /* recollect.app */,
+				80539B4319F4BCFD00C23F6D /* Recollect.app */,
 				80539B5819F4BCFE00C23F6D /* recollectTests.xctest */,
 			);
 			name = Products;
@@ -199,7 +200,6 @@
 		80539B4619F4BCFD00C23F6D /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				80BE1F301A7422A800D741CA /* GameKit.framework */,
 				80D712B619F4E0A600152F13 /* Launch Screen.xib */,
 				80539B4719F4BCFD00C23F6D /* Info.plist */,
 			);
@@ -309,7 +309,7 @@
 			);
 			name = recollect;
 			productName = recollect;
-			productReference = 80539B4319F4BCFD00C23F6D /* recollect.app */;
+			productReference = 80539B4319F4BCFD00C23F6D /* Recollect.app */;
 			productType = "com.apple.product-type.application";
 		};
 		80539B5719F4BCFE00C23F6D /* recollectTests */ = {

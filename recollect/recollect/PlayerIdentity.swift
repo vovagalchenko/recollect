@@ -10,7 +10,7 @@ import Foundation
 
 @objc protocol PlayerIdentity {
     var playerId: String { get }
-    func getLeaderboard(levelId: String, completion: Leaderboard -> Void)
+    func getLeaderboard(levelId: String, ownForcedScore: NSTimeInterval, completion: Leaderboard -> Void)
     func recordNewGame(newGame: GameState, completion: () -> Void) // <-- best effort, could be done asynchronously
     func getMyBestScores(completion: [String: PlayerScore] -> Void)
 }

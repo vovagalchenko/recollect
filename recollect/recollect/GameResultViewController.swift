@@ -231,7 +231,17 @@ class GameResultViewController: HalfScreenViewController, UIGestureRecognizerDel
         identity.getMyBestScores { usersOldBestScores in
             self.refreshThisGameInfo(usersOldBestScores[self.gameState.levelId])
             identity.recordNewGame(self.gameState) {
-                identity.getLeaderboard(self.gameState.levelId) { (leaderboard: Leaderboard) -> Void in
+                identity.getLeaderboard(self.gameState.levelId, ownForcedScore: self.gameState.finalTime()) { (leaderboard: Leaderboard) -> Void in
+                    logDebug("got_leaderboard", [
+                        "current_score": self.gameState.finalTime(),
+                        "leaderboard": leaderboard.entries.map() {
+                            return [
+                                "rank": $0.rank,
+                                "player_name": $0.playerName,
+                                "score": $0.time
+                            ]
+                        }
+                    ])
                     self.refreshLeaderboard(identity: identity, leaderboard: leaderboard)
                 }
             }

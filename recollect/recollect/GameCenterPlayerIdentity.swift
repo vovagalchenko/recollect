@@ -71,7 +71,7 @@ import GameKit
         }
     }
     
-    func getLeaderboard(levelId: String, completion: Leaderboard -> Void) {
+    func getLeaderboard(levelId: String, ownForcedScore: NSTimeInterval = -1, completion: Leaderboard -> Void) {
         let leaderboardId = leaderboardIdentifier(levelId)
         let leaderboard = GKLeaderboard()
         leaderboard.identifier = leaderboardId
@@ -86,6 +86,66 @@ import GameKit
                     }
                     return self.gkScoreToLeaderboardEntry(score)
                 }
+                let sortResultAndCallCompletion = { (entries: [LeaderboardEntry]) -> Void in
+                    // All of this acrobatics is necessary because the game center might not return the score we just submitted... what a piece of shit
+                    let sortedEntries: [LeaderboardEntry]
+                    if ownForcedScore != -1 {
+                        let scoreToAttemptForce = ownForcedScore
+                        var forcedEntry: LeaderboardEntry? = nil
+                        let entriesWithForcedScore: [LeaderboardEntry] = entries
+                            .map() {
+                                if $0.playerId == self.playerId && scoreToAttemptForce < $0.time {
+                                    forcedEntry = LeaderboardEntry(
+                                        playerId: $0.playerId,
+                                        time: scoreToAttemptForce,
+                                        playerName: $0.playerName,
+                                        rank: $0.rank
+                                    )
+                                    return forcedEntry!
+                                } else {
+                                    return $0
+                                }
+                            }
+                            .sorted() { $0.rank <= $1.rank }
+                        
+                        if let successfullyForcedEntry = forcedEntry {
+                            var finalEntries = [LeaderboardEntry]()
+                            var inserted = false
+                            for orderedEntry in entriesWithForcedScore {
+                                if orderedEntry.rank < successfullyForcedEntry.rank && orderedEntry.time > successfullyForcedEntry.time {
+                                    finalEntries.append(LeaderboardEntry(
+                                        playerId: successfullyForcedEntry.playerId,
+                                        time: successfullyForcedEntry.time,
+                                        playerName: successfullyForcedEntry.playerName,
+                                        rank: orderedEntry.rank
+                                    ))
+                                    inserted = true
+                                }
+                                
+                                if orderedEntry.playerId == successfullyForcedEntry.playerId {
+                                    if !inserted {
+                                        finalEntries.append(orderedEntry)
+                                    }
+                                } else if inserted && orderedEntry.rank < successfullyForcedEntry.rank {
+                                    finalEntries.append(LeaderboardEntry(
+                                        playerId: orderedEntry.playerId,
+                                        time: orderedEntry.time,
+                                        playerName: orderedEntry.playerName,
+                                        rank: orderedEntry.rank + 1
+                                    ))
+                                } else {
+                                    finalEntries.append(orderedEntry)
+                                }
+                            }
+                            sortedEntries = finalEntries
+                        } else {
+                            sortedEntries = entries
+                        }
+                    } else {
+                        sortedEntries = entries
+                    }
+                    completion(Leaderboard(entries: sortedEntries, leaderboardId: leaderboardId))
+                }
                 if needToAddOwnScore {
                     let myScoreRequest = GKLeaderboard(players: [self.gameKitPlayer])
                     myScoreRequest.identifier = leaderboardId
@@ -93,10 +153,10 @@ import GameKit
                         let myScore = ((myScoreArray ?? []) as! [GKScore]).filter { $0.player.playerID == self.gameKitPlayer.playerID }.map {
                             self.gkScoreToLeaderboardEntry($0)
                         }
-                        completion(Leaderboard(entries: playerScores + myScore, leaderboardId: leaderboardId))
+                        sortResultAndCallCompletion(playerScores + myScore)
                     })
                 } else {
-                    completion(Leaderboard(entries: playerScores, leaderboardId: leaderboardId))
+                    sortResultAndCallCompletion(playerScores)
                 }
                 
             } else {
@@ -134,20 +194,7 @@ import GameKit
                 logWarning("game_center_score_report_error", ["error": error.description])
             }
             self.cachedBestScores = nil
-            
-            // At least in the sandbox environment, queries for leadboards inside this completionHandler
-            // don't observe the score reported by this call. This is really fucking stupid actually, and
-            // this 3 second timeout is an ugly hack to get around this limitation.
-            let dispatchTime = dispatch_time(
-                DISPATCH_TIME_NOW,
-                Int64(5.0 * Double(NSEC_PER_SEC))
-            )
-            dispatch_after(dispatchTime, dispatch_get_main_queue()) {
-                completion()
-            }
-//            dispatch_async(dispatch_get_main_queue()) {
-//                completion()
-//            }
+            completion()
         }
     }
     

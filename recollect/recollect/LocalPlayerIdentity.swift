@@ -48,7 +48,7 @@ import Foundation
         return delta
     }
     
-    func getLeaderboard(levelId: String, completion: Leaderboard -> Void) {
+    func getLeaderboard(levelId: String, ownForcedScore: NSTimeInterval = -1, completion: Leaderboard -> Void) {
         var leaderboard = [LeaderboardEntry]()
         if let bestTime = bestGames[levelId]?.finalTime() {
             leaderboard.append(LeaderboardEntry(playerId: playerId, time: bestTime, rank: 1))
