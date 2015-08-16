@@ -41,3 +41,12 @@ enum GameplayInput: Int {
 }
 
 println("\(GameplayInput.Back)")
+
+
+var testArray = [1, 2, 3, 4, 5]
+var tmpArray = testArray
+tmpArray.removeLast()
+
+tmpArray
+testArray
+

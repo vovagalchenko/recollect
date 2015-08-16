@@ -50,6 +50,7 @@ class GameResultViewController: HalfScreenViewController, UIGestureRecognizerDel
         
         completionMsgLabel = ManglableLabel()
         completionMsgLabel!.setContentHuggingPriority(1000, forAxis: UILayoutConstraintAxis.Vertical)
+        completionMsgLabel!.setContentCompressionResistancePriority(1000, forAxis: UILayoutConstraintAxis.Vertical)
         completionMsgLabel!.font = UIFont(name: "AvenirNextCondensed-DemiBold", size: completionMsgLabelHeight)
         completionMsgLabel!.textColor = DesignLanguage.NeverActiveTextColor
         completionMsgLabel!.adjustsFontSizeToFitWidth = true
@@ -59,6 +60,7 @@ class GameResultViewController: HalfScreenViewController, UIGestureRecognizerDel
         
         mainTimeLabel = ManglableLabel()
         mainTimeLabel!.setContentHuggingPriority(1000, forAxis: UILayoutConstraintAxis.Vertical)
+        mainTimeLabel!.setContentCompressionResistancePriority(1000, forAxis: UILayoutConstraintAxis.Vertical)
         mainTimeLabel!.font = UIFont(name: "AvenirNextCondensed-DemiBold", size: mainTimeLabelHeight)
         mainTimeLabel!.textColor = DesignLanguage.ActiveTextColor
         mainTimeLabel!.text = gameState.finalTime().minuteSecondCentisecondString()
@@ -66,6 +68,7 @@ class GameResultViewController: HalfScreenViewController, UIGestureRecognizerDel
         
         deltaTimeLabel = ManglableLabel()
         deltaTimeLabel!.setContentHuggingPriority(1000, forAxis: UILayoutConstraintAxis.Vertical)
+        deltaTimeLabel!.setContentCompressionResistancePriority(1000, forAxis: UILayoutConstraintAxis.Vertical)
         deltaTimeLabel!.font = UIFont(name: "AvenirNextCondensed-DemiBold", size: deltaTimeLabelHeight)
         deltaTimeLabel!.textAlignment = NSTextAlignment.Right
         deltaTimeLabel!.textColor = DesignLanguage.NeverActiveTextColor

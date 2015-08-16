@@ -91,7 +91,7 @@
 		802EDE7D1A5E68B0004EE1CC /* ButtonBackground.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ButtonBackground.swift; sourceTree = "<group>"; };
 		802EDE7F1A5E6C16004EE1CC /* UIButton+CustomizableBackground.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIButton+CustomizableBackground.swift"; sourceTree = "<group>"; };
 		8036714C1A5FA04C001A4D61 /* MenuIconView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MenuIconView.swift; sourceTree = "<group>"; };
-		80539B4319F4BCFD00C23F6D /* Recollect.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Recollect.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		80539B4319F4BCFD00C23F6D /* recollect.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = recollect.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		80539B4719F4BCFD00C23F6D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		80539B4819F4BCFD00C23F6D /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		80539B4A19F4BCFD00C23F6D /* BaseViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseViewController.swift; sourceTree = "<group>"; };
@@ -174,7 +174,7 @@
 		80539B4419F4BCFD00C23F6D /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				80539B4319F4BCFD00C23F6D /* Recollect.app */,
+				80539B4319F4BCFD00C23F6D /* recollect.app */,
 				80539B5819F4BCFE00C23F6D /* recollectTests.xctest */,
 			);
 			name = Products;
@@ -310,7 +310,7 @@
 			);
 			name = recollect;
 			productName = recollect;
-			productReference = 80539B4319F4BCFD00C23F6D /* Recollect.app */;
+			productReference = 80539B4319F4BCFD00C23F6D /* recollect.app */;
 			productType = "com.apple.product-type.application";
 		};
 		80539B5719F4BCFE00C23F6D /* recollectTests */ = {
@@ -515,6 +515,7 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -557,7 +558,8 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Distribution";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				COPY_PHASE_STRIP = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -600,7 +602,7 @@
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				INFOPLIST_FILE = recollect/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
