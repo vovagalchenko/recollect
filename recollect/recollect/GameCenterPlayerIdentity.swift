@@ -22,6 +22,10 @@ import GameKit
         logAppLifecycleEvent("game_center_authenticated", ["player_id": playerId, "player_username": gameKitPlayer.description])
     }
     
+    deinit {
+        GameManager.sharedInstance.unsubscribeFromGameStateChangeNotifications(self)
+    }
+    
     private var bestScoreCompletions: [[String: PlayerScore] -> Void] = []
     private var cachedBestScores: [String: PlayerScore]? = nil {
         didSet {

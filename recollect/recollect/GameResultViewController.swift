@@ -44,12 +44,13 @@ class GameResultViewController: HalfScreenViewController, UIGestureRecognizerDel
         resultViewContainer!.setContentHuggingPriority(1000, forAxis: UILayoutConstraintAxis.Vertical)
         view.addSubview(resultViewContainer!)
         
-        let completionMsgLabelHeight = CGFloat(26.5)
-        let mainTimeLabelHeight = CGFloat(53.5)
-        let deltaTimeLabelHeight = CGFloat(25.0)
+        let completionMsgLabelHeight = CGFloat(24.5)
+        let mainTimeLabelHeight = CGFloat(50.5)
+        let deltaTimeLabelHeight = CGFloat(24.0)
         
         completionMsgLabel = ManglableLabel()
         completionMsgLabel!.setContentHuggingPriority(1000, forAxis: UILayoutConstraintAxis.Vertical)
+        completionMsgLabel!.setContentCompressionResistancePriority(1000, forAxis: UILayoutConstraintAxis.Vertical)
         completionMsgLabel!.font = UIFont(name: "AvenirNextCondensed-DemiBold", size: completionMsgLabelHeight)
         completionMsgLabel!.textColor = DesignLanguage.NeverActiveTextColor
         completionMsgLabel!.adjustsFontSizeToFitWidth = true
@@ -59,6 +60,7 @@ class GameResultViewController: HalfScreenViewController, UIGestureRecognizerDel
         
         mainTimeLabel = ManglableLabel()
         mainTimeLabel!.setContentHuggingPriority(1000, forAxis: UILayoutConstraintAxis.Vertical)
+        mainTimeLabel!.setContentCompressionResistancePriority(1000, forAxis: UILayoutConstraintAxis.Vertical)
         mainTimeLabel!.font = UIFont(name: "AvenirNextCondensed-DemiBold", size: mainTimeLabelHeight)
         mainTimeLabel!.textColor = DesignLanguage.ActiveTextColor
         mainTimeLabel!.text = gameState.finalTime().minuteSecondCentisecondString()
@@ -66,6 +68,7 @@ class GameResultViewController: HalfScreenViewController, UIGestureRecognizerDel
         
         deltaTimeLabel = ManglableLabel()
         deltaTimeLabel!.setContentHuggingPriority(1000, forAxis: UILayoutConstraintAxis.Vertical)
+        deltaTimeLabel!.setContentCompressionResistancePriority(1000, forAxis: UILayoutConstraintAxis.Vertical)
         deltaTimeLabel!.font = UIFont(name: "AvenirNextCondensed-DemiBold", size: deltaTimeLabelHeight)
         deltaTimeLabel!.textAlignment = NSTextAlignment.Right
         deltaTimeLabel!.textColor = DesignLanguage.NeverActiveTextColor
