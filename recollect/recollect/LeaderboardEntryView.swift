@@ -102,7 +102,7 @@ class LeaderboardEntryView: UIView {
     private func createLabel() -> ManglableLabel {
         let label = ManglableLabel()
         label.backgroundColor = UIColor.clearColor()
-        label.font = UIFont(name: "AvenirNextCondensed-Regular", size: 22.5)
+        label.font = UIFont(name: "AvenirNextCondensed-Regular", size: 20.0)
         label.textColor = DesignLanguage.NeverActiveTextColor
         return label
     }

@@ -44,9 +44,9 @@ class GameResultViewController: HalfScreenViewController, UIGestureRecognizerDel
         resultViewContainer!.setContentHuggingPriority(1000, forAxis: UILayoutConstraintAxis.Vertical)
         view.addSubview(resultViewContainer!)
         
-        let completionMsgLabelHeight = CGFloat(26.5)
-        let mainTimeLabelHeight = CGFloat(53.5)
-        let deltaTimeLabelHeight = CGFloat(25.0)
+        let completionMsgLabelHeight = CGFloat(24.5)
+        let mainTimeLabelHeight = CGFloat(50.5)
+        let deltaTimeLabelHeight = CGFloat(24.0)
         
         completionMsgLabel = ManglableLabel()
         completionMsgLabel!.setContentHuggingPriority(1000, forAxis: UILayoutConstraintAxis.Vertical)
