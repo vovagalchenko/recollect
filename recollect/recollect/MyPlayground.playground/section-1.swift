@@ -50,3 +50,8 @@ tmpArray.removeLast()
 tmpArray
 testArray
 
+var t = 1
+let a = t++
+
+
+

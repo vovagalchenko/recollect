@@ -68,7 +68,11 @@ class PlayerIdentityManager {
             } else {
                 self.gameCenterLoginViewController = nil
                 if let gkError = error {
-                    logWarning("game_center_auth_error", ["error": gkError.description])
+                    Analytics.sharedInstance().logEventWithName(
+                        "game_center_auth_error",
+                        type: AnalyticsEventTypeWarning,
+                        attributes: ["error": gkError.description]
+                    )
                 }
                 self.setGameCenterDisabled(true)
                 self.currentIdentity = LocalPlayerIdentity()

@@ -19,7 +19,12 @@ import GameKit
         super.init()
         
         GameManager.sharedInstance.subscribeToGameStateChangeNotifications(self)
-        logAppLifecycleEvent("game_center_authenticated", ["player_id": playerId, "player_username": gameKitPlayer.description])
+        
+        Analytics.sharedInstance().logEventWithName(
+            "game_center_authenticated",
+            type: AnalyticsEventTypeAppLifecycle,
+            attributes: ["player_id": playerId, "player_username": gameKitPlayer.description]
+        )
     }
     
     deinit {
@@ -50,7 +55,11 @@ import GameKit
                 leaderboardRequest.identifier = leaderboardIdentifier(levelId)
                 leaderboardRequest.loadScoresWithCompletionHandler() { (scores, error) -> Void in
                     if error != nil {
-                        logWarning("game_center_best_score_fetch_error", ["error": error.description])
+                        Analytics.sharedInstance().logEventWithName(
+                            "game_center_best_score_fetch_error",
+                            type: AnalyticsEventTypeWarning,
+                            attributes: ["error": error.description]
+                        )
                     }
                     let receivedScores = (scores ?? []) as! [GKScore]
                     let playerScore: PlayerScore?
@@ -164,7 +173,11 @@ import GameKit
                 }
                 
             } else {
-                logWarning("game_center_leaderboard_fetch_error", ["error": error.description])
+                Analytics.sharedInstance().logEventWithName(
+                    "game_center_leaderboard_fetch_error",
+                    type: AnalyticsEventTypeWarning,
+                    attributes: ["error": error.description]
+                )
                 completion(Leaderboard(entries: [LeaderboardEntry](), leaderboardId: leaderboardId))
                 
             }
@@ -193,9 +206,17 @@ import GameKit
         GKScore.reportScores([newScore]) { (error: NSError!) -> Void in
             if error == nil {
                 NSLog("SUCCESFULLY REPORTED SCORE: \(newScore)")
-                logDebug("game_center_score_report", ["final_time": newGame.finalTime(), "level": newGame.levelId])
+                Analytics.sharedInstance().logEventWithName(
+                    "game_center_score_report",
+                    type: AnalyticsEventTypeDebug,
+                    attributes: ["final_time": newGame.finalTime(), "level": newGame.levelId]
+                )
             } else {
-                logWarning("game_center_score_report_error", ["error": error.description])
+                Analytics.sharedInstance().logEventWithName(
+                    "game_center_score_report_error",
+                    type: AnalyticsEventTypeWarning,
+                    attributes: ["error": error.description]
+                )
             }
             self.cachedBestScores = nil
             completion()
@@ -228,9 +249,17 @@ extension GameCenterPlayerIdentity: GameStateChangeListener {
             }
             GKAchievement.reportAchievements(achievementsToReport) { error -> Void in
                 if error != nil {
-                    logWarning("game_center_achievement_report_error", ["error": error.description])
+                    Analytics.sharedInstance().logEventWithName(
+                        "game_center_achievement_report_error",
+                        type: AnalyticsEventTypeWarning,
+                        attributes: ["error": error.description]
+                    )
                 } else {
-                    logDebug("game_center_achievement_report", ["achievements": achievementsToReport.map({ $0.identifier })])
+                    Analytics.sharedInstance().logEventWithName(
+                        "game_center_achievement_report",
+                        type: AnalyticsEventTypeDebug,
+                        attributes: ["achievements": achievementsToReport.map({ $0.identifier })]
+                    )
                     NSLog("Reported achievements \(achievementsToReport)")
                 }
             }

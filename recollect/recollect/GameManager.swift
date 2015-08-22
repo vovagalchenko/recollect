@@ -51,7 +51,11 @@ class GameManager: GameplayInputControllerDelegate {
             } else {
                 logEventAttributes = ["no_game": true]
             }
-            logDebug("curr_game_state_change", logEventAttributes)
+            Analytics.sharedInstance().logEventWithName(
+                "curr_game_state_change",
+                type: AnalyticsEventTypeDebug,
+                attributes: logEventAttributes
+            )
             
             NSNotificationCenter.defaultCenter().postNotificationName(
                 GameManager.GameStateChangeNotificationName,
@@ -93,14 +97,22 @@ class GameManager: GameplayInputControllerDelegate {
 extension GameManager: GameplayOutputViewControllerDelegate {
     func peeked() {
         assert(self.currentGameState != nil, "Can't add a peek, because there's no game in progress!")
-        logUserAction("peek", nil)
+        Analytics.sharedInstance().logEventWithName(
+            "peek",
+            type: AnalyticsEventTypeUserAction,
+            attributes: nil
+        )
         currentGameState = currentGameState!.addPeek()
     }
 }
 
 extension GameManager: GameplayInputControllerDelegate {
     func receivedInput(input: GameplayInput) {
-        logUserAction("gameplay_input", ["value": input.description])
+        Analytics.sharedInstance().logEventWithName(
+            "gameplay_input",
+            type: AnalyticsEventTypeUserAction,
+            attributes: ["value": input.description]
+        )
         switch input {
             case GameplayInput.Back:
                 currentGameState = nil

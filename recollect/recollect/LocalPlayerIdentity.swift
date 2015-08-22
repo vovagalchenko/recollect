@@ -16,7 +16,11 @@ import Foundation
             if NSKeyedArchiver.archiveRootObject(bestGames, toFile: computeScoresFilePath()) {
                 NSLog("Wrote local player's best scores successfully:\n\(bestGames)")
             } else {
-                logWarning("local_score_save_fail", nil)
+                Analytics.sharedInstance().logEventWithName(
+                    "local_score_save_fail",
+                    type: AnalyticsEventTypeWarning,
+                    attributes: nil
+                )
             }
             
             NSNotificationCenter.defaultCenter().postNotificationName(
