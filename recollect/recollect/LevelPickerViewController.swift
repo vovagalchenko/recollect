@@ -25,6 +25,12 @@ class LevelPickerViewController: HalfScreenViewController, UIGestureRecognizerDe
         super.init(nibName: nil, bundle: nil)
         
         PlayerIdentityManager.sharedInstance.subscribeToPlayerIdentityChangeNotifications(self)
+        NSNotificationCenter.defaultCenter().addObserver(
+            self,
+            selector: "appDidBecomeActive:",
+            name: UIApplicationDidBecomeActiveNotification,
+            object: nil
+        )
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -213,6 +219,14 @@ class LevelPickerViewController: HalfScreenViewController, UIGestureRecognizerDe
     
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(animated)
+        initializeViewForAppearance()
+    }
+    
+    @objc private func appDidBecomeActive(notification: NSNotification) {
+        initializeViewForAppearance()
+    }
+    
+    private func initializeViewForAppearance() {
         scrollViewDidScroll(scrollView)
         fadeInTimeLabels()
     }
