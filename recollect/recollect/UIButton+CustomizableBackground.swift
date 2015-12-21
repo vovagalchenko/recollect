@@ -10,20 +10,20 @@ import UIKit
 
 extension UIButton {
     class func buttonWithCustomBackground(bg: ButtonBackground) -> UIButton {
-        let button = UIButton.buttonWithType(UIButtonType.Custom) as! UIButton
-        button.addTarget(button, action: "didBecomePressed:", forControlEvents: .TouchDown | .TouchDragEnter)
-        button.addTarget(button, action: "didBecomeUnpressed:", forControlEvents: .TouchDragExit | .TouchUpInside)
-        button.setTranslatesAutoresizingMaskIntoConstraints(false)
+        let button = UIButton(type: UIButtonType.Custom)
+        button.addTarget(button, action: "didBecomePressed:", forControlEvents: [.TouchDown, .TouchDragEnter])
+        button.addTarget(button, action: "didBecomeUnpressed:", forControlEvents: [.TouchDragExit, .TouchUpInside])
+        button.translatesAutoresizingMaskIntoConstraints = false
         button.addSubview(bg)
         button.addConstraints(
             NSLayoutConstraint.constraintsWithVisualFormat(
                 "H:|[bg]|",
-                options: NSLayoutFormatOptions(0),
+                options: NSLayoutFormatOptions(rawValue: 0),
                 metrics: nil,
                 views: ["bg" : bg]) +
             NSLayoutConstraint.constraintsWithVisualFormat(
                 "V:|[bg]|",
-                options: NSLayoutFormatOptions(0),
+                options: NSLayoutFormatOptions(rawValue: 0),
                 metrics: nil,
                 views: ["bg" : bg])
         )

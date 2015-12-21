@@ -18,13 +18,13 @@ class ButtonBackground: UIView {
     init() {
         self.baseColor = DesignLanguage.ActiveTextColor
         super.init(frame: CGRectZero)
-        setTranslatesAutoresizingMaskIntoConstraints(false)
+        translatesAutoresizingMaskIntoConstraints = false
         userInteractionEnabled = false
         opaque = false
         clearsContextBeforeDrawing = true
     }
 
-    required init(coder aDecoder: NSCoder) {
+    required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) is not expected to be called, because we don't use xibs")
     }
 }

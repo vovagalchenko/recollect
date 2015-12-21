@@ -16,14 +16,14 @@ class BlurView: UIView {
     init(viewToBlur: UIView) {
         self.viewToBlur = viewToBlur
         blurredView = UIImageView()
-        blurredView.setTranslatesAutoresizingMaskIntoConstraints(false)
+        blurredView.translatesAutoresizingMaskIntoConstraints = false
         gradientView = GradientView(frame: CGRectZero)
         super.init(frame: CGRectZero)
         
         opaque = true
         clipsToBounds = true
         backgroundColor = DesignLanguage.TopHalfBGColor
-        setTranslatesAutoresizingMaskIntoConstraints(false)
+        translatesAutoresizingMaskIntoConstraints = false
         
         addSubview(blurredView)
         addSubview(gradientView)
@@ -75,23 +75,21 @@ class BlurView: UIView {
     
     private func screenshot(viewToCapture: UIView) -> CIImage {
         UIGraphicsBeginImageContextWithOptions(viewToCapture.bounds.size, false, UIScreen.mainScreen().scale)
-        let ctx = UIGraphicsGetCurrentContext()
+        let ctx = UIGraphicsGetCurrentContext()!
         viewToCapture.layer.renderInContext(ctx)
         
         let uiImage = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
-        return CIImage(CGImage: uiImage.CGImage)
+        return CIImage(CGImage: uiImage.CGImage!)
     }
     
     private func treatImage(image: CIImage) -> UIImage {
-        let context = CIContext(options: nil)!
-        
-        let blurFilter = CIFilter(name: "CIGaussianBlur")
+        let blurFilter = CIFilter(name: "CIGaussianBlur")!
         blurFilter.setValue(image, forKey: kCIInputImageKey)
         blurFilter.setValue(DesignLanguage.obfuscationBlurRadius, forKey: kCIInputRadiusKey)
-        let blurredImage = blurFilter.outputImage
-        let originalImageExtent = image.extent()
-        let blurredImageExtent = blurredImage.extent()
+        let blurredImage = blurFilter.outputImage!
+        let originalImageExtent = image.extent
+        let blurredImageExtent = blurredImage.extent
         let centerOfImage = CGPoint(x: blurredImageExtent.midX, y: blurredImageExtent.midY)
         
         let croppedBlurredImage = blurredImage.imageByCroppingToRect(
@@ -103,10 +101,10 @@ class BlurView: UIView {
             )
         )
         
-        return UIImage(CIImage: croppedBlurredImage, scale: UIScreen.mainScreen().scale, orientation: UIImageOrientation.Up)!
+        return UIImage(CIImage: croppedBlurredImage, scale: UIScreen.mainScreen().scale, orientation: UIImageOrientation.Up)
     }
     
-    required init(coder aDecoder: NSCoder) {
+    required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented. We don't expect it to ever get called because we're not using nibs.")
     }
 }

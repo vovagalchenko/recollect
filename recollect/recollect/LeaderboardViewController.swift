@@ -13,7 +13,7 @@ class LeaderboardViewController: UIViewController, GKGameCenterControllerDelegat
     var currentLeaderboard: Leaderboard?
     
     override func viewDidLoad() {
-        view.setTranslatesAutoresizingMaskIntoConstraints(false)
+        view.translatesAutoresizingMaskIntoConstraints = false
         view.backgroundColor = UIColor.clearColor()
         
         let tapRecognizer = UITapGestureRecognizer(target: self, action: "handleTap:")
@@ -25,10 +25,10 @@ class LeaderboardViewController: UIViewController, GKGameCenterControllerDelegat
         
         currentLeaderboard = leaderboard
         for subview in view.subviews { subview.removeFromSuperview() }
-        view.removeConstraints(view.constraints())
+        view.removeConstraints(view.constraints)
         
         var prevEntryView: LeaderboardEntryView? = nil
-        for (index, entry) in enumerate(leaderboard.entries) {
+        for (index, entry) in leaderboard.entries.enumerate() {
             let position: LeaderboardEntryViewPosition
             if index == 0 {
                 position = .Top
@@ -43,7 +43,7 @@ class LeaderboardViewController: UIViewController, GKGameCenterControllerDelegat
             view.addConstraints(
                 NSLayoutConstraint.constraintsWithVisualFormat(
                     "H:|[entry]|",
-                    options: NSLayoutFormatOptions(0),
+                    options: NSLayoutFormatOptions(rawValue: 0),
                     metrics: nil,
                     views: ["entry": entryView])
             )
@@ -55,7 +55,7 @@ class LeaderboardViewController: UIViewController, GKGameCenterControllerDelegat
                     view.addConstraints(
                         NSLayoutConstraint.constraintsWithVisualFormat(
                             "H:|[entry]|",
-                            options: NSLayoutFormatOptions(0),
+                            options: NSLayoutFormatOptions(rawValue: 0),
                             metrics: nil,
                             views: ["entry": gapEntryView]) +
                         [
@@ -137,7 +137,7 @@ class LeaderboardViewController: UIViewController, GKGameCenterControllerDelegat
         }
     }
     
-    func gameCenterViewControllerDidFinish(gameCenterViewController: GKGameCenterViewController!) {
+    func gameCenterViewControllerDidFinish(gameCenterViewController: GKGameCenterViewController) {
         dismissViewControllerAnimated(true, completion: nil)
     }
 }

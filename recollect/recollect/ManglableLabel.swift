@@ -13,9 +13,9 @@ class ManglableLabel: UILabel {
     var originalText: String?
     override var text: String? {
         set(newText) {
-            if let existingUnmangledText = originalText {
+            if originalText != nil {
                 originalText = newText
-            } else if let existingUnmangledAttributedText = originalAttributedText {
+            } else if originalAttributedText != nil {
                 if let existingNewText = newText {
                     originalAttributedText = NSAttributedString(string: existingNewText, attributes: [NSForegroundColorAttributeName: originalTextColor ?? textColor])
                 } else {
@@ -44,10 +44,10 @@ class ManglableLabel: UILabel {
     
     init() {
         super.init(frame: CGRectZero)
-        setTranslatesAutoresizingMaskIntoConstraints(false)
+        translatesAutoresizingMaskIntoConstraints = false
     }
 
-    required init(coder aDecoder: NSCoder) {
+    required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) isn't expected to be called because xibs aren't used.")
     }
     
@@ -67,10 +67,10 @@ class ManglableLabel: UILabel {
         } else if originalText != nil && originalTextColor != nil {
             mangledString = NSMutableAttributedString(string: originalText!, attributes: [NSForegroundColorAttributeName: originalTextColor!])
         }
-        if count(mangledString.string) > 0 {
-            let strLength = count(mangledString.string)
+        if mangledString.string.characters.count > 0 {
+            let strLength = mangledString.string.characters.count
             let numCharactersToLeaveUnmangled = Int(round(Float(strLength) * portionOfTextToLeaveUnmangled))
-            let indexOfSplitChar = advance(mangledString.string.startIndex, numCharactersToLeaveUnmangled)
+            let indexOfSplitChar = mangledString.string.startIndex.advancedBy(numCharactersToLeaveUnmangled)
             var stringToPrepend = ""
             for character in mangledString.string.substringFromIndex(indexOfSplitChar).unicodeScalars {
                 var replacement = character
@@ -83,12 +83,12 @@ class ManglableLabel: UILabel {
                 }
                 stringToPrepend.append(replacement)
             }
-            let mangledStringRange = NSRange(location: count(mangledString.string) - count(stringToPrepend), length: count(stringToPrepend))
+            let mangledStringRange = NSRange(location: mangledString.string.characters.count - stringToPrepend.characters.count, length: stringToPrepend.characters.count)
             mangledString.mutableString.replaceCharactersInRange(mangledStringRange, withString: stringToPrepend)
             
             if canUseAlphaForAccents {
                 // TODO: ManglableLabel animation probably looks weird if the original attributedText isn't of uniform color, but we don't have that case for now.
-                var color = originalTextColor ?? mangledString.attribute(NSForegroundColorAttributeName, atIndex: 0, effectiveRange: nil) as! UIColor
+                let color = originalTextColor ?? mangledString.attribute(NSForegroundColorAttributeName, atIndex: 0, effectiveRange: nil) as! UIColor
                 var alpha: CGFloat = 0
                 color.getRed(nil, green: nil, blue: nil, alpha: &alpha)
                 let mangledStringColor = canUseAlphaForAccents ? color.colorWithAlphaComponent(alpha * 0.5) : color

@@ -21,7 +21,7 @@ class ProgressViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        view.setTranslatesAutoresizingMaskIntoConstraints(false)
+        view.translatesAutoresizingMaskIntoConstraints = false
         view.backgroundColor = DesignLanguage.BottomHalfBGColor
         
         let font = UIFont(name: "AvenirNextCondensed-DemiBold", size: 25.0)
@@ -55,7 +55,7 @@ class ProgressViewController: UIViewController {
         
         for i in 1...(gameState!.challenges.count) {
             let dotLabel = UILabel()
-            dotLabel.setTranslatesAutoresizingMaskIntoConstraints(false)
+            dotLabel.translatesAutoresizingMaskIntoConstraints = false
             dotLabel.backgroundColor = UIColor.clearColor()
             dotLabel.font = font
             dotLabel.text = "."
@@ -85,29 +85,29 @@ class ProgressViewController: UIViewController {
         }
         
         let bottomShadow = UIView()
-        bottomShadow.setTranslatesAutoresizingMaskIntoConstraints(false)
+        bottomShadow.translatesAutoresizingMaskIntoConstraints = false
         bottomShadow.backgroundColor = DesignLanguage.ShadowColor
         view.addSubview(bottomShadow)
         
         view.addConstraints(
             NSLayoutConstraint.constraintsWithVisualFormat(
                 "H:|[bottomShadow]|",
-                options: NSLayoutFormatOptions(0),
+                options: NSLayoutFormatOptions(rawValue: 0),
                 metrics: nil,
                 views: ["bottomShadow" : bottomShadow]) +
             NSLayoutConstraint.constraintsWithVisualFormat(
                 "V:[bottomShadow(1)]|",
-                options: NSLayoutFormatOptions(0),
+                options: NSLayoutFormatOptions(rawValue: 0),
                 metrics: nil,
                 views: ["bottomShadow" : bottomShadow])
         )
         
         penaltyLabel = UILabel()
-        penaltyLabel!.setTranslatesAutoresizingMaskIntoConstraints(false)
+        penaltyLabel!.translatesAutoresizingMaskIntoConstraints = false
         penaltyLabel!.backgroundColor = UIColor.clearColor()
         penaltyLabel!.font = font
         penaltyLabel!.textColor = DesignLanguage.AccentTextColor
-        penaltyLabel!.text = GameManager.penaltyPerPeek.minuteSecondCentisecondString(signed: true)
+        penaltyLabel!.text = GameManager.penaltyPerPeek.minuteSecondCentisecondString(true)
         penaltyLabel!.alpha = 0.0
         penaltyLabel!.transform = penaltyLabelStartTranslation
         view.addSubview(penaltyLabel!)
@@ -115,12 +115,12 @@ class ProgressViewController: UIViewController {
         view.addConstraints(
             NSLayoutConstraint.constraintsWithVisualFormat(
                 "V:|[penaltyLabel]|",
-                options: NSLayoutFormatOptions(0),
+                options: NSLayoutFormatOptions(rawValue: 0),
                 metrics: nil,
                 views: ["penaltyLabel" : penaltyLabel!]) +
             NSLayoutConstraint.constraintsWithVisualFormat(
                 "H:[penaltyLabel]-|",
-                options: NSLayoutFormatOptions(0),
+                options: NSLayoutFormatOptions(rawValue: 0),
                 metrics: nil,
                 views: ["penaltyLabel" : penaltyLabel!])
         )
@@ -143,7 +143,7 @@ class ProgressViewController: UIViewController {
                 self.penaltyLabel!.transform = CGAffineTransformMakeScale(1.0, 1.0)
             }) { (finished: Bool) -> Void in
                 
-                UIView.animateWithDuration(DesignLanguage.MinorAnimationDuration, delay: DesignLanguage.MinorAnimationDuration/2.0, options: nil, animations: { () -> Void in
+                UIView.animateWithDuration(DesignLanguage.MinorAnimationDuration, delay: DesignLanguage.MinorAnimationDuration/2.0, options: [], animations: { () -> Void in
                     self.penaltyLabel!.alpha = 0.0
                 }, completion: nil)
         }
@@ -151,7 +151,7 @@ class ProgressViewController: UIViewController {
     
     private func refreshDotViews() {
         let currChallengeIndex = gameState?.currentChallengeIndex ?? Int.max
-        for (dotViewIndex, dotView) in enumerate(self.dotViews) {
+        for (dotViewIndex, dotView) in self.dotViews.enumerate() {
             dotView.textColor = (dotViewIndex >= currChallengeIndex) ? DesignLanguage.ActiveTextColor : DesignLanguage.InactiveTextColor
         }
     }

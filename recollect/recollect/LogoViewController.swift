@@ -20,7 +20,7 @@ class LogoViewController: HalfScreenViewController {
         super.viewDidLoad()
         
         let logoContainer = UIView()
-        logoContainer.setTranslatesAutoresizingMaskIntoConstraints(false)
+        logoContainer.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(logoContainer)
         logoContainer.backgroundColor = UIColor.clearColor()
         view.addConstraints([
@@ -63,9 +63,9 @@ class LogoViewController: HalfScreenViewController {
         ])
 
         
-        for (lineIndex, line) in enumerate(logoText) {
+        for (lineIndex, line) in logoText.enumerate() {
             assert(line.lengthOfBytesUsingEncoding(NSUTF8StringEncoding) == self.logoText.count, "The logo text must be such that it forms a perfect square")
-            for (index, character) in enumerate(line) {
+            for (index, character) in line.characters.enumerate() {
                 let characterView = ManglableLabel()
                 characterView.backgroundColor = UIColor.clearColor()
                 characterView.textColor = DesignLanguage.NeverActiveTextColor

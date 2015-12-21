@@ -8,7 +8,7 @@
 
 import Foundation
 
-@objc protocol PlayerIdentity {
+protocol PlayerIdentity: class {
     var playerId: String { get }
     func getLeaderboard(levelId: String, ownForcedScore: NSTimeInterval, completion: Leaderboard -> Void)
     func recordNewGame(newGame: GameState, completion: () -> Void) // <-- best effort, could be done asynchronously

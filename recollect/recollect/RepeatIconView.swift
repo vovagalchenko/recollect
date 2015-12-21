@@ -43,7 +43,7 @@ class RepeatIconView: ButtonBackground {
         CGContextClosePath(ctx)
         baseColor.setFill()
         CGContextSetLineWidth(ctx, 0.5)
-        CGContextDrawPath(ctx, kCGPathFillStroke)
+        CGContextDrawPath(ctx, CGPathDrawingMode.FillStroke)
     }
     
     override func intrinsicContentSize() -> CGSize {

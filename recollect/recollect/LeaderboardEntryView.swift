@@ -20,7 +20,7 @@ class LeaderboardEntryView: UIView {
     private let position: LeaderboardEntryViewPosition
     var rank: Int {
         get {
-            return rankLabel.text!.toInt()!
+            return Int(rankLabel.text!)!
         }
     }
     
@@ -28,7 +28,7 @@ class LeaderboardEntryView: UIView {
         position = pos
         super.init(frame: CGRectZero)
         backgroundColor = UIColor.clearColor()
-        setTranslatesAutoresizingMaskIntoConstraints(false)
+        translatesAutoresizingMaskIntoConstraints = false
         
         rankLabel = createLabel()
         nameLabel = createLabel()
@@ -38,7 +38,7 @@ class LeaderboardEntryView: UIView {
         avatarImageView.layer.borderWidth = 1.0
         avatarImageView.layer.masksToBounds = true
         avatarImageView.contentMode = UIViewContentMode.ScaleAspectFill
-        avatarImageView.setTranslatesAutoresizingMaskIntoConstraints(false)
+        avatarImageView.translatesAutoresizingMaskIntoConstraints = false
         avatarImageView.alpha = 0.0
         let padding: CGFloat = 15.0
         for subview in [rankLabel, nameLabel, timeLabel, avatarImageView] {
@@ -46,7 +46,7 @@ class LeaderboardEntryView: UIView {
             addConstraints(
                 NSLayoutConstraint.constraintsWithVisualFormat(
                     "V:|-(\(padding/2.0))-[subview]-(\(padding/2.0))-|",
-                    options: NSLayoutFormatOptions(0),
+                    options: NSLayoutFormatOptions(rawValue: 0),
                     metrics: nil,
                     views: ["subview": subview])
             )
@@ -55,12 +55,12 @@ class LeaderboardEntryView: UIView {
         addConstraints(
             NSLayoutConstraint.constraintsWithVisualFormat(
                 "H:|-(\(padding))-[rank]-(\(padding))-[avatar]-(\(padding))-[name]",
-                options: NSLayoutFormatOptions(0),
+                options: NSLayoutFormatOptions(rawValue: 0),
                 metrics: nil,
                 views: ["rank": rankLabel, "avatar": avatarImageView, "name": nameLabel]) +
             NSLayoutConstraint.constraintsWithVisualFormat(
                 "H:[timeLabel]-(\(padding))-|",
-                options: NSLayoutFormatOptions(0),
+                options: NSLayoutFormatOptions(rawValue: 0),
                 metrics: nil,
                 views: ["timeLabel": timeLabel])
         )
@@ -107,7 +107,7 @@ class LeaderboardEntryView: UIView {
         return label
     }
     
-    required init(coder aDecoder: NSCoder) {
+    required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
@@ -118,7 +118,7 @@ class LeaderboardEntryView: UIView {
             DesignLanguage.ShadowColor.setFill()
             CGContextFillRect(ctx, bounds)
         } else {
-            let (points, thickness) = pixelPerfectCoordinates(
+            let (points, _) = pixelPerfectCoordinates(
                 thicknessInPixels: 1,
                 points: CGPoint(x: 0, y: 0),
                 CGPoint(x: bounds.size.width, y: 0),
@@ -131,14 +131,14 @@ class LeaderboardEntryView: UIView {
                 CGContextAddLineToPoint(ctx, points[1].x, points[1].y)
                 
                 DesignLanguage.HighlightColor.setStroke()
-                CGContextDrawPath(ctx, kCGPathStroke)
+                CGContextDrawPath(ctx, CGPathDrawingMode.Stroke)
             }
             if position != .Bottom {
                 CGContextMoveToPoint(ctx, points[2].x, points[2].y)
                 CGContextAddLineToPoint(ctx, points[3].x, points[3].y)
                 
                 DesignLanguage.ShadowColor.setStroke()
-                CGContextDrawPath(ctx, kCGPathStroke)
+                CGContextDrawPath(ctx, CGPathDrawingMode.Stroke)
             }
         }
     }

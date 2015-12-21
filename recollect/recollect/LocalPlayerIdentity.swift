@@ -8,7 +8,7 @@
 
 import Foundation
 
-@objc class LocalPlayerIdentity: PlayerIdentity {
+class LocalPlayerIdentity: PlayerIdentity {
     
     var bestGames: [String: GameState] {
         didSet {
@@ -40,8 +40,8 @@ import Foundation
     }
     
     func computeScoresFilePath() -> String {
-        let documentDir = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)[0] as! String
-        return documentDir.stringByAppendingPathComponent(playerId + ".scores")
+        let documentDir = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)[0] 
+        return (documentDir as NSString).stringByAppendingPathComponent(playerId + ".scores")
     }
     
     func deltaFromBest(game: GameState) -> NSTimeInterval {

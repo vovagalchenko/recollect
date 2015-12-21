@@ -23,7 +23,7 @@ class ContinueInstructionOverlayView: UIView {
         super.init(frame: frame)
         
         userInteractionEnabled = false
-        setTranslatesAutoresizingMaskIntoConstraints(false)
+        translatesAutoresizingMaskIntoConstraints = false
         backgroundColor = UIColor.whiteColor().colorWithAlphaComponent(0.2)
         
         addSubview(instructionLabel)
@@ -51,7 +51,7 @@ class ContinueInstructionOverlayView: UIView {
         self.init(frame: CGRectZero)
     }
     
-    required init(coder aDecoder: NSCoder) {
+    required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented. We don't expect it to ever get called because we're not using nibs.")
     }
 }

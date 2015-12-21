@@ -50,7 +50,7 @@ class GameplayButton: UIControl {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        self.setTranslatesAutoresizingMaskIntoConstraints(false)
+        self.translatesAutoresizingMaskIntoConstraints = false
         self.opaque = false
         self.clearsContextBeforeDrawing = true
         self.clipsToBounds = false
@@ -59,12 +59,12 @@ class GameplayButton: UIControl {
         self.addConstraints(
             NSLayoutConstraint.constraintsWithVisualFormat(
                 "H:|[label]|",
-                options: NSLayoutFormatOptions(0),
+                options: NSLayoutFormatOptions(rawValue: 0),
                 metrics: nil,
                 views: ["label": label]) +
             NSLayoutConstraint.constraintsWithVisualFormat(
                 "V:|[label]|",
-                options: NSLayoutFormatOptions(0),
+                options: NSLayoutFormatOptions(rawValue: 0),
                 metrics: nil,
                 views: ["label": label])
         )
@@ -104,13 +104,13 @@ class GameplayButton: UIControl {
         label.layer.addAnimation(animationGroup, forKey: nil)
     }
     
-    override func animationDidStop(anim: CAAnimation!, finished flag: Bool) {
+    override func animationDidStop(anim: CAAnimation, finished flag: Bool) {
         if flag {
             setUpGlow()
         }
     }
 
-    required init(coder aDecoder: NSCoder) {
+    required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented. We don't expect it to ever get called because we're not using nibs.")
     }
     

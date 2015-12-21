@@ -105,9 +105,9 @@ class PlayerIdentityManager {
     
 }
 
-@objc protocol PlayerIdentityChangeListener {
+protocol PlayerIdentityChangeListener: class {
     func playerIdentityChanged(oldIdentity: PlayerIdentity, newIdentity: PlayerIdentity)
-    @objc func playerIdentityChangeNotificationReceived(notification: NSNotification!)
+    func playerIdentityChangeNotificationReceived(notification: NSNotification!)
 }
 
 extension NSObject {

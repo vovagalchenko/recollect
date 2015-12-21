@@ -56,7 +56,7 @@ extension Challenge: NSCoding {
         aCoder.encodeObject(userResponses, forKey: "userResponses")
     }
     
-    convenience init(coder aDecoder: NSCoder) {
+    convenience init?(coder aDecoder: NSCoder) {
         let newLOperand = aDecoder.decodeIntegerForKey("lOperand")
         let newROperand = aDecoder.decodeIntegerForKey("rOperand")
         let newChallengeOperator = ChallengeOperator(rawValue: aDecoder.decodeIntegerForKey("challengeOperator"))!

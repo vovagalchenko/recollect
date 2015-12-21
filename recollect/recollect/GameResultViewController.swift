@@ -27,7 +27,7 @@ class GameResultViewController: HalfScreenViewController, UIGestureRecognizerDel
         PlayerIdentityManager.sharedInstance.subscribeToPlayerIdentityChangeNotifications(self)
     }
     
-    required init(coder aDecoder: NSCoder) {
+    required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) won't be implemented because I ain't using xibs")
     }
     
@@ -40,7 +40,7 @@ class GameResultViewController: HalfScreenViewController, UIGestureRecognizerDel
         
         resultViewContainer = UIView()
         resultViewContainer!.backgroundColor = UIColor.clearColor()
-        resultViewContainer!.setTranslatesAutoresizingMaskIntoConstraints(false)
+        resultViewContainer!.translatesAutoresizingMaskIntoConstraints = false
         resultViewContainer!.setContentHuggingPriority(1000, forAxis: UILayoutConstraintAxis.Vertical)
         view.addSubview(resultViewContainer!)
         
@@ -72,11 +72,11 @@ class GameResultViewController: HalfScreenViewController, UIGestureRecognizerDel
         deltaTimeLabel!.font = UIFont(name: "AvenirNextCondensed-DemiBold", size: deltaTimeLabelHeight)
         deltaTimeLabel!.textAlignment = NSTextAlignment.Right
         deltaTimeLabel!.textColor = DesignLanguage.NeverActiveTextColor
-        deltaTimeLabel!.text = NSTimeInterval(0).minuteSecondCentisecondString(signed: true)
+        deltaTimeLabel!.text = NSTimeInterval(0).minuteSecondCentisecondString(true)
         deltaTimeLabel!.alpha = 0.0
         resultViewContainer!.addSubview(deltaTimeLabel!)
         
-        let resultLabelsConstraints: [AnyObject] = [
+        let resultLabelsConstraints = [
             NSLayoutConstraint(
                 item: completionMsgLabel!,
                 attribute: .Top,
@@ -122,21 +122,21 @@ class GameResultViewController: HalfScreenViewController, UIGestureRecognizerDel
             resultLabelsConstraints +
             NSLayoutConstraint.constraintsWithVisualFormat(
                 "H:|[completionMsg]|",
-                options: NSLayoutFormatOptions(0),
+                options: NSLayoutFormatOptions(rawValue: 0),
                 metrics: nil,
                 views: [
                     "completionMsg" : completionMsgLabel!,
                 ]) +
             NSLayoutConstraint.constraintsWithVisualFormat(
                 "H:|[mainTime]|",
-                options: NSLayoutFormatOptions(0),
+                options: NSLayoutFormatOptions(rawValue: 0),
                 metrics: nil,
                 views: [
                     "mainTime" : mainTimeLabel!,
                 ]) +
             NSLayoutConstraint.constraintsWithVisualFormat(
                 "H:[deltaTime]|",
-                options: NSLayoutFormatOptions(0),
+                options: NSLayoutFormatOptions(rawValue: 0),
                 metrics: nil,
                 views: [
                     "deltaTime" : deltaTimeLabel!,
@@ -160,12 +160,12 @@ class GameResultViewController: HalfScreenViewController, UIGestureRecognizerDel
         view.addConstraints(
             NSLayoutConstraint.constraintsWithVisualFormat(
                 "H:|[leaderboardView]|",
-                options: NSLayoutFormatOptions(0),
+                options: NSLayoutFormatOptions(rawValue: 0),
                 metrics: nil,
                 views: ["leaderboardView": leaderboardVC.view]) +
             NSLayoutConstraint.constraintsWithVisualFormat(
                 "V:[leaderboardView]|",
-                options: NSLayoutFormatOptions(0),
+                options: NSLayoutFormatOptions(rawValue: 0),
                 metrics: nil,
                 views: ["leaderboardView": leaderboardVC.view])
         )
@@ -260,7 +260,7 @@ class GameResultViewController: HalfScreenViewController, UIGestureRecognizerDel
         let deltaAlpha: CGFloat
         let deltaTextColor: UIColor
         if delta != 0 {
-            deltaTimeLabel!.text = delta.minuteSecondCentisecondString(signed: true)
+            deltaTimeLabel!.text = delta.minuteSecondCentisecondString(true)
             deltaAlpha = 1.0
             deltaTextColor = delta > 0 ? DesignLanguage.NegativeAccentTextColor : DesignLanguage.NeverActiveTextColor
         } else {
@@ -273,7 +273,7 @@ class GameResultViewController: HalfScreenViewController, UIGestureRecognizerDel
         }
     }
     
-    func refreshLeaderboard(#identity: PlayerIdentity, leaderboard: Leaderboard) {
+    func refreshLeaderboard(identity identity: PlayerIdentity, leaderboard: Leaderboard) {
         view.layoutIfNeeded()
         
         gameCenterSolicitationLabel?.attributedText = NSAttributedString(

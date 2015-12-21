@@ -30,7 +30,7 @@ class GameplayOutputViewController: HalfScreenViewController, UIGestureRecognize
         super.init(nibName: nil, bundle: nil)
     }
 
-    required init(coder aDecoder: NSCoder) {
+    required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
@@ -46,19 +46,19 @@ class GameplayOutputViewController: HalfScreenViewController, UIGestureRecognize
         view.addConstraints(
             NSLayoutConstraint.constraintsWithVisualFormat(
                 "H:|[progressView]|",
-                options: NSLayoutFormatOptions(0),
+                options: NSLayoutFormatOptions(rawValue: 0),
                 metrics: nil,
                 views: ["progressView" : progressVC!.view]) +
             NSLayoutConstraint.constraintsWithVisualFormat(
                 "V:[progressView(\(DesignLanguage.ProgressBarHeight))]|",
-                options: NSLayoutFormatOptions(0),
+                options: NSLayoutFormatOptions(rawValue: 0),
                 metrics: nil,
                 views: ["progressView" : progressVC!.view])
         )
         
         challengeContainer = UIView()
         challengeContainer!.backgroundColor = UIColor.clearColor()
-        challengeContainer!.setTranslatesAutoresizingMaskIntoConstraints(false)
+        challengeContainer!.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(challengeContainer!)
         
         view.addConstraints(
@@ -90,7 +90,7 @@ class GameplayOutputViewController: HalfScreenViewController, UIGestureRecognize
             ]
         )
         
-        for (challengeIndex, challenge) in enumerate(gameState.challenges) {
+        for (challengeIndex, challenge) in gameState.challenges.enumerate() {
             let topLabel = challengeLabel(challenge.lOperand)
             let bottomLabel = challengeLabel(challenge.rOperand)
             challengeContainer!.addSubview(topLabel)
@@ -207,7 +207,7 @@ class GameplayOutputViewController: HalfScreenViewController, UIGestureRecognize
         )
         
         plusLabel = UILabel()
-        plusLabel!.setTranslatesAutoresizingMaskIntoConstraints(false)
+        plusLabel!.translatesAutoresizingMaskIntoConstraints = false
         plusLabel!.backgroundColor = UIColor.clearColor()
         plusLabel!.textColor = DesignLanguage.NeverActiveTextColor
         plusLabel!.font = UIFont(name: "AvenirNext-Regular", size: 45.0)
@@ -266,7 +266,7 @@ class GameplayOutputViewController: HalfScreenViewController, UIGestureRecognize
             }
             
             var labelXCenters = [CGFloat]()
-            var increment = blurView!.bounds.width/CGFloat(gameState.n)
+            let increment = blurView!.bounds.width/CGFloat(gameState.n)
             var curr = -increment/2
             while curr > -blurView!.bounds.width {
                 labelXCenters.append(curr)
@@ -276,7 +276,7 @@ class GameplayOutputViewController: HalfScreenViewController, UIGestureRecognize
             var labelWidth: CGFloat = 0
             for subview in challengeContainer!.subviews {
                 if let label = subview as? ManglableLabel {
-                    if label.text?.toInt() != nil {
+                    if Int(label.text ?? "") != nil {
                         labelWidth = label.bounds.width
                         break
                     }
@@ -284,7 +284,7 @@ class GameplayOutputViewController: HalfScreenViewController, UIGestureRecognize
             }
             
             let numLabelsUnderBlur = gameState.n + min(gameState.currentChallengeIndex, 0)
-            let labelEdges = labelXCenters[0..<numLabelsUnderBlur].map { $0 + labelWidth/2 }
+            let labelEdges = Array(labelXCenters[0..<numLabelsUnderBlur].map { $0 + labelWidth/2 })
             
             for labelEdge in labelEdges {
                 if previousXTranslation >= labelEdge && xTranslation < labelEdge {
@@ -572,10 +572,10 @@ extension GameplayOutputViewController: GameStateChangeListener {
                     }
                     PlayerIdentityManager.sharedInstance.currentIdentity.getMyBestScores { bestScores in
                         NSTimer.scheduledTimerWithTimeInterval(
-                            DesignLanguage.delayBeforeInstructionalOverlay(gameState.levelId, finishedLevelBefore: bestScores[gameState.levelId] != nil),
+                            DesignLanguage.delayBeforeInstructionalOverlay(self.gameState.levelId, finishedLevelBefore: bestScores[self.gameState.levelId] != nil),
                             target: self,
                             selector: "presentInstructionalOverlayIfNeeded:",
-                            userInfo: gameState,
+                            userInfo: self.gameState,
                             repeats: false)
                     }
                     

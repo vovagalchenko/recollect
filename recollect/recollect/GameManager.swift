@@ -9,7 +9,7 @@
 import Foundation
 import UIKit
 
-class GameManager: GameplayInputControllerDelegate {
+class GameManager {
     
     class var sharedInstance : GameManager {
         struct Static {
@@ -78,7 +78,7 @@ class GameManager: GameplayInputControllerDelegate {
     
     func startGame(gameLevelId: String) {
         assert(self.currentGameState == nil || self.currentGameState!.latestTimeStart == nil, "Can't start a game when one is already in progress!")
-        self.currentGameState = GameState(n: gameLevelId.toInt()!, numRounds: 10)
+        self.currentGameState = GameState(n: Int(gameLevelId)!, numRounds: 10)
     }
     
     func subscribeToGameStateChangeNotifications(listener: GameStateChangeListener) {
@@ -120,10 +120,8 @@ extension GameManager: GameplayInputControllerDelegate {
                 currentGameState = currentGameState!.advance()
             case .Zero, .One, .Two, .Three, .Four, .Five, .Six, .Seven, .Eight, .Nine:
                 if currentGameState?.currentChallengeIndex >= 0 && currentGameState?.currentChallengeIndex < currentGameState?.challenges.count {
-                    currentGameState = currentGameState!.advance(userInput: input.rawValue)
+                    currentGameState = currentGameState!.advance(input.rawValue)
                 }
-            default:
-                fatalError("Can't understand user input <\(input)>.")
         }
     }
 }
@@ -148,7 +146,7 @@ extension GameManager: SharingViewControllerDelegate {
     }
 }
 
-@objc protocol GameStateChangeListener {
+protocol GameStateChangeListener: class {
     func gameStateChanged(change: GameStateChange)
     func gameStateChangeNotificationReceived(notification: NSNotification!)
 }

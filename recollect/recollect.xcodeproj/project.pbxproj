@@ -19,7 +19,6 @@
 		80539B4919F4BCFD00C23F6D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80539B4819F4BCFD00C23F6D /* AppDelegate.swift */; };
 		80539B4B19F4BCFD00C23F6D /* BaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80539B4A19F4BCFD00C23F6D /* BaseViewController.swift */; };
 		80539B5019F4BCFD00C23F6D /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 80539B4F19F4BCFD00C23F6D /* Images.xcassets */; };
-		80539B5F19F4BCFE00C23F6D /* recollectTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80539B5E19F4BCFE00C23F6D /* recollectTests.swift */; };
 		805DE3E91A5646750072CB12 /* GameplayOutputViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 805DE3E81A5646750072CB12 /* GameplayOutputViewController.swift */; };
 		805DE3EB1A564D550072CB12 /* ProgressViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 805DE3EA1A564D550072CB12 /* ProgressViewController.swift */; };
 		806B529B1A4B3BB6005F4DFA /* DesignLanguage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 806B529A1A4B3BB6005F4DFA /* DesignLanguage.swift */; };
@@ -71,13 +70,6 @@
 			remoteGlobalIDString = 80629C0C18D4A03100106131;
 			remoteInfo = VGAnalytics;
 		};
-		80539B5919F4BCFE00C23F6D /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 80539B3B19F4BCFD00C23F6D /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 80539B4219F4BCFD00C23F6D;
-			remoteInfo = recollect;
-		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
@@ -96,7 +88,6 @@
 		80539B4819F4BCFD00C23F6D /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		80539B4A19F4BCFD00C23F6D /* BaseViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseViewController.swift; sourceTree = "<group>"; };
 		80539B4F19F4BCFD00C23F6D /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
-		80539B5819F4BCFE00C23F6D /* recollectTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = recollectTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		80539B5D19F4BCFE00C23F6D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		80539B5E19F4BCFE00C23F6D /* recollectTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = recollectTests.swift; sourceTree = "<group>"; };
 		805DE3E81A5646750072CB12 /* GameplayOutputViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameplayOutputViewController.swift; sourceTree = "<group>"; };
@@ -140,13 +131,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		80539B5519F4BCFE00C23F6D /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -175,7 +159,6 @@
 			isa = PBXGroup;
 			children = (
 				80539B4319F4BCFD00C23F6D /* recollect.app */,
-				80539B5819F4BCFE00C23F6D /* recollectTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -187,7 +170,6 @@
 				8087FEC51A5234E600F3B3AD /* HalfScreenController */,
 				8098CD2B1A58365D009968EE /* Model */,
 				80539B4819F4BCFD00C23F6D /* AppDelegate.swift */,
-				80539B4A19F4BCFD00C23F6D /* BaseViewController.swift */,
 				806B529A1A4B3BB6005F4DFA /* DesignLanguage.swift */,
 				80539B4F19F4BCFD00C23F6D /* Images.xcassets */,
 				806B529E1A4B459E005F4DFA /* MyPlayground.playground */,
@@ -242,6 +224,7 @@
 			children = (
 				8087FEC11A5114BC00F3B3AD /* ManglableLabel.swift */,
 				8087FEC31A5114EA00F3B3AD /* HalfScreenViewController.swift */,
+				80539B4A19F4BCFD00C23F6D /* BaseViewController.swift */,
 			);
 			name = framework;
 			sourceTree = "<group>";
@@ -313,31 +296,15 @@
 			productReference = 80539B4319F4BCFD00C23F6D /* recollect.app */;
 			productType = "com.apple.product-type.application";
 		};
-		80539B5719F4BCFE00C23F6D /* recollectTests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 80539B6519F4BCFE00C23F6D /* Build configuration list for PBXNativeTarget "recollectTests" */;
-			buildPhases = (
-				80539B5419F4BCFE00C23F6D /* Sources */,
-				80539B5519F4BCFE00C23F6D /* Frameworks */,
-				80539B5619F4BCFE00C23F6D /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				80539B5A19F4BCFE00C23F6D /* PBXTargetDependency */,
-			);
-			name = recollectTests;
-			productName = recollectTests;
-			productReference = 80539B5819F4BCFE00C23F6D /* recollectTests.xctest */;
-			productType = "com.apple.product-type.bundle.unit-test";
-		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
 		80539B3B19F4BCFD00C23F6D /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0600;
+				LastSwiftMigration = 0720;
+				LastSwiftUpdateCheck = 0720;
+				LastUpgradeCheck = 0720;
 				ORGANIZATIONNAME = "Vova Galchenko";
 				TargetAttributes = {
 					80539B4219F4BCFD00C23F6D = {
@@ -348,10 +315,6 @@
 								enabled = 1;
 							};
 						};
-					};
-					80539B5719F4BCFE00C23F6D = {
-						CreatedOnToolsVersion = 6.0.1;
-						TestTargetID = 80539B4219F4BCFD00C23F6D;
 					};
 				};
 			};
@@ -375,7 +338,6 @@
 			projectRoot = "";
 			targets = (
 				80539B4219F4BCFD00C23F6D /* recollect */,
-				80539B5719F4BCFE00C23F6D /* recollectTests */,
 			);
 		};
 /* End PBXProject section */
@@ -404,13 +366,6 @@
 			files = (
 				80539B5019F4BCFD00C23F6D /* Images.xcassets in Resources */,
 				80D712B719F4E0A600152F13 /* Launch Screen.xib in Resources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		80539B5619F4BCFE00C23F6D /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -474,14 +429,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		80539B5419F4BCFE00C23F6D /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				80539B5F19F4BCFE00C23F6D /* recollectTests.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -489,11 +436,6 @@
 			isa = PBXTargetDependency;
 			name = VGAnalytics;
 			targetProxy = 800551031B6EECAA00996A08 /* PBXContainerItemProxy */;
-		};
-		80539B5A19F4BCFE00C23F6D /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 80539B4219F4BCFD00C23F6D /* recollect */;
-			targetProxy = 80539B5919F4BCFE00C23F6D /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -519,6 +461,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -586,8 +529,9 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				INFOPLIST_FILE = recollect/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.galchenko.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "recollect/recollect-Bridging-Header.h";
@@ -604,45 +548,12 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				INFOPLIST_FILE = recollect/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.galchenko.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "recollect/recollect-Bridging-Header.h";
-			};
-			name = Release;
-		};
-		80539B6619F4BCFE00C23F6D /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(SDKROOT)/Developer/Library/Frameworks",
-					"$(inherited)",
-				);
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
-					"$(inherited)",
-				);
-				INFOPLIST_FILE = recollectTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/recollect.app/recollect";
-			};
-			name = Debug;
-		};
-		80539B6719F4BCFE00C23F6D /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(SDKROOT)/Developer/Library/Frameworks",
-					"$(inherited)",
-				);
-				INFOPLIST_FILE = recollectTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/recollect.app/recollect";
 			};
 			name = Release;
 		};
@@ -663,15 +574,6 @@
 			buildConfigurations = (
 				80539B6319F4BCFE00C23F6D /* Debug */,
 				80539B6419F4BCFE00C23F6D /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		80539B6519F4BCFE00C23F6D /* Build configuration list for PBXNativeTarget "recollectTests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				80539B6619F4BCFE00C23F6D /* Debug */,
-				80539B6719F4BCFE00C23F6D /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

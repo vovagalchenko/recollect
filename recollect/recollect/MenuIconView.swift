@@ -17,7 +17,7 @@ class MenuIconView: ButtonBackground {
         let numLines = 3
         
         CGContextSetLineWidth(ctx, lineThickness)
-        CGContextSetLineCap(ctx, kCGLineCapRound)
+        CGContextSetLineCap(ctx, CGLineCap.Round)
         baseColor.setStroke()
         
         for i in 0..<numLines {

@@ -28,13 +28,13 @@ class BaseViewController: UIViewController {
         bottomHalfContainerView = UIView()
         bottomHalfContainerView!.clipsToBounds = true
         bottomHalfContainerView!.backgroundColor = DesignLanguage.BottomHalfBGColor
-        bottomHalfContainerView!.setTranslatesAutoresizingMaskIntoConstraints(false)
+        bottomHalfContainerView!.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(bottomHalfContainerView!)
         
         topHalfContainerView = UIView()
         topHalfContainerView!.clipsToBounds = true
         topHalfContainerView!.backgroundColor = DesignLanguage.TopHalfBGColor
-        topHalfContainerView!.setTranslatesAutoresizingMaskIntoConstraints(false)
+        topHalfContainerView!.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(topHalfContainerView!)
         
         view.addConstraints(constraints(topHalfContainerView!, isTop: true) + constraints(bottomHalfContainerView!, isTop: false))
@@ -48,7 +48,7 @@ class BaseViewController: UIViewController {
         GameManager.sharedInstance.subscribeToGameStateChangeNotifications(self)
     }
     
-    private func constraints(halfViewContainer: UIView, isTop: Bool) -> [AnyObject] {
+    private func constraints(halfViewContainer: UIView, isTop: Bool) -> [NSLayoutConstraint] {
         return [
             NSLayoutConstraint(item: halfViewContainer,
                 attribute: NSLayoutAttribute.CenterX,
@@ -88,7 +88,7 @@ class BaseViewController: UIViewController {
     // Ewwww, I really should turn these into objects
     private var transitionQueue: [((() -> HalfScreenViewController?)?, (() -> HalfScreenViewController?)?, HalfScreenViewController?, HalfScreenViewController?, (TransitionRotation, TransitionRotation))] = []
     
-    func queueTransition(newTopViewControllerFunc: (() -> HalfScreenViewController?)? = nil, newBottomViewControllerFunc: (() -> HalfScreenViewController?)? = nil,
+    func queueTransition(newTopViewControllerFunc newTopViewControllerFunc: (() -> HalfScreenViewController?)? = nil, newBottomViewControllerFunc: (() -> HalfScreenViewController?)? = nil,
         checkTopViewController: HalfScreenViewController? = nil, checkBottomViewController: HalfScreenViewController? = nil, rotationParams: (TransitionRotation, TransitionRotation)) {
         assert(NSThread.isMainThread(), "queueTransition(...) has to be called on the main thread")
         transitionQueue.append((newTopViewControllerFunc, newBottomViewControllerFunc, checkTopViewController, checkBottomViewController, rotationParams))
@@ -120,8 +120,8 @@ class BaseViewController: UIViewController {
         
         let constraint: NSLayoutConstraint? = nil
         
-        var newViewConstraints: [AnyObject] = [NSLayoutConstraint]()
-        var constraintsToRemove: [AnyObject] = [NSLayoutConstraint]()
+        var newViewConstraints = [NSLayoutConstraint]()
+        var constraintsToRemove = [NSLayoutConstraint]()
         for (oldController, newController) in controllersToAnimate {
             if let existingNewController = newController {
                 existingNewController.view.alpha = existingNewController.managesOwnTransitions() ? 1.0 : 0.0
@@ -133,15 +133,15 @@ class BaseViewController: UIViewController {
                 viewToAddTo.sendSubviewToBack(existingNewController.view)
                 existingNewController.didMoveToParentViewController(self)
                 
-                newViewConstraints.extend(
+                newViewConstraints.appendContentsOf(
                     NSLayoutConstraint.constraintsWithVisualFormat(
                         "V:|[newView]|",
-                        options: NSLayoutFormatOptions(0),
+                        options: NSLayoutFormatOptions(rawValue: 0),
                         metrics: nil,
                         views: ["newView" : existingNewController.view]) +
                         NSLayoutConstraint.constraintsWithVisualFormat(
                             "H:|[newView]|",
-                            options: NSLayoutFormatOptions(0),
+                            options: NSLayoutFormatOptions(rawValue: 0),
                             metrics: nil,
                             views: ["newView" : existingNewController.view])
                 )
@@ -153,7 +153,7 @@ class BaseViewController: UIViewController {
                 existingNewController.animationWillBegin(.Inactive, plannedAnimationDuration: DesignLanguage.TransitionAnimationDuration)
             }
             if let existingOldController = oldController {
-                constraintsToRemove.extend(existingOldController.view.superview?.constraints(existingOldController.view) ?? [])
+                constraintsToRemove.appendContentsOf(existingOldController.view.superview?.constraints(existingOldController.view) ?? [NSLayoutConstraint]())
                 existingOldController.animationWillBegin(.Active, plannedAnimationDuration: DesignLanguage.TransitionAnimationDuration)
             }
         }
@@ -218,7 +218,7 @@ class BaseViewController: UIViewController {
             let requiredOldVc = topViewController
             doAfterRandomTimeout {
                 self.queueTransition(
-                    newTopViewControllerFunc:newTopViewControllerFunc,
+                    newTopViewControllerFunc: newTopViewControllerFunc,
                     checkTopViewController: requiredOldVc,
                     rotationParams: (randomRotationParam(), .None)
                 )
@@ -236,7 +236,7 @@ class BaseViewController: UIViewController {
         }
     }
     
-    private func getControllersToAnimate(#oldController: HalfScreenViewController?, newController: HalfScreenViewController?) -> (HalfScreenViewController?, HalfScreenViewController?) {
+    private func getControllersToAnimate(oldController oldController: HalfScreenViewController?, newController: HalfScreenViewController?) -> (HalfScreenViewController?, HalfScreenViewController?) {
         if oldController != nil && oldController! == newController {
             // The two controllers are the same – nothing to animate
             return (nil, nil);
@@ -254,12 +254,12 @@ class BaseViewController: UIViewController {
             bottomHalfContainerView?.addConstraints(
                 NSLayoutConstraint.constraintsWithVisualFormat(
                     "H:|[overlay]|",
-                    options: NSLayoutFormatOptions(0),
+                    options: NSLayoutFormatOptions(rawValue: 0),
                     metrics: nil,
                     views: ["overlay" : continueHelperOverlay!]) +
                 NSLayoutConstraint.constraintsWithVisualFormat(
                     "V:|[overlay]|",
-                    options: NSLayoutFormatOptions(0),
+                    options: NSLayoutFormatOptions(rawValue: 0),
                     metrics: nil,
                     views: ["overlay" : continueHelperOverlay!])
             )
@@ -329,13 +329,9 @@ extension BaseViewController: GameStateChangeListener {
 }
 
 extension UIView {
-    func constraints(constrainedView: UIView) -> [AnyObject] {
-        return constraints().filter {
-            if let constraint = $0 as? NSLayoutConstraint {
-                return constraint.firstItem as! NSObject == constrainedView || constraint.secondItem as! NSObject == constrainedView
-            } else {
-                return false
-            }
+    func constraints(constrainedView: UIView) -> [NSLayoutConstraint] {
+        return constraints.filter {
+            $0.firstItem as! NSObject == constrainedView || $0.secondItem as! NSObject == constrainedView
         }
     }
 }

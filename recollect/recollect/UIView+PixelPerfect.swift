@@ -9,7 +9,7 @@
 import UIKit
 
 extension UIView {
-    func pixelPerfectCoordinates(#thicknessInPixels: Int, points: CGPoint...) -> ([CGPoint], CGFloat) {
+    func pixelPerfectCoordinates(thicknessInPixels thicknessInPixels: Int, points: CGPoint...) -> ([CGPoint], CGFloat) {
         assert(window != nil, "A view must be added to a window before you can get pixel perfect coordinates for points.")
         let pixelsPerPoint = window!.screen.scale
         let thicknessInPoints = CGFloat(thicknessInPixels)/pixelsPerPoint
@@ -27,8 +27,8 @@ extension UIView {
         }
         
         let resultingPoints = points.map { CGPoint(
-            x: applyOffset($0.x, self.bounds.width, thicknessInPoints),
-            y: applyOffset($0.y, self.bounds.height, thicknessInPoints)
+            x: applyOffset($0.x, limit: self.bounds.width, thicknessInPoints: thicknessInPoints),
+            y: applyOffset($0.y, limit: self.bounds.height, thicknessInPoints: thicknessInPoints)
         ) }
         return (resultingPoints, thicknessInPoints)
     }

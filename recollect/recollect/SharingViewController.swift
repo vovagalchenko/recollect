@@ -18,7 +18,7 @@ class SharingViewController: HalfScreenViewController {
         super.init(nibName: nil, bundle: nil)
     }
     
-    required init(coder aDecoder: NSCoder) {
+    required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) won't be implemented because I ain't using xibs")
     }
     

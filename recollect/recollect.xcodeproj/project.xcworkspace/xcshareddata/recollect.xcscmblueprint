@@ -1,0 +1,30 @@
+{
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "9F099853700383915B975AA4A9C19880ADBA9E84",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
+
+  },
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "9F099853700383915B975AA4A9C19880ADBA9E84" : 0,
+    "6362D405F03BEA017CBD16271CFD574ECF53524C" : 0
+  },
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "85CD6C57-C783-4AA1-8B74-0FB048D2298C",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+    "9F099853700383915B975AA4A9C19880ADBA9E84" : "recollect",
+    "6362D405F03BEA017CBD16271CFD574ECF53524C" : "recollectios-analytics"
+  },
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "recollect",
+  "DVTSourceControlWorkspaceBlueprintVersion" : 204,
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "recollect\/recollect.xcodeproj",
+  "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/vovagalchenko\/ios-analytics.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "6362D405F03BEA017CBD16271CFD574ECF53524C"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/vovagalchenko\/recollect.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "9F099853700383915B975AA4A9C19880ADBA9E84"
+    }
+  ]
+}

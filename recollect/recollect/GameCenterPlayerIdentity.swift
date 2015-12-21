@@ -15,7 +15,7 @@ import GameKit
     
     init(gameCenterLocalPlayer: GKPlayer) {
         gameKitPlayer = gameCenterLocalPlayer
-        playerId = gameKitPlayer.playerID
+        playerId = gameKitPlayer.playerID!
         super.init()
         
         GameManager.sharedInstance.subscribeToGameStateChangeNotifications(self)
@@ -54,14 +54,14 @@ import GameKit
                 let leaderboardRequest = GKLeaderboard(players: [gameKitPlayer])
                 leaderboardRequest.identifier = leaderboardIdentifier(levelId)
                 leaderboardRequest.loadScoresWithCompletionHandler() { (scores, error) -> Void in
-                    if error != nil {
+                    if let emittedError = error  {
                         Analytics.sharedInstance().logEventWithName(
                             "game_center_best_score_fetch_error",
                             type: AnalyticsEventTypeWarning,
-                            attributes: ["error": error.description]
+                            attributes: ["error": emittedError.description]
                         )
                     }
-                    let receivedScores = (scores ?? []) as! [GKScore]
+                    let receivedScores = (scores ?? []) 
                     let playerScore: PlayerScore?
                     if receivedScores.count == 0 {
                         playerScore = nil
@@ -74,7 +74,7 @@ import GameKit
                         
                         if levelsToFetch.count == 0 {
                             self.cachedBestScores = myBestScores
-                            for bestScoreCompletion in self.bestScoreCompletions {
+                            for _ in self.bestScoreCompletions {
                                 self.bestScoreCompletions.removeAtIndex(0)(myBestScores)
                             }
                         }
@@ -89,11 +89,11 @@ import GameKit
         let leaderboard = GKLeaderboard()
         leaderboard.identifier = leaderboardId
         leaderboard.range = NSMakeRange(1, 3)
-        leaderboard.loadScoresWithCompletionHandler({ (scores: [AnyObject]!, error: NSError!) -> Void in
+        leaderboard.loadScoresWithCompletionHandler({ (scores: [GKScore]?, error: NSError?) -> Void in
             if error == nil {
                 var needToAddOwnScore = true
                 let playerScores = (scores ?? []).map { s -> LeaderboardEntry in
-                    let score = (s as! GKScore)
+                    let score = (s )
                     if score.player.playerID == self.gameKitPlayer.playerID {
                         needToAddOwnScore = false
                     }
@@ -119,7 +119,7 @@ import GameKit
                                     return $0
                                 }
                             }
-                            .sorted() { $0.rank <= $1.rank }
+                            .sort() { $0.rank <= $1.rank }
                         
                         if let successfullyForcedEntry = forcedEntry {
                             var finalEntries = [LeaderboardEntry]()
@@ -162,8 +162,8 @@ import GameKit
                 if needToAddOwnScore {
                     let myScoreRequest = GKLeaderboard(players: [self.gameKitPlayer])
                     myScoreRequest.identifier = leaderboardId
-                    myScoreRequest.loadScoresWithCompletionHandler({ (myScoreArray: [AnyObject]!, error: NSError!) -> Void in
-                        let myScore = ((myScoreArray ?? []) as! [GKScore]).filter { $0.player.playerID == self.gameKitPlayer.playerID }.map {
+                    myScoreRequest.loadScoresWithCompletionHandler({ (myScoreArray: [GKScore]?, error: NSError?) -> Void in
+                        let myScore = ((myScoreArray ?? []) ).filter { $0.player.playerID == self.gameKitPlayer.playerID }.map {
                             self.gkScoreToLeaderboardEntry($0)
                         }
                         sortResultAndCallCompletion(playerScores + myScore)
@@ -176,7 +176,7 @@ import GameKit
                 Analytics.sharedInstance().logEventWithName(
                     "game_center_leaderboard_fetch_error",
                     type: AnalyticsEventTypeWarning,
-                    attributes: ["error": error.description]
+                    attributes: ["error": error!.description]
                 )
                 completion(Leaderboard(entries: [LeaderboardEntry](), leaderboardId: leaderboardId))
                 
@@ -188,22 +188,22 @@ import GameKit
     private func gameTimeToScoreValue(time: NSTimeInterval) -> Int64 { return Int64(round(time*100)) }
     private func gkScoreToLeaderboardEntry(score: GKScore) -> LeaderboardEntry {
         return LeaderboardEntry(
-            playerId: score.player.playerID,
+            playerId: score.player.playerID!,
             time: NSTimeInterval(score.value)/100.0,
-            playerName: score.player.alias,
+            playerName: score.player.alias ?? "",
             rank: score.rank
         )
     }
     private func gkScoreToPlayerScore(score: GKScore) -> PlayerScore {
-        return PlayerScore(playerId: score.playerID, time: NSTimeInterval(score.value)/100.0)
+        return PlayerScore(playerId: score.player.playerID!, time: NSTimeInterval(score.value)/100.0)
     }
 
     func recordNewGame(newGame: GameState, completion: () -> Void) {
         let leaderboardId = leaderboardIdentifier(newGame.levelId)
         let newScore = GKScore(leaderboardIdentifier: leaderboardId)
         newScore.value = gameTimeToScoreValue(newGame)
-        newScore.context = UInt64(newGame.levelId.toInt()!)
-        GKScore.reportScores([newScore]) { (error: NSError!) -> Void in
+        newScore.context = UInt64(Int(newGame.levelId)!)
+        GKScore.reportScores([newScore]) { (error: NSError?) -> Void in
             if error == nil {
                 NSLog("SUCCESFULLY REPORTED SCORE: \(newScore)")
                 Analytics.sharedInstance().logEventWithName(
@@ -215,7 +215,7 @@ import GameKit
                 Analytics.sharedInstance().logEventWithName(
                     "game_center_score_report_error",
                     type: AnalyticsEventTypeWarning,
-                    attributes: ["error": error.description]
+                    attributes: ["error": error?.description ?? "unknown_error"]
                 )
             }
             self.cachedBestScores = nil
@@ -231,13 +231,13 @@ extension GameCenterPlayerIdentity: GameStateChangeListener {
         if change.newGameState?.isFinished() ?? false {
             let levelClearedAchievement = GKAchievement(
                 identifier: "level_\(change.newGameState!.levelId)_cleared",
-                forPlayer: playerId
+                player: gameKitPlayer
             )
             let achievementsToReport: [GKAchievement]
             if change.newGameState!.isFlawless() {
                 let flawlessAchievement = GKAchievement(
                     identifier: "level_\(change.newGameState!.levelId)_cleared_flawlessly",
-                    forPlayer: playerId
+                    player: gameKitPlayer
                 )
                 flawlessAchievement.showsCompletionBanner = true
                 achievementsToReport = [
@@ -247,18 +247,20 @@ extension GameCenterPlayerIdentity: GameStateChangeListener {
             } else {
                 achievementsToReport = [levelClearedAchievement]
             }
+            
             GKAchievement.reportAchievements(achievementsToReport) { error -> Void in
                 if error != nil {
                     Analytics.sharedInstance().logEventWithName(
                         "game_center_achievement_report_error",
                         type: AnalyticsEventTypeWarning,
-                        attributes: ["error": error.description]
+                        attributes: ["error": error?.description ?? "unexplained_error"]
                     )
                 } else {
+                    let achievementIds = achievementsToReport.map { $0.identifier! }
                     Analytics.sharedInstance().logEventWithName(
                         "game_center_achievement_report",
                         type: AnalyticsEventTypeDebug,
-                        attributes: ["achievements": achievementsToReport.map({ $0.identifier })]
+                        attributes: ["achievements": achievementIds]
                     )
                     NSLog("Reported achievements \(achievementsToReport)")
                 }

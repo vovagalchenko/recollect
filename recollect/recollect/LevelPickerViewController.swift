@@ -27,12 +27,12 @@ class LevelPickerViewController: HalfScreenViewController, UIGestureRecognizerDe
         PlayerIdentityManager.sharedInstance.subscribeToPlayerIdentityChangeNotifications(self)
     }
 
-    required init(coder aDecoder: NSCoder) {
+    required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) won't be implemented because I ain't using xibs")
     }
     
     deinit {
-        scrollView.delegate = nil
+        scrollView?.delegate = nil
         PlayerIdentityManager.sharedInstance.unsubscribeFromPlayerIdentityChangeNotifications(self)
         NSNotificationCenter.defaultCenter().removeObserver(self)
     }
@@ -50,7 +50,7 @@ class LevelPickerViewController: HalfScreenViewController, UIGestureRecognizerDe
         
         scrollView = UIScrollView()
         scrollView.delegate = self
-        scrollView.setTranslatesAutoresizingMaskIntoConstraints(false)
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
         scrollView.alwaysBounceHorizontal = true
         scrollView.showsHorizontalScrollIndicator = false
         scrollView.showsVerticalScrollIndicator = false
@@ -59,12 +59,12 @@ class LevelPickerViewController: HalfScreenViewController, UIGestureRecognizerDe
         let scrollViewConstraints =
             NSLayoutConstraint.constraintsWithVisualFormat(
                 "H:|[scrollView]|",
-                options: NSLayoutFormatOptions(0),
+                options: NSLayoutFormatOptions(rawValue: 0),
                 metrics: nil,
                 views: ["scrollView": scrollView]) +
             NSLayoutConstraint.constraintsWithVisualFormat(
                 "V:|[scrollView]|",
-                options: NSLayoutFormatOptions(0),
+                options: NSLayoutFormatOptions(rawValue: 0),
                 metrics: nil,
                 views: ["scrollView": scrollView])
         
@@ -77,9 +77,9 @@ class LevelPickerViewController: HalfScreenViewController, UIGestureRecognizerDe
                 return (labelsArray, acc.1 + "[\(labelName)]-(>=\(self.horizontalPadding))-")
             }
         
-        var levelLabelConstraints = [AnyObject]()
+        var levelLabelConstraints = [NSLayoutConstraint]()
         var labelsDict = [String: ManglableLabel]()
-        for (index, (labelName, label)) in enumerate(levelLabels) {
+        for (index, (labelName, label)) in levelLabels.enumerate() {
             scrollView.addSubview(label)
             levelLabelConstraints += [
                 NSLayoutConstraint(
@@ -127,14 +127,14 @@ class LevelPickerViewController: HalfScreenViewController, UIGestureRecognizerDe
         
         levelLabelConstraints += NSLayoutConstraint.constraintsWithVisualFormat(
             horizontalConstraint + "|",
-            options: NSLayoutFormatOptions(0),
+            options: NSLayoutFormatOptions(rawValue: 0),
             metrics: nil,
-            views: labelsDict as [NSObject: AnyObject])
+            views: labelsDict)
         
         let allConstraints =
             NSLayoutConstraint.constraintsWithVisualFormat(
                 "V:|-(\(verticalPadding))-[swipeLabel][tapLabel]",
-                options: NSLayoutFormatOptions(0),
+                options: NSLayoutFormatOptions(rawValue: 0),
                 metrics: nil,
                 views: ["swipeLabel": swipeLabel, "tapLabel": tapLabel]) +
             scrollViewConstraints +
@@ -171,7 +171,7 @@ class LevelPickerViewController: HalfScreenViewController, UIGestureRecognizerDe
         view.addConstraints(
             NSLayoutConstraint.constraintsWithVisualFormat(
                 "V:[bestTimeValue][bestTimeKey]-(\(verticalPadding))-|",
-                options: NSLayoutFormatOptions(0),
+                options: NSLayoutFormatOptions(rawValue: 0),
                 metrics: nil,
                 views: ["bestTimeValue" : bestTimeValueLabel!, "bestTimeKey" : bestTimeKeyLabel!]) +
             [
@@ -204,14 +204,17 @@ class LevelPickerViewController: HalfScreenViewController, UIGestureRecognizerDe
         view.setNeedsLayout()
         view.layoutIfNeeded()
         
-        scrollViewDidScroll(scrollView)
-        fadeInTimeLabels()
-        
         NSNotificationCenter.defaultCenter().addObserver(
             self,
             selector: "bestScoreChanged:",
             name: PlayerIdentityManager.BestScoresChangeNotificationName,
             object: nil)
+    }
+    
+    override func viewDidAppear(animated: Bool) {
+        super.viewDidAppear(animated)
+        scrollViewDidScroll(scrollView)
+        fadeInTimeLabels()
     }
     
     func playerIdentityChanged(oldIdentity: PlayerIdentity, newIdentity: PlayerIdentity) {
@@ -283,7 +286,7 @@ extension LevelPickerViewController: UIScrollViewDelegate {
     
     private func fadeInTimeLabels() {
         refreshBestTimeLabels()
-        let haveBestScore = count(self.bestTimeValueLabel?.text ?? "") > 0
+        let haveBestScore = (self.bestTimeValueLabel?.text ?? "").characters.count > 0
         UIView.animateWithDuration(
             DesignLanguage.MinorAnimationDuration,
             delay: 0.0,
@@ -311,9 +314,9 @@ extension LevelPickerViewController: UIScrollViewDelegate {
                 let labelCenter = CGPointMake(label.center.x - scrollView.contentOffset.x, label.center.y)
                 let xDistance = abs(labelCenter.x - scrollView.center.x)
                 label.textColor = UIColor(
-                    red: interpolate(xDistance, inactiveR, activeR),
-                    green: interpolate(xDistance, inactiveG, activeG),
-                    blue: interpolate(xDistance, inactiveB, activeB),
+                    red: interpolate(xDistance, from: inactiveR, to: activeR),
+                    green: interpolate(xDistance, from: inactiveG, to: activeG),
+                    blue: interpolate(xDistance, from: inactiveB, to: activeB),
                     alpha: 1.0)
             }
         }
@@ -329,7 +332,9 @@ extension LevelPickerViewController: UIScrollViewDelegate {
                 animations: { () -> Void in
                     self.bestTimeKeyLabel?.alpha = 0
                     self.bestTimeValueLabel?.alpha = 0
-            }, completion: nil)
+                },
+                completion: nil
+            )
         }
     }
     

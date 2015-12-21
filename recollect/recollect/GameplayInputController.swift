@@ -24,18 +24,18 @@ class GameplayInputController: HalfScreenViewController {
         super.init(nibName: nil, bundle: nil)
     }
     
-    required init(coder aDecoder: NSCoder) {
+    required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) won't be implemented because I ain't using xibs")
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        for (lineNumber, buttonTextLine) in enumerate(buttonsText) {
-            for (buttonNumber, buttonText) in enumerate(buttonTextLine) {
+        for (lineNumber, buttonTextLine) in buttonsText.enumerate() {
+            for (buttonNumber, buttonText) in buttonTextLine.enumerate() {
                 let button = gameplayButton(buttonText)
                 buttons.append(button)
-                if buttonText.toInt() != nil {
+                if Int(buttonText) != nil {
                     button.enabled = false
                 }
                 view.addSubview(button)
@@ -114,7 +114,7 @@ extension GameplayInputController: GameStateChangeListener {
     }
 }
 
-enum GameplayInput: Int, Printable {
+enum GameplayInput: Int, CustomStringConvertible {
     case Zero, One, Two, Three, Four, Five, Six, Seven, Eight, Nine, Back, Forward
     
     var description: String {
@@ -129,7 +129,7 @@ enum GameplayInput: Int, Printable {
     
     static func fromString(str: String) -> GameplayInput {
         switch(str) {
-            case "0", "1", "2", "3", "4", "5", "6", "7", "8", "9": return GameplayInput(rawValue: str.toInt()!)!
+            case "0", "1", "2", "3", "4", "5", "6", "7", "8", "9": return GameplayInput(rawValue: Int(str)!)!
             case "«": return GameplayInput.Back
             case "»": return GameplayInput.Forward
             default: fatalError("Unexpected string to create a GameplayInput from: \(str)")

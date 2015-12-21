@@ -29,7 +29,7 @@ class LeaderboardEntry: PlayerScore {
     }
 }
 
-@objc class Leaderboard {
+class Leaderboard {
     let entries: [LeaderboardEntry]
     let leaderboardId: String
     

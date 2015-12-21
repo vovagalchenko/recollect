@@ -125,7 +125,7 @@ final class GameState: NSObject, Streamable {
     func writeTo<Target : OutputStreamType>(inout target: Target) {
         target.write("GAME STATE:\n\tn = \(n)\n\tchallenges = \(challenges)\n\tcurrentChallengeIndex = \(currentChallengeIndex)\n\tclosedTimeIntervals = \(closedTimeIntervals)")
         if let currentTimeIntervalStart = latestTimeStart {
-            target.write("\n\tlatestTimeStart = \(latestTimeStart)")
+            target.write("\n\tlatestTimeStart = \(currentTimeIntervalStart)")
         } else {
             target.write("\n\tfinalTime = \(finalTime())")
         }
@@ -150,7 +150,7 @@ final class TimeInterval: NSObject, NSCoding {
         aCoder.encodeObject(endTime, forKey: "endTime")
     }
     
-    convenience init(coder aDecoder: NSCoder) {
+    convenience init?(coder aDecoder: NSCoder) {
         self.init(
             startTime: aDecoder.decodeObjectForKey("startTime") as! NSDate,
             endTime: aDecoder.decodeObjectForKey("endTime") as! NSDate
@@ -172,7 +172,7 @@ extension GameState: NSCoding {
         aCoder.encodeObject(peeks, forKey: "peeks")
     }
     
-    convenience init(coder aDecoder: NSCoder) {
+    convenience init?(coder aDecoder: NSCoder) {
         let newGameId = aDecoder.decodeObjectForKey("gameId") as! String
         let newN = aDecoder.decodeIntegerForKey("n")
         let newChallenges = aDecoder.decodeObjectForKey("challenges") as! [Challenge]
@@ -193,7 +193,7 @@ extension GameState: NSCoding {
     }
 }
 
-@objc class GameStateChange {
+class GameStateChange {
     let oldGameState: GameState?
     let newGameState: GameState?
     

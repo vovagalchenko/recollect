@@ -17,18 +17,16 @@ class HalfScreenViewController: UIViewController, TransitionAnimationDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.view.setTranslatesAutoresizingMaskIntoConstraints(false)
-        for c in view.constraints() {
-            if let constraint = c as? NSLayoutConstraint {
-                constraint.shouldBeArchived = true
-            }
+        self.view.translatesAutoresizingMaskIntoConstraints = false
+        for c in view.constraints {
+            c.shouldBeArchived = true
         }
     }
     
     private func subviewsWalk(root: UIView, work: (UIView) -> Void) {
         work(root)
         for subview in root.subviews {
-            subviewsWalk(subview as! UIView, work: work)
+            subviewsWalk(subview , work: work)
         }
     }
     
@@ -76,7 +74,7 @@ class HalfScreenViewController: UIViewController, TransitionAnimationDelegate {
         displayLinkStartDate = NSDate()
         displayLinkDuration = plannedAnimationDuration
         
-        displayLink?.addToRunLoop(NSRunLoop.mainRunLoop(), forMode: NSDefaultRunLoopMode)
+        displayLink.addToRunLoop(NSRunLoop.mainRunLoop(), forMode: NSDefaultRunLoopMode)
     }
     
     func addToAnimationBlock(endingState: TransitionAnimationState) { }
