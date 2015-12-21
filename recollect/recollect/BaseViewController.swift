@@ -153,7 +153,7 @@ class BaseViewController: UIViewController {
                 existingNewController.animationWillBegin(.Inactive, plannedAnimationDuration: DesignLanguage.TransitionAnimationDuration)
             }
             if let existingOldController = oldController {
-                constraintsToRemove.appendContentsOf(existingOldController.view.superview?.constraints(existingOldController.view) ?? [NSLayoutConstraint]())
+                constraintsToRemove.appendContentsOf(existingOldController.view.superview?.constraintsConstrainingView(existingOldController.view) ?? [NSLayoutConstraint]())
                 existingOldController.animationWillBegin(.Active, plannedAnimationDuration: DesignLanguage.TransitionAnimationDuration)
             }
         }
@@ -309,7 +309,7 @@ extension BaseViewController: GameStateChangeListener {
                 animations: { () -> Void in
                     self.continueHelperOverlay!.alpha = 0.0
                 }) { (finished: Bool) -> Void in
-                    self.bottomHalfContainerView!.removeConstraints(self.bottomHalfContainerView!.constraints(self.continueHelperOverlay!))
+                    self.bottomHalfContainerView!.removeConstraints(self.bottomHalfContainerView!.constraintsConstrainingView(self.continueHelperOverlay!))
                     self.continueHelperOverlay!.removeFromSuperview()
                     self.continueHelperOverlay = nil
             }
@@ -329,9 +329,13 @@ extension BaseViewController: GameStateChangeListener {
 }
 
 extension UIView {
-    func constraints(constrainedView: UIView) -> [NSLayoutConstraint] {
+    func constraintsConstrainingView(
+        constrainedView: UIView,
+        constrainedAttributePredicate: (NSLayoutAttribute -> Bool) = { _ -> Bool in return true }
+    ) -> [NSLayoutConstraint] {
         return constraints.filter {
-            $0.firstItem as! NSObject == constrainedView || $0.secondItem as! NSObject == constrainedView
+            ($0.firstItem as! NSObject == constrainedView && constrainedAttributePredicate($0.firstAttribute)) ||
+            ($0.secondItem as! NSObject == constrainedView && constrainedAttributePredicate($0.secondAttribute))
         }
     }
 }

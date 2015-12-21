@@ -17,7 +17,6 @@ class GameResultViewController: HalfScreenViewController, UIGestureRecognizerDel
     var mainTimeLabel: ManglableLabel?
     var deltaTimeLabel: ManglableLabel?
     var gameCenterSolicitationLabel: ManglableLabel?
-    var resultViewContainerVerticalConstraint: NSLayoutConstraint?
     var leaderboardVC: LeaderboardViewController!
     
     init(gameState: GameState) {
@@ -25,6 +24,7 @@ class GameResultViewController: HalfScreenViewController, UIGestureRecognizerDel
         super.init(nibName: nil, bundle: nil)
         
         PlayerIdentityManager.sharedInstance.subscribeToPlayerIdentityChangeNotifications(self)
+        
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -170,16 +170,15 @@ class GameResultViewController: HalfScreenViewController, UIGestureRecognizerDel
                 views: ["leaderboardView": leaderboardVC.view])
         )
         
-        resultViewContainerVerticalConstraint = NSLayoutConstraint(
-            item: resultViewContainer!,
-            attribute: NSLayoutAttribute.CenterY,
-            relatedBy: NSLayoutRelation.Equal,
-            toItem: view,
-            attribute: NSLayoutAttribute.CenterY,
-            multiplier: 1.0,
-            constant: 0.0)
         view.addConstraints([
-            resultViewContainerVerticalConstraint!,
+            NSLayoutConstraint(
+                item: resultViewContainer!,
+                attribute: NSLayoutAttribute.CenterY,
+                relatedBy: NSLayoutRelation.Equal,
+                toItem: view,
+                attribute: NSLayoutAttribute.CenterY,
+                multiplier: 1.0,
+                constant: 0.0),
             NSLayoutConstraint(
                 item: leaderboardVC.view,
                 attribute: .Top,
@@ -217,6 +216,14 @@ class GameResultViewController: HalfScreenViewController, UIGestureRecognizerDel
                 constant: -5.0 // a little breathing room never hurt nobody
             ),
         ])
+    }
+    
+    override func viewDidAppear(animated: Bool) {
+        super.viewDidAppear(animated)
+        initializeViewForAppearance()
+    }
+    
+    private func initializeViewForAppearance() {
         refreshLayout()
         PlayerIdentityManager.sharedInstance.presentGameCenterLoginViewControllerIfAvailable()
     }
@@ -286,27 +293,33 @@ class GameResultViewController: HalfScreenViewController, UIGestureRecognizerDel
         )
         
         UIView.animateWithDuration(DesignLanguage.MinorAnimationDuration) {
-            if let resultsContainerConstraint = self.resultViewContainerVerticalConstraint {
-                self.view.removeConstraint(resultsContainerConstraint)
+            let constraintsToRemove = self.view.constraintsConstrainingView(self.resultViewContainer!) {
+                $0 == .Top || $0 == .CenterY
             }
-            self.resultViewContainerVerticalConstraint = leaderboard.entries.count > 1 ?
-                NSLayoutConstraint(
+            self.view.removeConstraints(constraintsToRemove)
+            let constraintToAdd: NSLayoutConstraint
+            if leaderboard.entries.count > 1 {
+                constraintToAdd = NSLayoutConstraint(
                     item: self.resultViewContainer!,
                     attribute: .Top,
                     relatedBy: .Equal,
                     toItem: self.view,
                     attribute: .Top,
                     multiplier: 1.0,
-                    constant: self.topLayoutGuide.length) :
-                NSLayoutConstraint(
+                    constant: self.topLayoutGuide.length)
+                
+            } else {
+                constraintToAdd = NSLayoutConstraint(
                     item: self.resultViewContainer!,
                     attribute: NSLayoutAttribute.CenterY,
                     relatedBy: NSLayoutRelation.Equal,
                     toItem: self.view,
                     attribute: NSLayoutAttribute.CenterY,
                     multiplier: 1.0,
-                    constant: 0.0)
-            self.view.addConstraint(self.resultViewContainerVerticalConstraint!)
+                    constant: 0.0
+                )
+            }
+            self.view.addConstraint(constraintToAdd)
             if 2...4 ~= leaderboard.entries.count {
                 self.leaderboardVC.setLeaderboard(leaderboard)
             }
