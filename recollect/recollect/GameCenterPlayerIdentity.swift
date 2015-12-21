@@ -233,6 +233,7 @@ extension GameCenterPlayerIdentity: GameStateChangeListener {
                 identifier: "level_\(change.newGameState!.levelId)_cleared",
                 player: gameKitPlayer
             )
+            levelClearedAchievement.percentComplete = 100.0
             let achievementsToReport: [GKAchievement]
             if change.newGameState!.isFlawless() {
                 let flawlessAchievement = GKAchievement(
@@ -240,6 +241,7 @@ extension GameCenterPlayerIdentity: GameStateChangeListener {
                     player: gameKitPlayer
                 )
                 flawlessAchievement.showsCompletionBanner = true
+                flawlessAchievement.percentComplete = 100.0
                 achievementsToReport = [
                     levelClearedAchievement,
                     flawlessAchievement
