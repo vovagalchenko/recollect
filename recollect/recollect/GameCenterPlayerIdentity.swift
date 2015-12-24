@@ -124,7 +124,7 @@ import GameKit
                             var finalEntries = [LeaderboardEntry]()
                             var inserted = false
                             for orderedEntry in entriesWithForcedScore {
-                                if orderedEntry.rank < successfullyForcedEntry.rank && orderedEntry.time > successfullyForcedEntry.time {
+                                if orderedEntry.rank <= successfullyForcedEntry.rank && orderedEntry.time > successfullyForcedEntry.time {
                                     finalEntries.append(LeaderboardEntry(
                                         playerId: successfullyForcedEntry.playerId,
                                         time: successfullyForcedEntry.time,
