@@ -93,11 +93,10 @@ import GameKit
             if error == nil {
                 var needToAddOwnScore = true
                 let playerScores = (scores ?? []).map { s -> LeaderboardEntry in
-                    let score = (s )
-                    if score.player.playerID == self.gameKitPlayer.playerID {
+                    if s.player.playerID == self.gameKitPlayer.playerID {
                         needToAddOwnScore = false
                     }
-                    return self.gkScoreToLeaderboardEntry(score)
+                    return self.gkScoreToLeaderboardEntry(s)
                 }
                 let sortResultAndCallCompletion = { (entries: [LeaderboardEntry]) -> Void in
                     // All of this acrobatics is necessary because the game center might not return the score we just submitted... what a piece of shit

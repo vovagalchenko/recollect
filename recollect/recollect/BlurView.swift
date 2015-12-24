@@ -67,7 +67,8 @@ class BlurView: UIView {
     override func layoutSubviews() {
         let beforeRect = blurredView.bounds
         super.layoutSubviews()
-        if !CGRectEqualToRect(beforeRect, blurredView.bounds) {
+        if !CGRectEqualToRect(beforeRect, blurredView.bounds) &&
+            viewToBlur.bounds.width * viewToBlur.bounds.height > 0  {
             let blurredImage = self.treatImage(self.screenshot(self.viewToBlur))
             self.blurredView.image = blurredImage
         }

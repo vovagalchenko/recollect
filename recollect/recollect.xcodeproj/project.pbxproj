@@ -41,6 +41,7 @@
 		80CFFDE81A5BBE0400E3640B /* Leaderboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80CFFDE71A5BBE0400E3640B /* Leaderboard.swift */; };
 		80CFFDEA1A5BC0DD00E3640B /* LocalPlayerIdentity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80CFFDE91A5BC0DD00E3640B /* LocalPlayerIdentity.swift */; };
 		80D712B719F4E0A600152F13 /* Launch Screen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 80D712B619F4E0A600152F13 /* Launch Screen.xib */; };
+		80F2B84F1C2BECA500FD1D45 /* ReviewElicitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80F2B84E1C2BECA500FD1D45 /* ReviewElicitor.swift */; };
 		80F4CA451A62EB2500C5A0E8 /* ContinueInstructionOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80F4CA441A62EB2500C5A0E8 /* ContinueInstructionOverlayView.swift */; };
 		80F4CA471A63177200C5A0E8 /* BorderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80F4CA461A63177200C5A0E8 /* BorderView.swift */; };
 		80F4CA491A63191800C5A0E8 /* UIView+PixelPerfect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80F4CA481A63191800C5A0E8 /* UIView+PixelPerfect.swift */; };
@@ -113,6 +114,7 @@
 		80CFFDE71A5BBE0400E3640B /* Leaderboard.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Leaderboard.swift; sourceTree = "<group>"; };
 		80CFFDE91A5BC0DD00E3640B /* LocalPlayerIdentity.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocalPlayerIdentity.swift; sourceTree = "<group>"; };
 		80D712B619F4E0A600152F13 /* Launch Screen.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "Launch Screen.xib"; sourceTree = "<group>"; };
+		80F2B84E1C2BECA500FD1D45 /* ReviewElicitor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReviewElicitor.swift; sourceTree = "<group>"; };
 		80F4CA441A62EB2500C5A0E8 /* ContinueInstructionOverlayView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContinueInstructionOverlayView.swift; sourceTree = "<group>"; };
 		80F4CA461A63177200C5A0E8 /* BorderView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BorderView.swift; sourceTree = "<group>"; };
 		80F4CA481A63191800C5A0E8 /* UIView+PixelPerfect.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIView+PixelPerfect.swift"; sourceTree = "<group>"; };
@@ -246,6 +248,7 @@
 				80F4CA461A63177200C5A0E8 /* BorderView.swift */,
 				80F4CA481A63191800C5A0E8 /* UIView+PixelPerfect.swift */,
 				80FDA25A1B09564F00E3648B /* LeaderboardEntryView.swift */,
+				80F2B84E1C2BECA500FD1D45 /* ReviewElicitor.swift */,
 			);
 			name = "Gameplay UI Helpers";
 			sourceTree = "<group>";
@@ -416,6 +419,7 @@
 				802EDE761A5D1E6D004EE1CC /* SharingViewController.swift in Sources */,
 				80BE1F331A74475F00D741CA /* GameCenterPlayerIdentity.swift in Sources */,
 				8098CD2F1A5836E0009968EE /* Challenge.swift in Sources */,
+				80F2B84F1C2BECA500FD1D45 /* ReviewElicitor.swift in Sources */,
 				80539B4919F4BCFD00C23F6D /* AppDelegate.swift in Sources */,
 				80F4CA471A63177200C5A0E8 /* BorderView.swift in Sources */,
 				806B529D1A4B3DFD005F4DFA /* LogoViewController.swift in Sources */,

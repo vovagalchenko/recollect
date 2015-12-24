@@ -220,10 +220,6 @@ class GameResultViewController: HalfScreenViewController, UIGestureRecognizerDel
     
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(animated)
-        initializeViewForAppearance()
-    }
-    
-    private func initializeViewForAppearance() {
         refreshLayout()
         PlayerIdentityManager.sharedInstance.presentGameCenterLoginViewControllerIfAvailable()
     }
@@ -306,8 +302,7 @@ class GameResultViewController: HalfScreenViewController, UIGestureRecognizerDel
                     toItem: self.view,
                     attribute: .Top,
                     multiplier: 1.0,
-                    constant: self.topLayoutGuide.length)
-                
+                    constant: self.parentViewController!.topLayoutGuide.length)
             } else {
                 constraintToAdd = NSLayoutConstraint(
                     item: self.resultViewContainer!,
