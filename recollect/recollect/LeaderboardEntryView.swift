@@ -23,6 +23,7 @@ class LeaderboardEntryView: UIView {
             return Int(rankLabel.text!)!
         }
     }
+    var playerId: String?
     
     init(pos: LeaderboardEntryViewPosition = .Middle) {
         position = pos
@@ -87,6 +88,7 @@ class LeaderboardEntryView: UIView {
         nameLabel.text = entry.playerName
         rankLabel.text = "\(entry.rank)"
         timeLabel.text = entry.time.minuteSecondCentisecondString()
+        playerId = entry.playerId
         avatarImageView.alpha = 1.0
         
         let labels = [nameLabel, rankLabel, timeLabel]
@@ -97,6 +99,10 @@ class LeaderboardEntryView: UIView {
                 label.textColor = DesignLanguage.NeverActiveTextColor
             }
         }
+    }
+    
+    func setAvatarImage(image: UIImage) {
+        avatarImageView.image = image
     }
     
     private func createLabel() -> ManglableLabel {

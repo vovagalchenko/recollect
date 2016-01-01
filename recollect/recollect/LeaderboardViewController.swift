@@ -27,7 +27,7 @@ class LeaderboardViewController: UIViewController, GKGameCenterControllerDelegat
         for subview in view.subviews { subview.removeFromSuperview() }
         view.removeConstraints(view.constraints)
         
-        var prevEntryView: LeaderboardEntryView? = nil
+        var leaderboardEntryViews = [LeaderboardEntryView]()
         for (index, entry) in leaderboard.entries.enumerate() {
             let position: LeaderboardEntryViewPosition
             if index == 0 {
@@ -47,7 +47,7 @@ class LeaderboardViewController: UIViewController, GKGameCenterControllerDelegat
                     metrics: nil,
                     views: ["entry": entryView])
             )
-            if let existingPrevEntryView = prevEntryView {
+            if let existingPrevEntryView = leaderboardEntryViews.last {
                 let viewToStickTo: UIView
                 if existingPrevEntryView.rank < entry.rank - 1 {
                     let gapEntryView = LeaderboardEntryView(pos: .Gap)
@@ -123,7 +123,42 @@ class LeaderboardViewController: UIViewController, GKGameCenterControllerDelegat
                         constant: 0.0)
                 )
             }
-            prevEntryView = entryView
+            leaderboardEntryViews.append(entryView)
+        }
+        
+        let playerIds = leaderboard.entries.map { $0.playerId }
+        GKPlayer.loadPlayersForIdentifiers(playerIds) { (players, error) -> Void in
+            if let existingPlayers = players {
+                existingPlayers.forEach { player -> Void in
+                    player.loadPhotoForSize(GKPhotoSizeNormal) { (image, error) -> Void in
+                        if let existingImage = image {
+                            leaderboardEntryViews
+                                .filter { $0.playerId == player.playerID }
+                                .forEach { $0.setAvatarImage(existingImage) }
+                        } else {
+                            Analytics.sharedInstance()
+                                .logEventWithName(
+                                    "player_avatar_load_fail",
+                                    type: AnalyticsEventTypeWarning,
+                                    attributes: [
+                                        "player_id": player.playerID ?? "unknown_player_id",
+                                        "error": error?.description ?? "unknown_error"
+                                    ]
+                            )
+                        }
+                    }
+                }
+            } else {
+                Analytics.sharedInstance()
+                    .logEventWithName(
+                        "player_for_id_load_fail",
+                        type: AnalyticsEventTypeWarning,
+                        attributes: [
+                            "player_ids": playerIds.description,
+                            "error": error?.description ?? "unknown_error"
+                        ]
+                )
+            }
         }
     }
     
