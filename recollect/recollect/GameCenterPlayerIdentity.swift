@@ -20,8 +20,8 @@ import GameKit
         
         GameManager.sharedInstance.subscribeToGameStateChangeNotifications(self)
         
-        Analytics.sharedInstance().logEventWithName(
-            "game_center_authenticated",
+        Analytics.sharedInstance().logEvent(
+            withName: "game_center_authenticated",
             type: AnalyticsEventTypeAppLifecycle,
             attributes: ["player_id": playerId, "player_username": gameKitPlayer.description]
         )
@@ -31,17 +31,18 @@ import GameKit
         GameManager.sharedInstance.unsubscribeFromGameStateChangeNotifications(self)
     }
     
-    private var bestScoreCompletions: [[String: PlayerScore] -> Void] = []
+    private var bestScoreCompletions: [([String: PlayerScore]) -> Void] = []
     private var cachedBestScores: [String: PlayerScore]? = nil {
         didSet {
-            NSNotificationCenter.defaultCenter().postNotificationName(
-                PlayerIdentityManager.BestScoresChangeNotificationName,
+            NotificationCenter.default.post(
+                name: Notification.Name(rawValue: PlayerIdentityManager.BestScoresChangeNotificationName),
                 object: self,
-                userInfo: nil)
+                userInfo: nil
+            )
         }
     }
-    func getMyBestScores(completion: [String: PlayerScore] -> Void) {
-        assert(NSThread.currentThread().isMainThread, "We are relying on getMyBestScores being called on the main thread.")
+    func getMyBestScores(_ completion: @escaping ([String: PlayerScore]) -> Void) {
+        assert(Thread.current.isMainThread, "We are relying on getMyBestScores being called on the main thread.")
         if let bestScores = cachedBestScores {
             completion(bestScores)
         } else if bestScoreCompletions.count > 0 {
@@ -53,12 +54,12 @@ import GameKit
             for levelId in GameManager.gameLevels {
                 let leaderboardRequest = GKLeaderboard(players: [gameKitPlayer])
                 leaderboardRequest.identifier = leaderboardIdentifier(levelId)
-                leaderboardRequest.loadScoresWithCompletionHandler() { (scores, error) -> Void in
+                leaderboardRequest.loadScores() { (scores, error) -> Void in
                     if let emittedError = error  {
-                        Analytics.sharedInstance().logEventWithName(
-                            "game_center_best_score_fetch_error",
+                        Analytics.sharedInstance().logEvent(
+                            withName: "game_center_best_score_fetch_error",
                             type: AnalyticsEventTypeWarning,
-                            attributes: ["error": emittedError.description]
+                            attributes: ["error": emittedError.localizedDescription]
                         )
                     }
                     let receivedScores = (scores ?? []) 
@@ -68,14 +69,14 @@ import GameKit
                     } else {
                         playerScore = self.gkScoreToPlayerScore(receivedScores[0])
                     }
-                    dispatch_async(dispatch_get_main_queue()) {
+                    DispatchQueue.main.async {
                         myBestScores[levelId] = playerScore
                         levelsToFetch.remove(levelId)
                         
                         if levelsToFetch.count == 0 {
                             self.cachedBestScores = myBestScores
                             for _ in self.bestScoreCompletions {
-                                self.bestScoreCompletions.removeAtIndex(0)(myBestScores)
+                                self.bestScoreCompletions.remove(at: 0)(myBestScores)
                             }
                         }
                     }
@@ -84,16 +85,16 @@ import GameKit
         }
     }
     
-    func getLeaderboard(levelId: String, ownForcedScore: NSTimeInterval = -1, completion: Leaderboard -> Void) {
+    func getLeaderboard(_ levelId: String, ownForcedScore: Foundation.TimeInterval = -1, completion: @escaping (Leaderboard) -> Void) {
         let leaderboardId = leaderboardIdentifier(levelId)
         let leaderboard = GKLeaderboard()
         leaderboard.identifier = leaderboardId
         leaderboard.range = NSMakeRange(1, 3)
-        leaderboard.loadScoresWithCompletionHandler({ (scores: [GKScore]?, error: NSError?) -> Void in
+        leaderboard.loadScores(completionHandler: { (scores: [GKScore]?, error: Error?) -> Void in
             if error == nil {
                 var needToAddOwnScore = true
                 let playerScores = (scores ?? []).map { s -> LeaderboardEntry in
-                    if s.player.playerID == self.gameKitPlayer.playerID {
+                    if s.player!.playerID == self.gameKitPlayer.playerID {
                         needToAddOwnScore = false
                     }
                     return self.gkScoreToLeaderboardEntry(s)
@@ -118,7 +119,7 @@ import GameKit
                                     return $0
                                 }
                             }
-                            .sort() { $0.rank <= $1.rank }
+                            .sorted() { $0.rank <= $1.rank }
                         
                         if let successfullyForcedEntry = forcedEntry {
                             var finalEntries = [LeaderboardEntry]()
@@ -161,8 +162,8 @@ import GameKit
                 if needToAddOwnScore {
                     let myScoreRequest = GKLeaderboard(players: [self.gameKitPlayer])
                     myScoreRequest.identifier = leaderboardId
-                    myScoreRequest.loadScoresWithCompletionHandler({ (myScoreArray: [GKScore]?, error: NSError?) -> Void in
-                        let myScore = ((myScoreArray ?? []) ).filter { $0.player.playerID == self.gameKitPlayer.playerID }.map {
+                    myScoreRequest.loadScores(completionHandler: { (myScoreArray: [GKScore]?, error: Error?) -> Void in
+                        let myScore = (myScoreArray ?? []).filter { $0.player!.playerID == self.gameKitPlayer.playerID }.map {
                             self.gkScoreToLeaderboardEntry($0)
                         }
                         sortResultAndCallCompletion(playerScores + myScore)
@@ -172,10 +173,10 @@ import GameKit
                 }
                 
             } else {
-                Analytics.sharedInstance().logEventWithName(
-                    "game_center_leaderboard_fetch_error",
+                Analytics.sharedInstance().logEvent(
+                    withName: "game_center_leaderboard_fetch_error",
                     type: AnalyticsEventTypeWarning,
-                    attributes: ["error": error!.description]
+                    attributes: ["error": error!.localizedDescription]
                 )
                 completion(Leaderboard(entries: [LeaderboardEntry](), leaderboardId: leaderboardId))
                 
@@ -183,50 +184,50 @@ import GameKit
         })
     }
 
-    private func gameTimeToScoreValue(gameState: GameState) -> Int64 { return gameTimeToScoreValue(gameState.finalTime()) }
-    private func gameTimeToScoreValue(time: NSTimeInterval) -> Int64 { return Int64(round(time*100)) }
-    private func gkScoreToLeaderboardEntry(score: GKScore) -> LeaderboardEntry {
+    private func gameTimeToScoreValue(_ gameState: GameState) -> Int64 { return gameTimeToScoreValue(gameState.finalTime()) }
+    private func gameTimeToScoreValue(_ time: Foundation.TimeInterval) -> Int64 { return Int64(round(time*100)) }
+    private func gkScoreToLeaderboardEntry(_ score: GKScore) -> LeaderboardEntry {
         return LeaderboardEntry(
-            playerId: score.player.playerID!,
-            time: NSTimeInterval(score.value)/100.0,
-            playerName: score.player.alias ?? "",
+            playerId: score.player!.playerID!,
+            time: Foundation.TimeInterval(score.value)/100.0,
+            playerName: score.player!.alias ?? "",
             rank: score.rank
         )
     }
-    private func gkScoreToPlayerScore(score: GKScore) -> PlayerScore {
-        return PlayerScore(playerId: score.player.playerID!, time: NSTimeInterval(score.value)/100.0)
+    private func gkScoreToPlayerScore(_ score: GKScore) -> PlayerScore {
+        return PlayerScore(playerId: score.player!.playerID!, time: Foundation.TimeInterval(score.value)/100.0)
     }
 
-    func recordNewGame(newGame: GameState, completion: () -> Void) {
+    func recordNewGame(_ newGame: GameState, completion: @escaping () -> Void) {
         let leaderboardId = leaderboardIdentifier(newGame.levelId)
         let newScore = GKScore(leaderboardIdentifier: leaderboardId)
         newScore.value = gameTimeToScoreValue(newGame)
         newScore.context = UInt64(Int(newGame.levelId)!)
-        GKScore.reportScores([newScore]) { (error: NSError?) -> Void in
+        GKScore.report([newScore], withCompletionHandler: { (error: Error?) -> Void in
             if error == nil {
                 NSLog("SUCCESFULLY REPORTED SCORE: \(newScore)")
-                Analytics.sharedInstance().logEventWithName(
-                    "game_center_score_report",
+                Analytics.sharedInstance().logEvent(
+                    withName: "game_center_score_report",
                     type: AnalyticsEventTypeDebug,
                     attributes: ["final_time": newGame.finalTime(), "level": newGame.levelId]
                 )
             } else {
-                Analytics.sharedInstance().logEventWithName(
-                    "game_center_score_report_error",
+                Analytics.sharedInstance().logEvent(
+                    withName: "game_center_score_report_error",
                     type: AnalyticsEventTypeWarning,
-                    attributes: ["error": error?.description ?? "unknown_error"]
+                    attributes: ["error": error?.localizedDescription ?? "unknown_error"]
                 )
             }
             self.cachedBestScores = nil
             completion()
-        }
+        }) 
     }
     
-    private func leaderboardIdentifier(levelId: String) -> String { return "level_\(levelId)_time" }
+    private func leaderboardIdentifier(_ levelId: String) -> String { return "level_\(levelId)_time" }
 }
 
 extension GameCenterPlayerIdentity: GameStateChangeListener {
-    func gameStateChanged(change: GameStateChange) {
+    func gameStateChanged(_ change: GameStateChange) {
         if change.newGameState?.isFinished() ?? false {
             let levelClearedAchievement = GKAchievement(
                 identifier: "level_\(change.newGameState!.levelId)_cleared",
@@ -249,23 +250,23 @@ extension GameCenterPlayerIdentity: GameStateChangeListener {
                 achievementsToReport = [levelClearedAchievement]
             }
             
-            GKAchievement.reportAchievements(achievementsToReport) { error -> Void in
+            GKAchievement.report(achievementsToReport, withCompletionHandler: { error -> Void in
                 if error != nil {
-                    Analytics.sharedInstance().logEventWithName(
-                        "game_center_achievement_report_error",
+                    Analytics.sharedInstance().logEvent(
+                        withName: "game_center_achievement_report_error",
                         type: AnalyticsEventTypeWarning,
-                        attributes: ["error": error?.description ?? "unexplained_error"]
+                        attributes: ["error": error?.localizedDescription ?? "unexplained_error"]
                     )
                 } else {
                     let achievementIds = achievementsToReport.map { $0.identifier! }
-                    Analytics.sharedInstance().logEventWithName(
-                        "game_center_achievement_report",
+                    Analytics.sharedInstance().logEvent(
+                        withName: "game_center_achievement_report",
                         type: AnalyticsEventTypeDebug,
                         attributes: ["achievements": achievementIds]
                     )
                     NSLog("Reported achievements \(achievementsToReport)")
                 }
-            }
+            }) 
         }
     }
 }

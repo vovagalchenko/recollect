@@ -13,15 +13,15 @@ class ReviewElicitor: NSObject, GameStateChangeListener, MFMailComposeViewContro
     static let instance = ReviewElicitor()
     static private let NumFinishedGamesUserDefaultsKey = "num_finished_games"
     static private let FeedbackEmailAddress = "info@pryanik.com"
-    static private let AppName = NSBundle.mainBundle().infoDictionary!["CFBundleName"] as! String
+    static private let AppName = Bundle.main.infoDictionary!["CFBundleName"] as! String
     static private let NumGamesToFinishBeforeRating = 10
     
     private var numFinishedGamesSinceLastPrompt: Int =
-        NSUserDefaults.standardUserDefaults().integerForKey(ReviewElicitor.NumFinishedGamesUserDefaultsKey) {
+        UserDefaults.standard.integer(forKey: ReviewElicitor.NumFinishedGamesUserDefaultsKey) {
             didSet {
-                NSUserDefaults.standardUserDefaults()
-                    .setInteger(numFinishedGamesSinceLastPrompt, forKey: ReviewElicitor.NumFinishedGamesUserDefaultsKey)
-                NSUserDefaults.standardUserDefaults().synchronize()
+                UserDefaults.standard
+                    .set(numFinishedGamesSinceLastPrompt, forKey: ReviewElicitor.NumFinishedGamesUserDefaultsKey)
+                UserDefaults.standard.synchronize()
             }
         }
     private var userOptedOut: Bool {
@@ -39,12 +39,12 @@ class ReviewElicitor: NSObject, GameStateChangeListener, MFMailComposeViewContro
         GameManager.sharedInstance.unsubscribeFromGameStateChangeNotifications(self)
     }
     
-    func gameStateChanged(change: GameStateChange) {
-        if let finishedGame = change.newGameState where
+    func gameStateChanged(_ change: GameStateChange) {
+        if let finishedGame = change.newGameState,
             !userOptedOut &&
             finishedGame.isFinished() &&
             !(change.oldGameState?.isFinished() ?? true) {
-            numFinishedGamesSinceLastPrompt++
+            numFinishedGamesSinceLastPrompt += 1
             if numFinishedGamesSinceLastPrompt >= ReviewElicitor.NumGamesToFinishBeforeRating {
                 self.numFinishedGamesSinceLastPrompt = 0
                 showPrompt()
@@ -57,36 +57,36 @@ class ReviewElicitor: NSObject, GameStateChangeListener, MFMailComposeViewContro
         let alertController = UIAlertController(
             title: "Do you like \(ReviewElicitor.AppName)?",
             message: "Please leave a review in the App Store\(mailSupported ? " or email us your feedback." : ".")",
-            preferredStyle: .Alert
+            preferredStyle: .alert
         )
         alertController.addAction(
-            UIAlertAction(title: "Leave a Review", style: .Default) { _ -> Void in
+            UIAlertAction(title: "Leave a Review", style: .default) { _ -> Void in
                 self.numFinishedGamesSinceLastPrompt = -1
-                Analytics.sharedInstance().logEventWithName(
-                    "app_store_review",
+                Analytics.sharedInstance().logEvent(
+                    withName: "app_store_review",
                     type: AnalyticsEventTypeUserAction,
                     attributes: ["mail_supported": mailSupported ? "yes" : "no"]
                 )
                 let appStoreUrl = "itms-apps://itunes.apple.com/app/id961318875"
-                UIApplication.sharedApplication().openURL(NSURL(string: appStoreUrl)!)
+                UIApplication.shared.openURL(URL(string: appStoreUrl)!)
             }
         )
         if mailSupported {
             alertController.addAction(
-                UIAlertAction(title: "Email Developer", style: .Default) { _ -> Void in
+                UIAlertAction(title: "Email Developer", style: .default) { _ -> Void in
                     let mailVC = MFMailComposeViewController()
                     mailVC.mailComposeDelegate = self
                     mailVC.setSubject("Feedback on \(ReviewElicitor.AppName)")
                     mailVC.setToRecipients([ReviewElicitor.FeedbackEmailAddress])
-                    let controller = UIApplication.sharedApplication().keyWindow!.rootViewController!
-                    controller.presentViewController(mailVC, animated: true, completion: nil)
+                    let controller = UIApplication.shared.keyWindow!.rootViewController!
+                    controller.present(mailVC, animated: true, completion: nil)
                 }
             )
         }
         alertController.addAction(
-            UIAlertAction(title: "Dismiss", style: .Cancel) { _ -> Void in
-                Analytics.sharedInstance().logEventWithName(
-                    "review_elicitor_cancelled",
+            UIAlertAction(title: "Dismiss", style: .cancel) { _ -> Void in
+                Analytics.sharedInstance().logEvent(
+                    withName: "review_elicitor_cancelled",
                     type: AnalyticsEventTypeUserAction,
                     attributes: ["mail_supported": mailSupported ? "yes" : "no"]
                 )
@@ -94,43 +94,43 @@ class ReviewElicitor: NSObject, GameStateChangeListener, MFMailComposeViewContro
             }
         )
         alertController.addAction(
-            UIAlertAction(title: "Don't Ask Again", style: .Destructive) { _ -> Void in
-                Analytics.sharedInstance().logEventWithName(
-                    "review_elicitor_dont_ask_again",
+            UIAlertAction(title: "Don't Ask Again", style: .destructive) { _ -> Void in
+                Analytics.sharedInstance().logEvent(
+                    withName: "review_elicitor_dont_ask_again",
                     type: AnalyticsEventTypeUserAction,
                     attributes: ["mail_supported": mailSupported ? "yes" : "no"]
                 )
                 self.numFinishedGamesSinceLastPrompt = -1
             }
         )
-        UIApplication.sharedApplication().keyWindow!.rootViewController!
-            .presentViewController(alertController, animated: true, completion: nil)
-        Analytics.sharedInstance().logEventWithName(
-            "review_elicitor_prompt_shown",
+        UIApplication.shared.keyWindow!.rootViewController!
+            .present(alertController, animated: true, completion: nil)
+        Analytics.sharedInstance().logEvent(
+            withName: "review_elicitor_prompt_shown",
             type: AnalyticsEventTypeViewChange,
             attributes: ["mail_supported": mailSupported ? "yes" : "no"]
         )
     }
     
     func mailComposeController(
-        controller: MFMailComposeViewController,
-        didFinishWithResult result: MFMailComposeResult,
-        error: NSError?
+        _ controller: MFMailComposeViewController,
+        didFinishWith result: MFMailComposeResult,
+        error: Error?
     ) {
-        controller.dismissViewControllerAnimated(true, completion: nil)
+        controller.dismiss(animated: true, completion: nil)
         switch (result) {
-        case MFMailComposeResultSent:
-            Analytics.sharedInstance().logEventWithName(
-                "feedback_sent",
+        case MFMailComposeResult.sent:
+            Analytics.sharedInstance().logEvent(
+                withName: "feedback_sent",
                 type: AnalyticsEventTypeUserAction,
                 attributes: nil
             )
             self.numFinishedGamesSinceLastPrompt = -1
         default:
-            Analytics.sharedInstance().logEventWithName(
-                "feedback_sending_didnt_succeed",
+            Analytics.sharedInstance().logEvent(
+                withName: "feedback_sending_didnt_succeed",
                 type: AnalyticsEventTypeUserAction,
-                attributes: ["mail_sending_result": NSNumber(unsignedInt: result.rawValue)]
+                attributes: ["mail_sending_result": NSNumber(value: result.rawValue)]
             )
             showPrompt()
         }

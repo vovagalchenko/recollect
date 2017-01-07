@@ -17,7 +17,10 @@ class ManglableLabel: UILabel {
                 originalText = newText
             } else if originalAttributedText != nil {
                 if let existingNewText = newText {
-                    originalAttributedText = NSAttributedString(string: existingNewText, attributes: [NSForegroundColorAttributeName: originalTextColor ?? textColor])
+                    originalAttributedText = NSAttributedString(
+                        string: existingNewText,
+                        attributes: [NSForegroundColorAttributeName: originalTextColor ?? textColor!]
+                    )
                 } else {
                     originalAttributedText = nil
                 }
@@ -38,12 +41,12 @@ class ManglableLabel: UILabel {
     private var originalAttributedText: NSAttributedString?
     private var originalTextColor: UIColor?
     
-    private let aToZCaps = Array(0x41...0x5A).map {UnicodeScalar($0)}
-    private let aToZLowercase = Array(0x61...0x7A).map {UnicodeScalar($0)}
-    private let zeroToNine = Array(0x30...0x39).map {UnicodeScalar($0)}
+    private let aToZCaps = Array(0x41...0x5A).map {UnicodeScalar($0)!}
+    private let aToZLowercase = Array(0x61...0x7A).map {UnicodeScalar($0)!}
+    private let zeroToNine = Array(0x30...0x39).map {UnicodeScalar($0)!}
     
     init() {
-        super.init(frame: CGRectZero)
+        super.init(frame: CGRect.zero)
         translatesAutoresizingMaskIntoConstraints = false
     }
 
@@ -51,7 +54,7 @@ class ManglableLabel: UILabel {
         fatalError("init(coder:) isn't expected to be called because xibs aren't used.")
     }
     
-    func mangle(portionOfTextToLeaveUnmangled: Float, canUseAlphaForAccents: Bool) {
+    func mangle(_ portionOfTextToLeaveUnmangled: Float, canUseAlphaForAccents: Bool) {
         if originalText == nil && originalTextColor == nil && originalAttributedText == nil {
             if attributedText != nil {
                 originalAttributedText = attributedText
@@ -70,28 +73,30 @@ class ManglableLabel: UILabel {
         if mangledString.string.characters.count > 0 {
             let strLength = mangledString.string.characters.count
             let numCharactersToLeaveUnmangled = Int(round(Float(strLength) * portionOfTextToLeaveUnmangled))
-            let indexOfSplitChar = mangledString.string.startIndex.advancedBy(numCharactersToLeaveUnmangled)
+            let indexOfSplitChar = mangledString.string.characters.index(mangledString.string.startIndex, offsetBy: numCharactersToLeaveUnmangled)
             var stringToPrepend = ""
-            for character in mangledString.string.substringFromIndex(indexOfSplitChar).unicodeScalars {
-                var replacement = character
-                if aToZCaps[0] <= character && aToZCaps[aToZCaps.count - 1] >= character {
+            for character in mangledString.string.substring(from: indexOfSplitChar).unicodeScalars {
+                let replacement: UnicodeScalar
+                if aToZCaps.first!.value <= character.value && aToZCaps.last!.value >= character.value {
                     replacement = aToZCaps[Int(arc4random_uniform(UInt32(aToZCaps.count)))]
-                } else if aToZLowercase[0] <= character && aToZLowercase[aToZLowercase.count - 1] >= character {
+                } else if aToZLowercase.first!.value <= character.value && aToZLowercase.last!.value >= character.value {
                     replacement = aToZLowercase[Int(arc4random_uniform(UInt32(aToZLowercase.count)))]
-                } else if zeroToNine[0] <= character && zeroToNine[zeroToNine.count - 1] >= character {
+                } else if zeroToNine.first!.value <= character.value && zeroToNine.last!.value >= character.value {
                     replacement = zeroToNine[Int(arc4random_uniform(UInt32(zeroToNine.count)))]
+                } else {
+                    replacement = character
                 }
-                stringToPrepend.append(replacement)
+                stringToPrepend.append(Character(replacement))
             }
             let mangledStringRange = NSRange(location: mangledString.string.characters.count - stringToPrepend.characters.count, length: stringToPrepend.characters.count)
-            mangledString.mutableString.replaceCharactersInRange(mangledStringRange, withString: stringToPrepend)
+            mangledString.mutableString.replaceCharacters(in: mangledStringRange, with: stringToPrepend)
             
             if canUseAlphaForAccents {
                 // TODO: ManglableLabel animation probably looks weird if the original attributedText isn't of uniform color, but we don't have that case for now.
-                let color = originalTextColor ?? mangledString.attribute(NSForegroundColorAttributeName, atIndex: 0, effectiveRange: nil) as! UIColor
+                let color = originalTextColor ?? mangledString.attribute(NSForegroundColorAttributeName, at: 0, effectiveRange: nil) as! UIColor
                 var alpha: CGFloat = 0
                 color.getRed(nil, green: nil, blue: nil, alpha: &alpha)
-                let mangledStringColor = canUseAlphaForAccents ? color.colorWithAlphaComponent(alpha * 0.5) : color
+                let mangledStringColor = canUseAlphaForAccents ? color.withAlphaComponent(alpha * 0.5) : color
                 mangledString.addAttribute(NSForegroundColorAttributeName, value: mangledStringColor, range: mangledStringRange)
             }
             attributedText = mangledString

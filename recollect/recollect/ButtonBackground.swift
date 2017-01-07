@@ -17,10 +17,10 @@ class ButtonBackground: UIView {
     
     init() {
         self.baseColor = DesignLanguage.ActiveTextColor
-        super.init(frame: CGRectZero)
+        super.init(frame: CGRect.zero)
         translatesAutoresizingMaskIntoConstraints = false
-        userInteractionEnabled = false
-        opaque = false
+        isUserInteractionEnabled = false
+        isOpaque = false
         clearsContextBeforeDrawing = true
     }
 

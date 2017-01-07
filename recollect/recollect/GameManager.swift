@@ -8,6 +8,30 @@
 
 import Foundation
 import UIKit
+// FIXME: comparison operators with optionals were removed from the Swift Standard Libary.
+// Consider refactoring the code to use the non-optional operators.
+private func < <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
+  switch (lhs, rhs) {
+  case let (l?, r?):
+    return l < r
+  case (nil, _?):
+    return true
+  default:
+    return false
+  }
+}
+
+// FIXME: comparison operators with optionals were removed from the Swift Standard Libary.
+// Consider refactoring the code to use the non-optional operators.
+private func >= <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
+  switch (lhs, rhs) {
+  case let (l?, r?):
+    return l >= r
+  default:
+    return !(lhs < rhs)
+  }
+}
+
 
 class GameManager {
     
@@ -30,13 +54,13 @@ class GameManager {
         return "change"
     }
     
-    class var penaltyPerPeek: NSTimeInterval {
+    class var penaltyPerPeek: Foundation.TimeInterval {
         return 5
     }
     
     var currentGameState: GameState? {
         didSet {
-            let logEventAttributes: [NSObject: AnyObject]
+            let logEventAttributes: [AnyHashable: Any]
             if let newGs = currentGameState {
                 logEventAttributes = [
                     "no_game": false,
@@ -51,54 +75,53 @@ class GameManager {
             } else {
                 logEventAttributes = ["no_game": true]
             }
-            Analytics.sharedInstance().logEventWithName(
-                "curr_game_state_change",
+            Analytics.sharedInstance().logEvent(
+                withName: "curr_game_state_change",
                 type: AnalyticsEventTypeDebug,
                 attributes: logEventAttributes
             )
             
-            NSNotificationCenter.defaultCenter().postNotificationName(
-                GameManager.GameStateChangeNotificationName,
+            NotificationCenter.default.post(
+                name: Notification.Name(rawValue: GameManager.GameStateChangeNotificationName),
                 object: self,
                 userInfo: [GameManager.GameStateChangeUserInfoKey: GameStateChange(oldGameState: oldValue, newGameState: currentGameState)])
         }
     }
     
     init() {
-        NSNotificationCenter
-            .defaultCenter()
-            .addObserver(self, selector: "appDidEnterBackground:", name: UIApplicationDidEnterBackgroundNotification, object: nil)
+        NotificationCenter.default
+            .addObserver(self, selector: #selector(GameManager.appDidEnterBackground(_:)), name: NSNotification.Name.UIApplicationDidEnterBackground, object: nil)
     }
     
-    @objc private func appDidEnterBackground(notification: NSNotification) {
+    @objc private func appDidEnterBackground(_ notification: Notification) {
         if currentGameState != nil && !currentGameState!.isFinished() {
             currentGameState = nil
         }
     }
     
-    func startGame(gameLevelId: String) {
+    func startGame(_ gameLevelId: String) {
         assert(self.currentGameState == nil || self.currentGameState!.latestTimeStart == nil, "Can't start a game when one is already in progress!")
         self.currentGameState = GameState(n: Int(gameLevelId)!, numRounds: 10)
     }
     
-    func subscribeToGameStateChangeNotifications(listener: GameStateChangeListener) {
-        NSNotificationCenter.defaultCenter().addObserver(
+    func subscribeToGameStateChangeNotifications(_ listener: GameStateChangeListener) {
+        NotificationCenter.default.addObserver(
             listener,
-            selector: "gameStateChangeNotificationReceived:",
-            name: GameManager.GameStateChangeNotificationName,
+            selector: #selector(NSObject.gameStateChangeNotificationReceived(_:)),
+            name: NSNotification.Name(rawValue: GameManager.GameStateChangeNotificationName),
             object: self)
     }
     
-    func unsubscribeFromGameStateChangeNotifications(listener: GameStateChangeListener) {
-        NSNotificationCenter.defaultCenter().removeObserver(listener, name: GameManager.GameStateChangeNotificationName, object: self)
+    func unsubscribeFromGameStateChangeNotifications(_ listener: GameStateChangeListener) {
+        NotificationCenter.default.removeObserver(listener, name: NSNotification.Name(rawValue: GameManager.GameStateChangeNotificationName), object: self)
     }
 }
 
 extension GameManager: GameplayOutputViewControllerDelegate {
     func peeked() {
         assert(self.currentGameState != nil, "Can't add a peek, because there's no game in progress!")
-        Analytics.sharedInstance().logEventWithName(
-            "peek",
+        Analytics.sharedInstance().logEvent(
+            withName: "peek",
             type: AnalyticsEventTypeUserAction,
             attributes: nil
         )
@@ -107,18 +130,18 @@ extension GameManager: GameplayOutputViewControllerDelegate {
 }
 
 extension GameManager: GameplayInputControllerDelegate {
-    func receivedInput(input: GameplayInput) {
-        Analytics.sharedInstance().logEventWithName(
-            "gameplay_input",
+    func receivedInput(_ input: GameplayInput) {
+        Analytics.sharedInstance().logEvent(
+            withName: "gameplay_input",
             type: AnalyticsEventTypeUserAction,
             attributes: ["value": input.description]
         )
         switch input {
-            case GameplayInput.Back:
+            case GameplayInput.back:
                 currentGameState = nil
-            case GameplayInput.Forward:
+            case GameplayInput.forward:
                 currentGameState = currentGameState!.advance()
-            case .Zero, .One, .Two, .Three, .Four, .Five, .Six, .Seven, .Eight, .Nine:
+            case .zero, .one, .two, .three, .four, .five, .six, .seven, .eight, .nine:
                 if currentGameState?.currentChallengeIndex >= 0 && currentGameState?.currentChallengeIndex < currentGameState?.challenges.count {
                     currentGameState = currentGameState!.advance(input.rawValue)
                 }
@@ -127,13 +150,13 @@ extension GameManager: GameplayInputControllerDelegate {
 }
 
 extension GameManager: LevelPickerViewControllerDelegate {
-    func pickedLevel(levelId: String) {
+    func pickedLevel(_ levelId: String) {
         startGame(levelId)
     }
 }
 
 extension GameManager: SharingViewControllerDelegate {
-    func repeatButtonPressed(sharingVC: SharingViewController) {
+    func repeatButtonPressed(_ sharingVC: SharingViewController) {
         if let levelId = currentGameState?.levelId {
             startGame(levelId)
         } else {
@@ -141,18 +164,18 @@ extension GameManager: SharingViewControllerDelegate {
         }
     }
     
-    func menuButtonPressed(sharingVC: SharingViewController) {
+    func menuButtonPressed(_ sharingVC: SharingViewController) {
         currentGameState = nil
     }
 }
 
 protocol GameStateChangeListener: class {
-    func gameStateChanged(change: GameStateChange)
-    func gameStateChangeNotificationReceived(notification: NSNotification!)
+    func gameStateChanged(_ change: GameStateChange)
+    func gameStateChangeNotificationReceived(_ notification: Notification!)
 }
 
 extension NSObject {
-    func gameStateChangeNotificationReceived(notification: NSNotification!) {
+    func gameStateChangeNotificationReceived(_ notification: Notification!) {
         let change = notification!.userInfo![GameManager.GameStateChangeUserInfoKey]! as! GameStateChange
         if let gameChangeListener = self as? GameStateChangeListener {
             gameChangeListener.gameStateChanged(change)

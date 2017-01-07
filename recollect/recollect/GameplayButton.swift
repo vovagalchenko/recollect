@@ -9,22 +9,22 @@
 import UIKit
 import QuartzCore
 
-class GameplayButton: UIControl {
+class GameplayButton: UIControl, CAAnimationDelegate {
     
-    override var highlighted: Bool {
+    override var isHighlighted: Bool {
         didSet {
-            if (highlighted) {
+            if (isHighlighted) {
                 label.textColor = DesignLanguage.InactiveTextColor
-            } else if enabled {
+            } else if isEnabled {
                 label.textColor = DesignLanguage.ActiveTextColor
             }
             setNeedsDisplay()
         }
     }
     
-    override var enabled: Bool {
+    override var isEnabled: Bool {
         didSet {
-            if (enabled) {
+            if (isEnabled) {
                 label.textColor = DesignLanguage.ActiveTextColor
             } else {
                 label.textColor = DesignLanguage.InactiveTextColor
@@ -51,19 +51,19 @@ class GameplayButton: UIControl {
     override init(frame: CGRect) {
         super.init(frame: frame)
         self.translatesAutoresizingMaskIntoConstraints = false
-        self.opaque = false
+        self.isOpaque = false
         self.clearsContextBeforeDrawing = true
         self.clipsToBounds = false
         
         self.addSubview(label)
         self.addConstraints(
-            NSLayoutConstraint.constraintsWithVisualFormat(
-                "H:|[label]|",
+            NSLayoutConstraint.constraints(
+                withVisualFormat: "H:|[label]|",
                 options: NSLayoutFormatOptions(rawValue: 0),
                 metrics: nil,
                 views: ["label": label]) +
-            NSLayoutConstraint.constraintsWithVisualFormat(
-                "V:|[label]|",
+            NSLayoutConstraint.constraints(
+                withVisualFormat: "V:|[label]|",
                 options: NSLayoutFormatOptions(rawValue: 0),
                 metrics: nil,
                 views: ["label": label])
@@ -71,26 +71,26 @@ class GameplayButton: UIControl {
     }
     
     convenience init() {
-        self.init(frame: CGRectZero)
+        self.init(frame: CGRect.zero)
     }
     
     private func setUpGlow() {
         label.layer.removeAllAnimations()
-        if (enabled && glowWhenEnabled) {
+        if (isEnabled && glowWhenEnabled) {
             glow()
         }
     }
     
     private func glow() {
-        label.layer.shadowColor = label.textColor.CGColor
+        label.layer.shadowColor = label.textColor.cgColor
         label.layer.shadowRadius = 0.0
         label.layer.shadowOpacity = 1.0
-        label.layer.shadowOffset = CGSizeZero
+        label.layer.shadowOffset = CGSize.zero
         
         label.layer.transform = CATransform3DIdentity
         
         let scaleAnimation = CABasicAnimation(keyPath: "transform")
-        scaleAnimation.toValue = NSValue(CATransform3D: CATransform3DMakeScale(1.3, 1.3, 1.0))
+        scaleAnimation.toValue = NSValue(caTransform3D: CATransform3DMakeScale(1.3, 1.3, 1.0))
         
         let glowAnimation = CABasicAnimation(keyPath: "shadowRadius")
         glowAnimation.toValue = 5.0
@@ -101,10 +101,10 @@ class GameplayButton: UIControl {
         animationGroup.repeatCount = 1.0
         animationGroup.delegate = self
         animationGroup.animations = [scaleAnimation, glowAnimation]
-        label.layer.addAnimation(animationGroup, forKey: nil)
+        label.layer.add(animationGroup, forKey: nil)
     }
     
-    override func animationDidStop(anim: CAAnimation, finished flag: Bool) {
+    func animationDidStop(_ anim: CAAnimation, finished flag: Bool) {
         if flag {
             setUpGlow()
         }
@@ -114,52 +114,52 @@ class GameplayButton: UIControl {
         fatalError("init(coder:) has not been implemented. We don't expect it to ever get called because we're not using nibs.")
     }
     
-    override func intrinsicContentSize() -> CGSize {
-        return CGSizeMake(UIViewNoIntrinsicMetric, UIViewNoIntrinsicMetric)
+    override var intrinsicContentSize : CGSize {
+        return CGSize(width: UIViewNoIntrinsicMetric, height: UIViewNoIntrinsicMetric)
     }
     
     private lazy var label: ManglableLabel = {
         let label = ManglableLabel()
-        label.backgroundColor = UIColor.clearColor()
+        label.backgroundColor = UIColor.clear
         label.textColor = DesignLanguage.ActiveTextColor
-        label.textAlignment = NSTextAlignment.Center
+        label.textAlignment = NSTextAlignment.center
         label.font = UIFont(name: "AvenirNext-UltraLight", size: 54)
-        label.setContentCompressionResistancePriority(1000, forAxis: UILayoutConstraintAxis.Vertical)
-        label.setContentCompressionResistancePriority(1000, forAxis: UILayoutConstraintAxis.Horizontal)
-        label.setContentHuggingPriority(250, forAxis: UILayoutConstraintAxis.Vertical)
-        label.setContentHuggingPriority(250, forAxis: UILayoutConstraintAxis.Horizontal)
+        label.setContentCompressionResistancePriority(1000, for: UILayoutConstraintAxis.vertical)
+        label.setContentCompressionResistancePriority(1000, for: UILayoutConstraintAxis.horizontal)
+        label.setContentHuggingPriority(250, for: UILayoutConstraintAxis.vertical)
+        label.setContentHuggingPriority(250, for: UILayoutConstraintAxis.horizontal)
         return label
     }()
     
-    override func drawRect(rect: CGRect) {
+    override func draw(_ rect: CGRect) {
         let ctx = UIGraphicsGetCurrentContext()
         
-        if (highlighted) {
+        if (isHighlighted) {
             DesignLanguage.ShadowColor.setFill()
-            CGContextFillRect(ctx, bounds)
+            ctx?.fill(bounds)
         } else {
             let (highlightPoints, highlightLineWidth) = pixelPerfectCoordinates(thicknessInPixels: 1, points: CGPoint(x: 0, y: 0), CGPoint(x: bounds.width, y: 0))
-            CGContextMoveToPoint(ctx, highlightPoints[0].x, highlightPoints[0].y)
-            CGContextAddLineToPoint(ctx, highlightPoints[1].x, highlightPoints[1].y)
-            CGContextSetLineWidth(ctx, highlightLineWidth)
+            ctx?.move(to: CGPoint(x: highlightPoints[0].x, y: highlightPoints[0].y))
+            ctx?.addLine(to: CGPoint(x: highlightPoints[1].x, y: highlightPoints[1].y))
+            ctx?.setLineWidth(highlightLineWidth)
             DesignLanguage.HighlightColor.setStroke()
-            CGContextStrokePath(ctx)
+            ctx?.strokePath()
         }
         
         
         let (horizontalShadowPoints, horizontalShadowWidth) = pixelPerfectCoordinates(thicknessInPixels: 2, points: CGPoint(x: 0, y: bounds.size.height), CGPoint(x: bounds.size.width, y: bounds.size.height))
-        CGContextMoveToPoint(ctx, horizontalShadowPoints[0].x, horizontalShadowPoints[0].y)
-        CGContextAddLineToPoint(ctx, horizontalShadowPoints[1].x, horizontalShadowPoints[1].y)
-        CGContextSetLineWidth(ctx, horizontalShadowWidth)
+        ctx?.move(to: CGPoint(x: horizontalShadowPoints[0].x, y: horizontalShadowPoints[0].y))
+        ctx?.addLine(to: CGPoint(x: horizontalShadowPoints[1].x, y: horizontalShadowPoints[1].y))
+        ctx?.setLineWidth(horizontalShadowWidth)
         DesignLanguage.ShadowColor.setStroke()
-        CGContextStrokePath(ctx)
+        ctx?.strokePath()
         
         
         let (verticalShadowPoints, verticalLineWidth) = pixelPerfectCoordinates(thicknessInPixels: 2, points: CGPoint(x: 0, y: 0), CGPoint(x: 0, y: bounds.height))
-        CGContextMoveToPoint(ctx, verticalShadowPoints[0].x, verticalShadowPoints[0].y)
-        CGContextAddLineToPoint(ctx, verticalShadowPoints[1].x, verticalShadowPoints[1].y)
-        CGContextSetLineWidth(ctx, verticalLineWidth)
+        ctx?.move(to: CGPoint(x: verticalShadowPoints[0].x, y: verticalShadowPoints[0].y))
+        ctx?.addLine(to: CGPoint(x: verticalShadowPoints[1].x, y: verticalShadowPoints[1].y))
+        ctx?.setLineWidth(verticalLineWidth)
         DesignLanguage.ShadowColor.setStroke()
-        CGContextStrokePath(ctx)
+        ctx?.strokePath()
     }
 }

@@ -31,12 +31,12 @@ class GameplayInputController: HalfScreenViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        for (lineNumber, buttonTextLine) in buttonsText.enumerate() {
-            for (buttonNumber, buttonText) in buttonTextLine.enumerate() {
+        for (lineNumber, buttonTextLine) in buttonsText.enumerated() {
+            for (buttonNumber, buttonText) in buttonTextLine.enumerated() {
                 let button = gameplayButton(buttonText)
                 buttons.append(button)
                 if Int(buttonText) != nil {
-                    button.enabled = false
+                    button.isEnabled = false
                 }
                 view.addSubview(button)
                 
@@ -44,37 +44,37 @@ class GameplayInputController: HalfScreenViewController {
                     [
                         NSLayoutConstraint(
                             item: button,
-                            attribute: NSLayoutAttribute.CenterX,
-                            relatedBy: NSLayoutRelation.Equal,
+                            attribute: NSLayoutAttribute.centerX,
+                            relatedBy: NSLayoutRelation.equal,
                             toItem: view,
-                            attribute: NSLayoutAttribute.CenterX,
+                            attribute: NSLayoutAttribute.centerX,
                             multiplier: CGFloat((2.0/(CGFloat(buttonTextLine.count)*2)) * CGFloat(buttonNumber*2 + 1)),
                             constant: 0.0
                         ),
                         NSLayoutConstraint(
                             item: button,
-                            attribute: NSLayoutAttribute.CenterY,
-                            relatedBy: NSLayoutRelation.Equal,
+                            attribute: NSLayoutAttribute.centerY,
+                            relatedBy: NSLayoutRelation.equal,
                             toItem: view,
-                            attribute: NSLayoutAttribute.CenterY,
+                            attribute: NSLayoutAttribute.centerY,
                             multiplier: CGFloat((2.0/(CGFloat(buttonsText.count)*2)) * CGFloat(lineNumber*2 + 1)),
                             constant: 0.0
                         ),
                         NSLayoutConstraint(
                             item: button,
-                            attribute: NSLayoutAttribute.Height,
-                            relatedBy: NSLayoutRelation.Equal,
+                            attribute: NSLayoutAttribute.height,
+                            relatedBy: NSLayoutRelation.equal,
                             toItem: view,
-                            attribute: NSLayoutAttribute.Height,
+                            attribute: NSLayoutAttribute.height,
                             multiplier: CGFloat(1.0)/CGFloat(buttonsText.count),
                             constant: 0.0
                         ),
                         NSLayoutConstraint(
                             item: button,
-                            attribute: NSLayoutAttribute.Width,
-                            relatedBy: NSLayoutRelation.Equal,
+                            attribute: NSLayoutAttribute.width,
+                            relatedBy: NSLayoutRelation.equal,
                             toItem: view,
-                            attribute: NSLayoutAttribute.Width,
+                            attribute: NSLayoutAttribute.width,
                             multiplier: CGFloat(1.0)/CGFloat(buttonTextLine.count),
                             constant: 0.0
                         )
@@ -90,13 +90,13 @@ class GameplayInputController: HalfScreenViewController {
         GameManager.sharedInstance.unsubscribeFromGameStateChangeNotifications(self)
     }
     
-    func handleButtonPress(gameplayButton: GameplayButton) {
+    func handleButtonPress(_ gameplayButton: GameplayButton) {
         delegate.receivedInput(GameplayInput.fromString(gameplayButton.text))
     }
     
-    private func gameplayButton(text: String) -> GameplayButton {
+    private func gameplayButton(_ text: String) -> GameplayButton {
         let button = GameplayButton()
-        button.addTarget(self, action: "handleButtonPress:", forControlEvents: UIControlEvents.TouchUpInside)
+        button.addTarget(self, action: #selector(GameplayInputController.handleButtonPress(_:)), for: UIControlEvents.touchUpInside)
         button.text = text
         button.glowWhenEnabled = text == "»"
         return button
@@ -104,39 +104,39 @@ class GameplayInputController: HalfScreenViewController {
 }
 
 extension GameplayInputController: GameStateChangeListener {
-    func gameStateChanged(change: GameStateChange) {
+    func gameStateChanged(_ change: GameStateChange) {
         if (change.oldGameState?.currentChallengeIndex ?? Int.min) < 0 &&
             (change.newGameState?.currentChallengeIndex ?? Int.min) >= 0 {
                 for button in self.buttons {
-                    button.enabled = (button.text != "»")
+                    button.isEnabled = (button.text != "»")
                 }
         }
     }
 }
 
 enum GameplayInput: Int, CustomStringConvertible {
-    case Zero, One, Two, Three, Four, Five, Six, Seven, Eight, Nine, Back, Forward
+    case zero, one, two, three, four, five, six, seven, eight, nine, back, forward
     
     var description: String {
         get {
             switch self {
-            case Zero, One, Two, Three, Four, Five, Six, Seven, Eight, Nine: return "\(rawValue)"
-            case Back: return "back"
-            case Forward: return "forward"
+            case .zero, .one, .two, .three, .four, .five, .six, .seven, .eight, .nine: return "\(rawValue)"
+            case .back: return "back"
+            case .forward: return "forward"
             }
         }
     }
     
-    static func fromString(str: String) -> GameplayInput {
+    static func fromString(_ str: String) -> GameplayInput {
         switch(str) {
             case "0", "1", "2", "3", "4", "5", "6", "7", "8", "9": return GameplayInput(rawValue: Int(str)!)!
-            case "«": return GameplayInput.Back
-            case "»": return GameplayInput.Forward
+            case "«": return GameplayInput.back
+            case "»": return GameplayInput.forward
             default: fatalError("Unexpected string to create a GameplayInput from: \(str)")
         }
     }
 }
 
 protocol GameplayInputControllerDelegate {
-    func receivedInput(input: GameplayInput)
+    func receivedInput(_ input: GameplayInput)
 }

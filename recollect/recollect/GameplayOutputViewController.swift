@@ -22,7 +22,7 @@ class GameplayOutputViewController: HalfScreenViewController, UIGestureRecognize
     private let delegate: GameplayOutputViewControllerDelegate
     
     // Instructional Overlay
-    private var borderOverlay: BorderView?
+    fileprivate var borderOverlay: BorderView?
     
     init(gameState: GameState) {
         self.gameState = gameState
@@ -41,23 +41,23 @@ class GameplayOutputViewController: HalfScreenViewController, UIGestureRecognize
         progressVC?.gameState = gameState
         addChildViewController(progressVC!)
         view.addSubview(progressVC!.view)
-        progressVC!.didMoveToParentViewController(self)
+        progressVC!.didMove(toParentViewController: self)
         
         view.addConstraints(
-            NSLayoutConstraint.constraintsWithVisualFormat(
-                "H:|[progressView]|",
+            NSLayoutConstraint.constraints(
+                withVisualFormat: "H:|[progressView]|",
                 options: NSLayoutFormatOptions(rawValue: 0),
                 metrics: nil,
                 views: ["progressView" : progressVC!.view]) +
-            NSLayoutConstraint.constraintsWithVisualFormat(
-                "V:[progressView(\(DesignLanguage.ProgressBarHeight))]|",
+            NSLayoutConstraint.constraints(
+                withVisualFormat: "V:[progressView(\(DesignLanguage.ProgressBarHeight))]|",
                 options: NSLayoutFormatOptions(rawValue: 0),
                 metrics: nil,
                 views: ["progressView" : progressVC!.view])
         )
         
         challengeContainer = UIView()
-        challengeContainer!.backgroundColor = UIColor.clearColor()
+        challengeContainer!.backgroundColor = UIColor.clear
         challengeContainer!.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(challengeContainer!)
         
@@ -65,32 +65,32 @@ class GameplayOutputViewController: HalfScreenViewController, UIGestureRecognize
             [
                 NSLayoutConstraint(
                     item: challengeContainer!,
-                    attribute: NSLayoutAttribute.Top,
-                    relatedBy: NSLayoutRelation.Equal,
+                    attribute: NSLayoutAttribute.top,
+                    relatedBy: NSLayoutRelation.equal,
                     toItem: view,
-                    attribute: NSLayoutAttribute.Top,
+                    attribute: NSLayoutAttribute.top,
                     multiplier: 1.0,
                     constant: 0.0),
                 NSLayoutConstraint(
                     item: challengeContainer!,
-                    attribute: NSLayoutAttribute.Bottom,
-                    relatedBy: NSLayoutRelation.Equal,
+                    attribute: NSLayoutAttribute.bottom,
+                    relatedBy: NSLayoutRelation.equal,
                     toItem: progressVC!.view,
-                    attribute: NSLayoutAttribute.Top,
+                    attribute: NSLayoutAttribute.top,
                     multiplier: 1.0,
                     constant: 0.0),
                 NSLayoutConstraint(
                     item: challengeContainer!,
-                    attribute: NSLayoutAttribute.Width,
-                    relatedBy: NSLayoutRelation.Equal,
+                    attribute: NSLayoutAttribute.width,
+                    relatedBy: NSLayoutRelation.equal,
                     toItem: view,
-                    attribute: NSLayoutAttribute.Width,
+                    attribute: NSLayoutAttribute.width,
                     multiplier: CGFloat(gameState.challenges.count)/CGFloat(gameState.n + 1),
                     constant: 0.0)
             ]
         )
         
-        for (challengeIndex, challenge) in gameState.challenges.enumerate() {
+        for (challengeIndex, challenge) in gameState.challenges.enumerated() {
             let topLabel = challengeLabel(challenge.lOperand)
             let bottomLabel = challengeLabel(challenge.rOperand)
             challengeContainer!.addSubview(topLabel)
@@ -100,34 +100,34 @@ class GameplayOutputViewController: HalfScreenViewController, UIGestureRecognize
                 [
                     NSLayoutConstraint(
                         item: topLabel,
-                        attribute: NSLayoutAttribute.CenterY,
-                        relatedBy: NSLayoutRelation.Equal,
+                        attribute: NSLayoutAttribute.centerY,
+                        relatedBy: NSLayoutRelation.equal,
                         toItem: challengeContainer,
-                        attribute: NSLayoutAttribute.CenterY,
+                        attribute: NSLayoutAttribute.centerY,
                         multiplier: 2.0/3.0,
                         constant: 0.0),
                     NSLayoutConstraint(
                         item: bottomLabel,
-                        attribute: NSLayoutAttribute.CenterY,
-                        relatedBy: NSLayoutRelation.Equal,
+                        attribute: NSLayoutAttribute.centerY,
+                        relatedBy: NSLayoutRelation.equal,
                         toItem: challengeContainer,
-                        attribute: NSLayoutAttribute.CenterY,
+                        attribute: NSLayoutAttribute.centerY,
                         multiplier: 4.0/3.0,
                         constant: 0.0),
                     NSLayoutConstraint(
                         item: topLabel,
-                        attribute: NSLayoutAttribute.CenterX,
-                        relatedBy: NSLayoutRelation.Equal,
+                        attribute: NSLayoutAttribute.centerX,
+                        relatedBy: NSLayoutRelation.equal,
                         toItem: challengeContainer,
-                        attribute: NSLayoutAttribute.CenterX,
+                        attribute: NSLayoutAttribute.centerX,
                         multiplier: (2.0/CGFloat(gameState.challenges.count * 2)) * CGFloat(challengeIndex*2 + 1),
                         constant: 0.0),
                     NSLayoutConstraint(
                         item: bottomLabel,
-                        attribute: NSLayoutAttribute.CenterX,
-                        relatedBy: NSLayoutRelation.Equal,
+                        attribute: NSLayoutAttribute.centerX,
+                        relatedBy: NSLayoutRelation.equal,
                         toItem: topLabel,
-                        attribute: NSLayoutAttribute.CenterX,
+                        attribute: NSLayoutAttribute.centerX,
                         multiplier: 1.0,
                         constant: 0.0)
                 ]
@@ -135,36 +135,36 @@ class GameplayOutputViewController: HalfScreenViewController, UIGestureRecognize
         }
         
         blurView = BlurView(viewToBlur: challengeContainer!)
-        blurView!.userInteractionEnabled = true
+        blurView!.isUserInteractionEnabled = true
         blurPanGestureRecognizer = UIPanGestureRecognizer()
         blurPanGestureRecognizer!.delegate = self
-        blurPanGestureRecognizer!.addTarget(self, action: "blurViewDragged:")
+        blurPanGestureRecognizer!.addTarget(self, action: #selector(GameplayOutputViewController.blurViewDragged(_:)))
         blurView!.addGestureRecognizer(blurPanGestureRecognizer!)
         view.addSubview(blurView!)
         
         view.addConstraints([
             NSLayoutConstraint(
                 item: blurView!.blurredView,
-                attribute: NSLayoutAttribute.CenterY,
-                relatedBy: NSLayoutRelation.Equal,
+                attribute: NSLayoutAttribute.centerY,
+                relatedBy: NSLayoutRelation.equal,
                 toItem: challengeContainer,
-                attribute: NSLayoutAttribute.CenterY,
+                attribute: NSLayoutAttribute.centerY,
                 multiplier: 1.0,
                 constant: 0.0),
             NSLayoutConstraint(
                 item: blurView!.blurredView,
-                attribute: NSLayoutAttribute.Height,
-                relatedBy: NSLayoutRelation.Equal,
+                attribute: NSLayoutAttribute.height,
+                relatedBy: NSLayoutRelation.equal,
                 toItem: challengeContainer,
-                attribute: NSLayoutAttribute.Height,
+                attribute: NSLayoutAttribute.height,
                 multiplier:1.0,
                 constant: 0.0),
             NSLayoutConstraint(
                 item: blurView!.blurredView,
-                attribute: NSLayoutAttribute.CenterX,
-                relatedBy: NSLayoutRelation.Equal,
+                attribute: NSLayoutAttribute.centerX,
+                relatedBy: NSLayoutRelation.equal,
                 toItem: challengeContainer,
-                attribute: NSLayoutAttribute.CenterX,
+                attribute: NSLayoutAttribute.centerX,
                 multiplier: 1.0,
                 constant: 0.0),
         ])
@@ -173,34 +173,34 @@ class GameplayOutputViewController: HalfScreenViewController, UIGestureRecognize
             [
                 NSLayoutConstraint(
                     item: blurView!,
-                    attribute: NSLayoutAttribute.Top,
-                    relatedBy: NSLayoutRelation.Equal,
+                    attribute: NSLayoutAttribute.top,
+                    relatedBy: NSLayoutRelation.equal,
                     toItem: view,
-                    attribute: NSLayoutAttribute.Top,
+                    attribute: NSLayoutAttribute.top,
                     multiplier: 1.0,
                     constant: 0.0),
                 NSLayoutConstraint(
                     item: blurView!,
-                    attribute: NSLayoutAttribute.Bottom,
-                    relatedBy: NSLayoutRelation.Equal,
+                    attribute: NSLayoutAttribute.bottom,
+                    relatedBy: NSLayoutRelation.equal,
                     toItem: view,
-                    attribute: NSLayoutAttribute.Bottom,
+                    attribute: NSLayoutAttribute.bottom,
                     multiplier: 1.0,
                     constant: 0.0),
                 NSLayoutConstraint(
                     item: blurView!,
-                    attribute: NSLayoutAttribute.Left,
-                    relatedBy: NSLayoutRelation.Equal,
+                    attribute: NSLayoutAttribute.left,
+                    relatedBy: NSLayoutRelation.equal,
                     toItem: view,
-                    attribute: NSLayoutAttribute.Left,
+                    attribute: NSLayoutAttribute.left,
                     multiplier: 1.0,
                     constant: 0.0),
                 NSLayoutConstraint(
                     item: blurView!,
-                    attribute: NSLayoutAttribute.Right,
-                    relatedBy: NSLayoutRelation.Equal,
+                    attribute: NSLayoutAttribute.right,
+                    relatedBy: NSLayoutRelation.equal,
                     toItem: view,
-                    attribute: NSLayoutAttribute.Right,
+                    attribute: NSLayoutAttribute.right,
                     multiplier: CGFloat(gameState.n)/CGFloat(gameState.n + 1),
                     constant: 0.0),
             ]
@@ -208,7 +208,7 @@ class GameplayOutputViewController: HalfScreenViewController, UIGestureRecognize
         
         plusLabel = UILabel()
         plusLabel!.translatesAutoresizingMaskIntoConstraints = false
-        plusLabel!.backgroundColor = UIColor.clearColor()
+        plusLabel!.backgroundColor = UIColor.clear
         plusLabel!.textColor = DesignLanguage.NeverActiveTextColor
         plusLabel!.font = UIFont(name: "AvenirNext-Regular", size: 45.0)
         plusLabel!.text = "+"
@@ -218,24 +218,24 @@ class GameplayOutputViewController: HalfScreenViewController, UIGestureRecognize
             [
                 NSLayoutConstraint(
                     item: plusLabel!,
-                    attribute: NSLayoutAttribute.CenterY,
-                    relatedBy: NSLayoutRelation.Equal,
+                    attribute: NSLayoutAttribute.centerY,
+                    relatedBy: NSLayoutRelation.equal,
                     toItem: challengeContainer,
-                    attribute: NSLayoutAttribute.CenterY,
+                    attribute: NSLayoutAttribute.centerY,
                     multiplier: 1.0,
                     constant: 0.0),
                 NSLayoutConstraint(
                     item: plusLabel!,
-                    attribute: NSLayoutAttribute.CenterX,
-                    relatedBy: NSLayoutRelation.Equal,
+                    attribute: NSLayoutAttribute.centerX,
+                    relatedBy: NSLayoutRelation.equal,
                     toItem: view,
-                    attribute: NSLayoutAttribute.Right,
+                    attribute: NSLayoutAttribute.right,
                     multiplier: (CGFloat(gameState.n) + 0.25)/CGFloat(gameState.n + 1),
                     constant: 0.0)
             ]
         )
         
-        view.bringSubviewToFront(progressVC!.view)
+        view.bringSubview(toFront: progressVC!.view)
         
         setActiveChallenge(gameState.currentChallengeIndex, animated: false)
         
@@ -246,23 +246,23 @@ class GameplayOutputViewController: HalfScreenViewController, UIGestureRecognize
         GameManager.sharedInstance.unsubscribeFromGameStateChangeNotifications(self)
     }
     
-    func gestureRecognizerShouldBegin(gestureRecognizer: UIGestureRecognizer) -> Bool {
+    func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
         // Don't do anything if we don't have anything under the blur view
         return gameState.currentChallengeIndex > -gameState.n
     }
     
     var previousXTranslation: CGFloat = 0.0
-    func blurViewDragged(panGestureRecognizer: UIPanGestureRecognizer) {
-        if panGestureRecognizer.state == UIGestureRecognizerState.Began ||
-           panGestureRecognizer.state == UIGestureRecognizerState.Changed {
-            if panGestureRecognizer.state == UIGestureRecognizerState.Began {
+    func blurViewDragged(_ panGestureRecognizer: UIPanGestureRecognizer) {
+        if panGestureRecognizer.state == UIGestureRecognizerState.began ||
+           panGestureRecognizer.state == UIGestureRecognizerState.changed {
+            if panGestureRecognizer.state == UIGestureRecognizerState.began {
                 currentSlidingHighlightId = nil
                 blurView!.layer.removeAllAnimations()
             }
-            let xTranslation: CGFloat = panGestureRecognizer.translationInView(self.view).x
+            let xTranslation: CGFloat = panGestureRecognizer.translation(in: self.view).x
             if xTranslation <= 0 {
-                blurView!.transform = CGAffineTransformMakeTranslation(xTranslation, 0.0)
-                blurView!.blurredView.transform = CGAffineTransformMakeTranslation(-xTranslation, 0.0)
+                blurView!.transform = CGAffineTransform(translationX: xTranslation, y: 0.0)
+                blurView!.blurredView.transform = CGAffineTransform(translationX: -xTranslation, y: 0.0)
             }
             
             var labelXCenters = [CGFloat]()
@@ -293,114 +293,111 @@ class GameplayOutputViewController: HalfScreenViewController, UIGestureRecognize
             }
             
             previousXTranslation = xTranslation
-        } else if panGestureRecognizer.state == UIGestureRecognizerState.Ended ||
-                  panGestureRecognizer.state == UIGestureRecognizerState.Cancelled {
+        } else if panGestureRecognizer.state == UIGestureRecognizerState.ended ||
+                  panGestureRecognizer.state == UIGestureRecognizerState.cancelled {
             let priorXTranslate = self.blurView!.transform.tx
-            UIView.animateWithDuration(
-                DesignLanguage.MinorAnimationDuration/2.0,
+            UIView.animate(
+                withDuration: DesignLanguage.MinorAnimationDuration/2.0,
                 delay: 0.0,
-                options: UIViewAnimationOptions.CurveEaseIn,
+                options: UIViewAnimationOptions.curveEaseIn,
                 animations: { () -> Void in
-                    self.blurView!.transform = CGAffineTransformIdentity
-                    self.blurView!.blurredView.transform = CGAffineTransformIdentity
+                    self.blurView!.transform = CGAffineTransform.identity
+                    self.blurView!.blurredView.transform = CGAffineTransform.identity
                 }) { (finished: Bool) -> Void in
-                UIView.animateWithDuration(
-                    DesignLanguage.MinorAnimationDuration/3.0,
+                UIView.animate(
+                    withDuration: DesignLanguage.MinorAnimationDuration/3.0,
                     delay: 0.0,
-                    options: UIViewAnimationOptions.CurveEaseOut,
+                    options: UIViewAnimationOptions.curveEaseOut,
                     animations: { () -> Void in
-                        self.blurView!.transform = CGAffineTransformMakeTranslation(priorXTranslate/CGFloat(8.0), 0.0)
-                        self.blurView!.blurredView.transform = CGAffineTransformMakeTranslation(-priorXTranslate/CGFloat(8.0), 0.0)
+                        self.blurView!.transform = CGAffineTransform(translationX: priorXTranslate/CGFloat(8.0), y: 0.0)
+                        self.blurView!.blurredView.transform = CGAffineTransform(translationX: -priorXTranslate/CGFloat(8.0), y: 0.0)
                 }) { (finished: Bool) -> Void in
-                    UIView.animateWithDuration(
-                        DesignLanguage.MinorAnimationDuration/3.0,
+                    UIView.animate(
+                        withDuration: DesignLanguage.MinorAnimationDuration/3.0,
                         delay: 0.0,
-                        options: UIViewAnimationOptions.CurveEaseIn,
+                        options: UIViewAnimationOptions.curveEaseIn,
                         animations: { () -> Void in
-                            self.blurView!.transform = CGAffineTransformIdentity
-                            self.blurView!.blurredView.transform = CGAffineTransformIdentity
+                            self.blurView!.transform = CGAffineTransform.identity
+                            self.blurView!.blurredView.transform = CGAffineTransform.identity
                     }, completion: nil)
                 }
             }
         }
     }
     
-    func challengeLabel(operand: Int) -> ManglableLabel {
+    func challengeLabel(_ operand: Int) -> ManglableLabel {
         let label = ManglableLabel()
-        label.backgroundColor = UIColor.clearColor()
+        label.backgroundColor = UIColor.clear
         label.textColor = DesignLanguage.NeverActiveTextColor
         label.font = UIFont(name: "AvenirNext-Regular", size: 76.0)
         label.text = "\(operand)"
         return label
     }
     
-    func setActiveChallenge(challengeIndex: Int, animated: Bool) {
+    func setActiveChallenge(_ challengeIndex: Int, animated: Bool) {
         view.layoutIfNeeded()
         setupChallengeContainerXPositionConstraint(challengeIndex)
-        UIView.animateWithDuration(animated ? DesignLanguage.MinorAnimationDuration : 0.0, animations: { () -> Void in
+        UIView.animate(withDuration: animated ? DesignLanguage.MinorAnimationDuration : 0.0, animations: { () -> Void in
             self.view.setNeedsLayout()
             self.view.layoutIfNeeded()
             self.plusLabel?.alpha = (challengeIndex > (self.gameState.challenges.count - self.gameState.n - 1)) ? 0.0 : 1.0
         })
     }
     
-    private func setupChallengeContainerXPositionConstraint(challengeIndex: Int) {
+    private func setupChallengeContainerXPositionConstraint(_ challengeIndex: Int) {
         if let constraintToRemove = challengeContainerXPositionConstraint {
             view.removeConstraint(constraintToRemove)
         }
         challengeContainerXPositionConstraint = NSLayoutConstraint(
             item: challengeContainer!,
-            attribute: NSLayoutAttribute.Left,
-            relatedBy: NSLayoutRelation.Equal,
+            attribute: NSLayoutAttribute.left,
+            relatedBy: NSLayoutRelation.equal,
             toItem: view,
-            attribute: NSLayoutAttribute.Right,
+            attribute: NSLayoutAttribute.right,
             multiplier: UIView.sanitizeLocationConstraintMultiplier(-CGFloat(challengeIndex)/CGFloat(gameState.n + 1)),
             constant: 0.0)
         view.addConstraint(challengeContainerXPositionConstraint!)
     }
     
-    private func configureForTransition(animationState: TransitionAnimationState) {
+    private func configureForTransition(_ animationState: TransitionAnimationState) {
         switch animationState {
-            case TransitionAnimationState.Inactive:
-                progressVC?.view.transform = CGAffineTransformMakeTranslation(0.0, DesignLanguage.ProgressBarHeight)
-                let challengesTransform = CGAffineTransformMakeTranslation(view.bounds.size.width - (challengeContainer?.frame.origin.x ?? 0), 0.0)
+            case TransitionAnimationState.inactive:
+                progressVC?.view.transform = CGAffineTransform(translationX: 0.0, y: DesignLanguage.ProgressBarHeight)
+                let challengesTransform = CGAffineTransform(translationX: view.bounds.size.width - (challengeContainer?.frame.origin.x ?? 0), y: 0.0)
                 challengeContainer?.transform = challengesTransform
-                plusLabel?.transform = CGAffineTransformMakeTranslation(view.bounds.size.width - (plusLabel?.frame.origin.x ?? 0), 0.0)
+                plusLabel?.transform = CGAffineTransform(translationX: view.bounds.size.width - (plusLabel?.frame.origin.x ?? 0), y: 0.0)
                 blurView?.blurredView.transform = challengesTransform
                 blurView?.alpha = 0
-            case TransitionAnimationState.Active:
-                progressVC?.view.transform = CGAffineTransformIdentity
-                challengeContainer?.transform = CGAffineTransformIdentity
-                blurView?.blurredView.transform = CGAffineTransformIdentity
+            case TransitionAnimationState.active:
+                progressVC?.view.transform = CGAffineTransform.identity
+                challengeContainer?.transform = CGAffineTransform.identity
+                blurView?.blurredView.transform = CGAffineTransform.identity
                 challengeContainer?.alpha = 1
-                plusLabel?.transform = CGAffineTransformIdentity
+                plusLabel?.transform = CGAffineTransform.identity
                 blurView?.alpha = 1
         }
     }
     
-    private let initialShakeDuration: NSTimeInterval = 0.1
-    private let shakeReductionFactor: NSTimeInterval = 0.01
+    private let initialShakeDuration: Foundation.TimeInterval = 0.1
+    private let shakeReductionFactor: Foundation.TimeInterval = 0.01
     private let totalNumShakes = 8
-    private func shakeChallenges(slideHighlightId: NSUUID, shakeNumber: Int = 0) {
-        UIView.animateWithDuration(initialShakeDuration - (NSTimeInterval(shakeNumber) * shakeReductionFactor), animations: {
+    fileprivate func shakeChallenges(_ slideHighlightId: UUID, shakeNumber: Int = 0) {
+        UIView.animate(withDuration: initialShakeDuration - (Foundation.TimeInterval(shakeNumber) * shakeReductionFactor), animations: {
             let sign: CGFloat = (shakeNumber%2 == 0) ? -1.0 : 1.0
             let initialShakeAmount = self.view.bounds.size.width/CGFloat(4*(self.gameState.n + 1))
             let actualShakeAmount = initialShakeAmount - (initialShakeAmount*(CGFloat(shakeNumber)/CGFloat(self.totalNumShakes)))
-            let translation = CGAffineTransformMakeTranslation(sign*actualShakeAmount, 0.0)
+            let translation = CGAffineTransform(translationX: sign*actualShakeAmount, y: 0.0)
             self.challengeContainer?.transform = translation
             self.blurView?.blurredView.transform = translation
             self.borderOverlay?.transform = translation
         }, completion: { (finished: Bool) -> Void in
             if (shakeNumber == self.totalNumShakes - 1) && finished {
-                self.challengeContainer?.transform = CGAffineTransformIdentity
-                self.blurView?.blurredView.transform = CGAffineTransformIdentity
-                self.borderOverlay?.transform = CGAffineTransformIdentity
-                let dispatchTime = dispatch_time(
-                    DISPATCH_TIME_NOW,
-                    Int64(1.0 * Double(NSEC_PER_SEC))
-                )
-                self.currentSlidingHighlightId = (slideHighlightId.copy() as! NSUUID)
-                dispatch_after(dispatchTime, dispatch_get_main_queue()) {
+                self.challengeContainer?.transform = CGAffineTransform.identity
+                self.blurView?.blurredView.transform = CGAffineTransform.identity
+                self.borderOverlay?.transform = CGAffineTransform.identity
+                let dispatchTime = DispatchTime.now() + Double(Int64(1.0 * Double(NSEC_PER_SEC))) / Double(NSEC_PER_SEC)
+                self.currentSlidingHighlightId = ((slideHighlightId as NSUUID).copy() as! UUID)
+                DispatchQueue.main.asyncAfter(deadline: dispatchTime) {
                     self.highlightSlidingIfNeeded(slideHighlightId)
                 }
                 
@@ -410,50 +407,47 @@ class GameplayOutputViewController: HalfScreenViewController, UIGestureRecognize
         })
     }
     
-    private var currentSlidingHighlightId: NSUUID? = nil
-    private func highlightSlidingIfNeeded(highlightId: NSUUID) {
+    fileprivate var currentSlidingHighlightId: UUID? = nil
+    private func highlightSlidingIfNeeded(_ highlightId: UUID) {
         if highlightId == currentSlidingHighlightId {
             let slidingAmount: CGFloat = 20
-            UIView.animateWithDuration(
-                DesignLanguage.MinorAnimationDuration/2.0,
+            UIView.animate(
+                withDuration: DesignLanguage.MinorAnimationDuration/2.0,
                 delay: 0.0,
-                options: UIViewAnimationOptions.CurveEaseOut,
+                options: UIViewAnimationOptions.curveEaseOut,
                 animations: { () -> Void in
-                    self.blurView!.transform = CGAffineTransformMakeTranslation(-slidingAmount, 0.0)
-                    self.blurView!.blurredView.transform = CGAffineTransformMakeTranslation(slidingAmount, 0.0)
+                    self.blurView!.transform = CGAffineTransform(translationX: -slidingAmount, y: 0.0)
+                    self.blurView!.blurredView.transform = CGAffineTransform(translationX: slidingAmount, y: 0.0)
                 }) { (finished: Bool) -> Void in
                     if !finished { return }
-                    UIView.animateWithDuration(
-                        DesignLanguage.MinorAnimationDuration/2.0,
+                    UIView.animate(
+                        withDuration: DesignLanguage.MinorAnimationDuration/2.0,
                         delay: 0.0,
-                        options: UIViewAnimationOptions.CurveEaseIn,
+                        options: UIViewAnimationOptions.curveEaseIn,
                         animations: { () -> Void in
-                            self.blurView!.transform = CGAffineTransformIdentity
-                            self.blurView!.blurredView.transform = CGAffineTransformIdentity
+                            self.blurView!.transform = CGAffineTransform.identity
+                            self.blurView!.blurredView.transform = CGAffineTransform.identity
                         }) { (finished: Bool) -> Void in
                             if !finished { return }
-                            UIView.animateWithDuration(
-                                DesignLanguage.MinorAnimationDuration/3.0,
+                            UIView.animate(
+                                withDuration: DesignLanguage.MinorAnimationDuration/3.0,
                                 delay: 0.0,
-                                options: UIViewAnimationOptions.CurveEaseOut,
+                                options: UIViewAnimationOptions.curveEaseOut,
                                 animations: { () -> Void in
-                                    self.blurView!.transform = CGAffineTransformMakeTranslation(-slidingAmount/8.0, 0.0)
-                                    self.blurView!.blurredView.transform = CGAffineTransformMakeTranslation(slidingAmount/8.0, 0.0)
+                                    self.blurView!.transform = CGAffineTransform(translationX: -slidingAmount/8.0, y: 0.0)
+                                    self.blurView!.blurredView.transform = CGAffineTransform(translationX: slidingAmount/8.0, y: 0.0)
                                 }) { (finished: Bool) -> Void in
                                 if !finished { return }
-                                UIView.animateWithDuration(
-                                    DesignLanguage.MinorAnimationDuration/3.0,
+                                UIView.animate(
+                                    withDuration: DesignLanguage.MinorAnimationDuration/3.0,
                                     delay: 0.0,
-                                    options: UIViewAnimationOptions.CurveEaseIn,
+                                    options: UIViewAnimationOptions.curveEaseIn,
                                     animations: { () -> Void in
-                                        self.blurView!.transform = CGAffineTransformIdentity
-                                        self.blurView!.blurredView.transform = CGAffineTransformIdentity
+                                        self.blurView!.transform = CGAffineTransform.identity
+                                        self.blurView!.blurredView.transform = CGAffineTransform.identity
                                     }) { (finished: Bool) -> Void in
-                                    let dispatchTime = dispatch_time(
-                                        DISPATCH_TIME_NOW,
-                                        Int64(3.0 * Double(NSEC_PER_SEC))
-                                    )
-                                    dispatch_after(dispatchTime, dispatch_get_main_queue()) {
+                                    let dispatchTime = DispatchTime.now() + Double(Int64(3.0 * Double(NSEC_PER_SEC))) / Double(NSEC_PER_SEC)
+                                    DispatchQueue.main.asyncAfter(deadline: dispatchTime) {
                                         self.highlightSlidingIfNeeded(highlightId)
                                     }
                                 }
@@ -463,13 +457,13 @@ class GameplayOutputViewController: HalfScreenViewController, UIGestureRecognize
         }
     }
     
-    func presentInstructionalOverlayIfNeeded(timer: NSTimer) {
+    func presentInstructionalOverlayIfNeeded(_ timer: Timer) {
         let gameStateAtTimerSetup = timer.userInfo as! GameState
         
         if gameStateAtTimerSetup.currentChallengeIndex == gameState.currentChallengeIndex && challengeContainer != nil {
-            var minYOrigin = CGFloat.max
-            var maxBottom = CGFloat.min
-            var maxWidth = CGFloat.min
+            var minYOrigin = CGFloat.greatestFiniteMagnitude
+            var maxBottom = CGFloat.leastNormalMagnitude
+            var maxWidth = CGFloat.leastNormalMagnitude
             for subview in challengeContainer!.subviews {
                 if subview.frame.origin.y < minYOrigin {
                     minYOrigin = subview.frame.origin.y
@@ -491,55 +485,55 @@ class GameplayOutputViewController: HalfScreenViewController, UIGestureRecognize
             view.addConstraints([
                 NSLayoutConstraint(
                     item: borderOverlay!,
-                    attribute: NSLayoutAttribute.CenterX,
-                    relatedBy: NSLayoutRelation.Equal,
+                    attribute: NSLayoutAttribute.centerX,
+                    relatedBy: NSLayoutRelation.equal,
                     toItem: blurView,
-                    attribute: NSLayoutAttribute.Right,
+                    attribute: NSLayoutAttribute.right,
                     multiplier: 1.0/CGFloat(2*gameState.n),
                     constant: 0.0),
                 NSLayoutConstraint(
                     item: borderOverlay!,
-                    attribute: NSLayoutAttribute.CenterY,
-                    relatedBy: NSLayoutRelation.Equal,
+                    attribute: NSLayoutAttribute.centerY,
+                    relatedBy: NSLayoutRelation.equal,
                     toItem: challengeContainer!,
-                    attribute: NSLayoutAttribute.CenterY,
+                    attribute: NSLayoutAttribute.centerY,
                     multiplier: 1.0,
                     constant: 0.0),
                 NSLayoutConstraint(
                     item: borderOverlay!,
-                    attribute: NSLayoutAttribute.Width,
-                    relatedBy: NSLayoutRelation.Equal,
+                    attribute: NSLayoutAttribute.width,
+                    relatedBy: NSLayoutRelation.equal,
                     toItem: nil,
-                    attribute: NSLayoutAttribute.NotAnAttribute,
+                    attribute: NSLayoutAttribute.notAnAttribute,
                     multiplier: 0.0,
                     constant: maxWidth + blurPadding),
                 NSLayoutConstraint(
                     item: borderOverlay!,
-                    attribute: NSLayoutAttribute.Height,
-                    relatedBy: NSLayoutRelation.Equal,
+                    attribute: NSLayoutAttribute.height,
+                    relatedBy: NSLayoutRelation.equal,
                     toItem: nil,
-                    attribute: NSLayoutAttribute.NotAnAttribute,
+                    attribute: NSLayoutAttribute.notAnAttribute,
                     multiplier: 0.0,
                     constant: maxBottom - minYOrigin)
             ])
             
-            UIView.animateWithDuration(DesignLanguage.MinorAnimationDuration) {
+            UIView.animate(withDuration: DesignLanguage.MinorAnimationDuration, animations: {
                 self.borderOverlay!.alpha = 1.0
-            }
+            }) 
         }
     }
     
-    override func animationWillBegin(beginningState: TransitionAnimationState, plannedAnimationDuration: NSTimeInterval) {
+    override func animationWillBegin(_ beginningState: TransitionAnimationState, plannedAnimationDuration: Foundation.TimeInterval) {
         super.animationWillBegin(beginningState, plannedAnimationDuration: plannedAnimationDuration)
-        view.superview?.bringSubviewToFront(view)
+        view.superview?.bringSubview(toFront: view)
         configureForTransition(beginningState)
         
-        if beginningState == TransitionAnimationState.Active {
+        if beginningState == TransitionAnimationState.active {
             challengeContainer?.layer.removeAllAnimations()
         }
     }
     
-    override func addToAnimationBlock(endingState: TransitionAnimationState) {
+    override func addToAnimationBlock(_ endingState: TransitionAnimationState) {
         configureForTransition(endingState)
     }
     
@@ -549,7 +543,7 @@ class GameplayOutputViewController: HalfScreenViewController, UIGestureRecognize
 }
 
 extension GameplayOutputViewController: GameStateChangeListener {
-    func gameStateChanged(change: GameStateChange) {
+    func gameStateChanged(_ change: GameStateChange) {
         if let newGameState = change.newGameState {
             gameState = newGameState
             if change.oldGameState?.currentChallengeIndex != newGameState.currentChallengeIndex {
@@ -560,21 +554,21 @@ extension GameplayOutputViewController: GameStateChangeListener {
             } else if change.oldGameState != nil &&
                 change.oldGameState!.currentChallenge()?.userResponses.count == ((newGameState.currentChallenge()?.userResponses.count ?? 0) - 1) {
                 // Wrong answer was entered
-                shakeChallenges(NSUUID())
+                shakeChallenges(UUID())
             }
             
             if gameState.currentChallengeIndex >= 0 && gameState.currentChallengeIndex < gameState.challenges.count
                 && gameState.currentChallengeIndex - 1 == change.oldGameState?.currentChallengeIndex {
                     if borderOverlay?.superview != nil {
-                        UIView.animateWithDuration(DesignLanguage.MinorAnimationDuration, animations: {
+                        UIView.animate(withDuration: DesignLanguage.MinorAnimationDuration, animations: {
                             self.borderOverlay!.alpha = 0.0
                         })
                     }
                     PlayerIdentityManager.sharedInstance.currentIdentity.getMyBestScores { bestScores in
-                        NSTimer.scheduledTimerWithTimeInterval(
-                            DesignLanguage.delayBeforeInstructionalOverlay(self.gameState.levelId, finishedLevelBefore: bestScores[self.gameState.levelId] != nil),
+                        Timer.scheduledTimer(
+                            timeInterval: DesignLanguage.delayBeforeInstructionalOverlay(self.gameState.levelId, finishedLevelBefore: bestScores[self.gameState.levelId] != nil),
                             target: self,
-                            selector: "presentInstructionalOverlayIfNeeded:",
+                            selector: #selector(GameplayOutputViewController.presentInstructionalOverlayIfNeeded(_:)),
                             userInfo: self.gameState,
                             repeats: false)
                     }

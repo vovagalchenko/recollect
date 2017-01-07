@@ -10,17 +10,17 @@ import UIKit
 
 class GradientView: UIView {
     
-    let gradient: CGGradientRef
+    let gradient: CGGradient
     
     override init(frame: CGRect) {
         let colorSpace = CGColorSpaceCreateDeviceRGB()
-        gradient = CGGradientCreateWithColorComponents(colorSpace, [
+        gradient = CGGradient(colorSpace: colorSpace, colorComponents: [
             0.0, 0.0, 0.0, 0.0,
             0.0, 0.0, 0.0, 0.2
-        ], [0.0, 1.0], 2)!
+        ], locations: [0.0, 1.0], count: 2)!
         
         super.init(frame: frame)
-        opaque = false
+        isOpaque = false
         clearsContextBeforeDrawing = true
         translatesAutoresizingMaskIntoConstraints = false
     }
@@ -29,15 +29,15 @@ class GradientView: UIView {
         fatalError("init(coder:) has not been implemented. We don't expect it to ever get called because we're not using nibs.")
     }
     
-    override func drawRect(rect: CGRect) {
+    override func draw(_ rect: CGRect) {
         let ctx = UIGraphicsGetCurrentContext()
-        CGContextDrawLinearGradient(ctx, gradient, CGPoint(x: 0, y: 0), CGPoint(x: 0, y: bounds.size.height), [])
+        ctx?.drawLinearGradient(gradient, start: CGPoint(x: 0, y: 0), end: CGPoint(x: 0, y: bounds.size.height), options: [])
         
-        CGContextMoveToPoint(ctx, bounds.size.width, 0.0)
-        CGContextAddLineToPoint(ctx, bounds.size.width, bounds.size.height)
+        ctx?.move(to: CGPoint(x: bounds.size.width, y: 0.0))
+        ctx?.addLine(to: CGPoint(x: bounds.size.width, y: bounds.size.height))
         
-        CGContextSetLineWidth(ctx, 2.0)
+        ctx?.setLineWidth(2.0)
         DesignLanguage.ShadowColor.setStroke()
-        CGContextStrokePath(ctx)
+        ctx?.strokePath()
     }
 }

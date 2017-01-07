@@ -13,20 +13,20 @@ class BorderView: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
         
-        opaque = false
+        isOpaque = false
         clearsContextBeforeDrawing = true
         translatesAutoresizingMaskIntoConstraints = false
     }
     
     convenience init() {
-        self.init(frame: CGRectZero)
+        self.init(frame: CGRect.zero)
     }
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented. We don't expect it to ever get called because we're not using nibs.")
     }
     
-    override func drawRect(rect: CGRect) {
+    override func draw(_ rect: CGRect) {
         let ctx = UIGraphicsGetCurrentContext()
         
         let (rectangePoints, lineThickness) = pixelPerfectCoordinates(
@@ -44,11 +44,11 @@ class BorderView: UIView {
                             height: rectangePoints[2].y - rectangePoints[1].y)),
             cornerRadius: 5.0)
         
-        CGContextAddPath(ctx, roundedRectPath.CGPath)
-        CGContextSetLineDash(ctx, 0, [1.0, 1.0], 2)
-        CGContextSetLineWidth(ctx, lineThickness)
+        ctx?.addPath(roundedRectPath.cgPath)
+        ctx?.setLineDash(phase: 0, lengths: [1.0, 1.0])
+        ctx?.setLineWidth(lineThickness)
         DesignLanguage.AccentTextColor.setStroke()
-        CGContextStrokePath(ctx)
+        ctx?.strokePath()
     }
     
 }

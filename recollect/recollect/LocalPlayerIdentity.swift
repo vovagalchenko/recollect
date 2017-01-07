@@ -16,15 +16,15 @@ class LocalPlayerIdentity: PlayerIdentity {
             if NSKeyedArchiver.archiveRootObject(bestGames, toFile: computeScoresFilePath()) {
                 NSLog("Wrote local player's best scores successfully:\n\(bestGames)")
             } else {
-                Analytics.sharedInstance().logEventWithName(
-                    "local_score_save_fail",
+                Analytics.sharedInstance().logEvent(
+                    withName: "local_score_save_fail",
                     type: AnalyticsEventTypeWarning,
                     attributes: nil
                 )
             }
             
-            NSNotificationCenter.defaultCenter().postNotificationName(
-                PlayerIdentityManager.BestScoresChangeNotificationName,
+            NotificationCenter.default.post(
+                name: Notification.Name(rawValue: PlayerIdentityManager.BestScoresChangeNotificationName),
                 object: self,
                 userInfo: nil)
         }
@@ -34,17 +34,17 @@ class LocalPlayerIdentity: PlayerIdentity {
     init() {
         bestGames = [String: GameState]()
         let scoresFilePath = self.computeScoresFilePath()
-        if NSFileManager.defaultManager().fileExistsAtPath(scoresFilePath) {
-            bestGames = NSKeyedUnarchiver.unarchiveObjectWithFile(scoresFilePath) as! [String: GameState]
+        if FileManager.default.fileExists(atPath: scoresFilePath) {
+            bestGames = NSKeyedUnarchiver.unarchiveObject(withFile: scoresFilePath) as! [String: GameState]
         }
     }
     
     func computeScoresFilePath() -> String {
-        let documentDir = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)[0] 
-        return (documentDir as NSString).stringByAppendingPathComponent(playerId + ".scores")
+        let documentDir = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0] 
+        return (documentDir as NSString).appendingPathComponent(playerId + ".scores")
     }
     
-    func deltaFromBest(game: GameState) -> NSTimeInterval {
+    func deltaFromBest(_ game: GameState) -> Foundation.TimeInterval {
         var delta = 0.0
         if let bestTimeForLevel = bestGames[game.levelId]?.finalTime() {
             delta = game.finalTime() - bestTimeForLevel
@@ -52,7 +52,7 @@ class LocalPlayerIdentity: PlayerIdentity {
         return delta
     }
     
-    func getLeaderboard(levelId: String, ownForcedScore: NSTimeInterval = -1, completion: Leaderboard -> Void) {
+    func getLeaderboard(_ levelId: String, ownForcedScore: Foundation.TimeInterval = -1, completion: (Leaderboard) -> Void) {
         var leaderboard = [LeaderboardEntry]()
         if let bestTime = bestGames[levelId]?.finalTime() {
             leaderboard.append(LeaderboardEntry(playerId: playerId, time: bestTime, rank: 1))
@@ -60,7 +60,7 @@ class LocalPlayerIdentity: PlayerIdentity {
         completion(Leaderboard(entries: leaderboard, leaderboardId: levelId))
     }
     
-    func getMyBestScores(completion: [String: PlayerScore] -> Void) {
+    func getMyBestScores(_ completion: ([String: PlayerScore]) -> Void) {
         var myBestScores = [String: PlayerScore]()
         for (levelId, bestGameState) in bestGames {
             myBestScores[levelId] = PlayerScore(playerId: playerId, time: bestGameState.finalTime())
@@ -68,7 +68,7 @@ class LocalPlayerIdentity: PlayerIdentity {
         completion(myBestScores)
     }
     
-    func recordNewGame(newGame: GameState, completion: () -> Void) {
+    func recordNewGame(_ newGame: GameState, completion: () -> Void) {
         if let bestGameForLevel = bestGames[newGame.levelId] {
             if bestGameForLevel.finalTime() > newGame.finalTime() {
                 bestGames[newGame.levelId] = newGame

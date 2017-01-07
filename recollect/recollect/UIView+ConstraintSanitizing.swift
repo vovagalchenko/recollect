@@ -9,7 +9,7 @@
 import UIKit
 
 extension UIView {
-    class func sanitizeLocationConstraintMultiplier(multiplier: CGFloat) -> CGFloat {
-        return (multiplier == 0) ? CGFloat.min : multiplier
+    class func sanitizeLocationConstraintMultiplier(_ multiplier: CGFloat) -> CGFloat {
+        return (multiplier == 0) ? CGFloat.leastNormalMagnitude : multiplier
     }
 }

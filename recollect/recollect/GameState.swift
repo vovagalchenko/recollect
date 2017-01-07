@@ -8,7 +8,7 @@
 
 import Foundation
 
-final class GameState: NSObject, Streamable {
+final class GameState: NSObject, TextOutputStreamable {
     let gameId: String
     let n: Int
     var levelId: String {
@@ -17,11 +17,11 @@ final class GameState: NSObject, Streamable {
     let challenges: [Challenge]
     let currentChallengeIndex: Int
     let closedTimeIntervals: [TimeInterval]
-    let latestTimeStart: NSDate?
-    let peeks: [NSDate]
+    let latestTimeStart: Date?
+    let peeks: [Date]
     
     init(n: Int, numRounds: Int) {
-        gameId = NSUUID().UUIDString
+        gameId = UUID().uuidString
         self.n = n
         
         var newChallenges: [Challenge] = []
@@ -38,7 +38,7 @@ final class GameState: NSObject, Streamable {
         latestTimeStart = nil
     }
     
-    init(gameId: String, n: Int, challenges: [Challenge], currentChallengeIndex: Int, closedTimeIntervals: [TimeInterval], latestTimeStart: NSDate?, peeks: [NSDate]) {
+    init(gameId: String, n: Int, challenges: [Challenge], currentChallengeIndex: Int, closedTimeIntervals: [TimeInterval], latestTimeStart: Date?, peeks: [Date]) {
         self.gameId = gameId
         self.n = n
         self.challenges = challenges
@@ -46,7 +46,7 @@ final class GameState: NSObject, Streamable {
         self.peeks = peeks
         
         if currentChallengeIndex >= self.challenges.count && latestTimeStart != nil {
-            self.closedTimeIntervals = closedTimeIntervals + [TimeInterval(startTime: latestTimeStart!, endTime: NSDate())]
+            self.closedTimeIntervals = closedTimeIntervals + [TimeInterval(startTime: latestTimeStart!, endTime: Date())]
             self.latestTimeStart = nil
         } else {
             self.closedTimeIntervals = closedTimeIntervals
@@ -54,7 +54,7 @@ final class GameState: NSObject, Streamable {
         }
     }
     
-    func advance(userInput: Int? = nil) -> GameState {
+    func advance(_ userInput: Int? = nil) -> GameState {
         
         if let givenUserInput = userInput {
             assert(currentChallengeIndex >= 0 && currentChallengeIndex < challenges.count,
@@ -80,7 +80,7 @@ final class GameState: NSObject, Streamable {
                 challenges: challenges,
                 currentChallengeIndex: currentChallengeIndex + 1,
                 closedTimeIntervals: closedTimeIntervals,
-                latestTimeStart: (currentChallengeIndex + 1 == 0) ? NSDate() : nil,
+                latestTimeStart: (currentChallengeIndex + 1 == 0) ? Date() : nil,
                 peeks: peeks
             )
         }
@@ -88,7 +88,7 @@ final class GameState: NSObject, Streamable {
     
     func addPeek() -> GameState {
         var newPeeks = peeks
-        newPeeks.append(NSDate())
+        newPeeks.append(Date())
         return GameState(
             gameId: gameId,
             n: n,
@@ -108,13 +108,13 @@ final class GameState: NSObject, Streamable {
         }
     }
     
-    func time(atTime time: NSDate = NSDate()) -> NSTimeInterval {
+    func time(atTime time: Date = Date()) -> Foundation.TimeInterval {
         return closedTimeIntervals.reduce(0) { $0 + $1.duration() }
-             + NSTimeInterval(peeks.count) * GameManager.penaltyPerPeek
-             + time.timeIntervalSinceDate(latestTimeStart ?? time)
+             + Foundation.TimeInterval(peeks.count) * GameManager.penaltyPerPeek
+             + time.timeIntervalSince(latestTimeStart ?? time)
     }
     
-    func finalTime() -> NSTimeInterval {
+    func finalTime() -> Foundation.TimeInterval {
         assert(isFinished(), "Can't get the final time while the game is still in progress.")
         return time()
     }
@@ -122,7 +122,7 @@ final class GameState: NSObject, Streamable {
     func isFlawless() -> Bool { return challenges.reduce(peeks.count == 0) { $0 && $1.userResponses.count <= 1 } }
     func isFinished() -> Bool { return currentChallengeIndex >= challenges.count && latestTimeStart == nil }
     
-    func writeTo<Target : OutputStreamType>(inout target: Target) {
+    func write<Target : TextOutputStream>(to target: inout Target) {
         target.write("GAME STATE:\n\tn = \(n)\n\tchallenges = \(challenges)\n\tcurrentChallengeIndex = \(currentChallengeIndex)\n\tclosedTimeIntervals = \(closedTimeIntervals)")
         if let currentTimeIntervalStart = latestTimeStart {
             target.write("\n\tlatestTimeStart = \(currentTimeIntervalStart)")
@@ -133,53 +133,53 @@ final class GameState: NSObject, Streamable {
 }
 
 final class TimeInterval: NSObject, NSCoding {
-    let startTime: NSDate
-    let endTime: NSDate
+    let startTime: Date
+    let endTime: Date
     
-    init(startTime: NSDate, endTime: NSDate) {
+    init(startTime: Date, endTime: Date) {
         self.startTime = startTime
         self.endTime = endTime
     }
     
-    func duration() -> NSTimeInterval {
-        return endTime.timeIntervalSinceDate(startTime)
+    func duration() -> Foundation.TimeInterval {
+        return endTime.timeIntervalSince(startTime)
     }
     
-    func encodeWithCoder(aCoder: NSCoder) {
-        aCoder.encodeObject(startTime, forKey: "startTime")
-        aCoder.encodeObject(endTime, forKey: "endTime")
+    func encode(with aCoder: NSCoder) {
+        aCoder.encode(startTime, forKey: "startTime")
+        aCoder.encode(endTime, forKey: "endTime")
     }
     
     convenience init?(coder aDecoder: NSCoder) {
         self.init(
-            startTime: aDecoder.decodeObjectForKey("startTime") as! NSDate,
-            endTime: aDecoder.decodeObjectForKey("endTime") as! NSDate
+            startTime: aDecoder.decodeObject(forKey: "startTime") as! Date,
+            endTime: aDecoder.decodeObject(forKey: "endTime") as! Date
         )
     }
 }
 
 extension GameState: NSCoding {
     
-    func encodeWithCoder(aCoder: NSCoder) {
-        aCoder.encodeObject(gameId, forKey: "gameId")
-        aCoder.encodeInteger(n, forKey: "n")
-        aCoder.encodeObject(challenges, forKey: "challenges")
-        aCoder.encodeInteger(currentChallengeIndex, forKey: "currentChallengeIndex")
-        aCoder.encodeObject(closedTimeIntervals, forKey: "closedTimeIntervals")
+    func encode(with aCoder: NSCoder) {
+        aCoder.encode(gameId, forKey: "gameId")
+        aCoder.encode(n, forKey: "n")
+        aCoder.encode(challenges, forKey: "challenges")
+        aCoder.encode(currentChallengeIndex, forKey: "currentChallengeIndex")
+        aCoder.encode(closedTimeIntervals, forKey: "closedTimeIntervals")
         if let currentTimeIntervalStart = latestTimeStart {
-            aCoder.encodeObject(currentTimeIntervalStart, forKey: "latestTimeStart")
+            aCoder.encode(currentTimeIntervalStart, forKey: "latestTimeStart")
         }
-        aCoder.encodeObject(peeks, forKey: "peeks")
+        aCoder.encode(peeks, forKey: "peeks")
     }
     
     convenience init?(coder aDecoder: NSCoder) {
-        let newGameId = aDecoder.decodeObjectForKey("gameId") as! String
-        let newN = aDecoder.decodeIntegerForKey("n")
-        let newChallenges = aDecoder.decodeObjectForKey("challenges") as! [Challenge]
-        let newCurrentChallengeIndex = aDecoder.decodeIntegerForKey("currentChallengeIndex")
-        let newClosedTimeIntervals = aDecoder.decodeObjectForKey("closedTimeIntervals") as! [TimeInterval]
-        let newLatestTimeStart = aDecoder.containsValueForKey("latestTimeStart") ? aDecoder.decodeObjectForKey("latestTimeStart") as! NSDate? : nil
-        let newPeeks = aDecoder.decodeObjectForKey("peeks") as! [NSDate]
+        let newGameId = aDecoder.decodeObject(forKey: "gameId") as! String
+        let newN = aDecoder.decodeInteger(forKey: "n")
+        let newChallenges = aDecoder.decodeObject(forKey: "challenges") as! [Challenge]
+        let newCurrentChallengeIndex = aDecoder.decodeInteger(forKey: "currentChallengeIndex")
+        let newClosedTimeIntervals = aDecoder.decodeObject(forKey: "closedTimeIntervals") as! [TimeInterval]
+        let newLatestTimeStart = aDecoder.containsValue(forKey: "latestTimeStart") ? aDecoder.decodeObject(forKey: "latestTimeStart") as! Date? : nil
+        let newPeeks = aDecoder.decodeObject(forKey: "peeks") as! [Date]
         
         self.init(
             gameId: newGameId,

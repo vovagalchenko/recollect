@@ -7,13 +7,37 @@
 //
 
 import UIKit
+// FIXME: comparison operators with optionals were removed from the Swift Standard Libary.
+// Consider refactoring the code to use the non-optional operators.
+private func < <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
+  switch (lhs, rhs) {
+  case let (l?, r?):
+    return l < r
+  case (nil, _?):
+    return true
+  default:
+    return false
+  }
+}
+
+// FIXME: comparison operators with optionals were removed from the Swift Standard Libary.
+// Consider refactoring the code to use the non-optional operators.
+private func >= <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
+  switch (lhs, rhs) {
+  case let (l?, r?):
+    return l >= r
+  default:
+    return !(lhs < rhs)
+  }
+}
+
 
 class HalfScreenViewController: UIViewController, TransitionAnimationDelegate {
-    var displayLinkStartDate: NSDate?
-    var displayLinkDuration: NSTimeInterval?
+    var displayLinkStartDate: Date?
+    var displayLinkDuration: Foundation.TimeInterval?
     var transitionBeginningState: TransitionAnimationState?
     
-    let labelSettlingDuration: NSTimeInterval = 0.5
+    let labelSettlingDuration: Foundation.TimeInterval = 0.5
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -23,25 +47,25 @@ class HalfScreenViewController: UIViewController, TransitionAnimationDelegate {
         }
     }
     
-    private func subviewsWalk(root: UIView, work: (UIView) -> Void) {
+    private func subviewsWalk(_ root: UIView, work: (UIView) -> Void) {
         work(root)
         for subview in root.subviews {
             subviewsWalk(subview , work: work)
         }
     }
     
-    func refreshFrame(displayLink: CADisplayLink) {
+    func refreshFrame(_ displayLink: CADisplayLink) {
         if let existingDisplayLinkStartDate = displayLinkStartDate {
-            let timeElapsed = NSDate().timeIntervalSinceDate(existingDisplayLinkStartDate)
+            let timeElapsed = Date().timeIntervalSince(existingDisplayLinkStartDate)
             let timeLeft = displayLinkDuration! - timeElapsed
             subviewsWalk(view) {
                 if let label = $0 as? ManglableLabel {
                     var portionToLeaveUnmangled: Float = 0
                     if (timeLeft <= self.labelSettlingDuration) {
                         let portionOfScreenToLeaveUnmangled = CGFloat((self.labelSettlingDuration - timeLeft)/self.labelSettlingDuration)
-                        let rectToLeaveUnmangled = CGRectMake(0, 0, self.view.bounds.size.width*portionOfScreenToLeaveUnmangled, self.view.bounds.size.height)
-                        let labelRect = label.superview!.convertRect(label.frame, toView: self.view)
-                        let labelRectToLeaveUnmangled = CGRectIntersection(rectToLeaveUnmangled, labelRect)
+                        let rectToLeaveUnmangled = CGRect(x: 0, y: 0, width: self.view.bounds.size.width*portionOfScreenToLeaveUnmangled, height: self.view.bounds.size.height)
+                        let labelRect = label.superview!.convert(label.frame, to: self.view)
+                        let labelRectToLeaveUnmangled = rectToLeaveUnmangled.intersection(labelRect)
                         if (labelRect.width > 0) {
                             portionToLeaveUnmangled = Float(labelRectToLeaveUnmangled.width/labelRect.width)
                         } else {
@@ -49,12 +73,12 @@ class HalfScreenViewController: UIViewController, TransitionAnimationDelegate {
                         }
                     }
                     label.mangle(portionToLeaveUnmangled,
-                        canUseAlphaForAccents: self.transitionBeginningState! == TransitionAnimationState.Inactive)
+                        canUseAlphaForAccents: self.transitionBeginningState! == TransitionAnimationState.inactive)
                 }
             }
         }
         
-        if displayLinkStartDate == nil || NSDate().timeIntervalSinceDate(displayLinkStartDate!) >= displayLinkDuration {
+        if displayLinkStartDate == nil || Date().timeIntervalSince(displayLinkStartDate!) >= displayLinkDuration {
             displayLink.invalidate()
             displayLinkDuration = nil
             displayLinkStartDate = nil
@@ -68,16 +92,16 @@ class HalfScreenViewController: UIViewController, TransitionAnimationDelegate {
         }
     }
     
-    func animationWillBegin(beginningState: TransitionAnimationState, plannedAnimationDuration: NSTimeInterval) {
-        let displayLink = CADisplayLink(target: self, selector: Selector("refreshFrame:"))
+    func animationWillBegin(_ beginningState: TransitionAnimationState, plannedAnimationDuration: Foundation.TimeInterval) {
+        let displayLink = CADisplayLink(target: self, selector: #selector(HalfScreenViewController.refreshFrame(_:)))
         transitionBeginningState = beginningState
-        displayLinkStartDate = NSDate()
+        displayLinkStartDate = Date()
         displayLinkDuration = plannedAnimationDuration
         
-        displayLink.addToRunLoop(NSRunLoop.mainRunLoop(), forMode: NSDefaultRunLoopMode)
+        displayLink.add(to: RunLoop.main, forMode: RunLoopMode.defaultRunLoopMode)
     }
     
-    func addToAnimationBlock(endingState: TransitionAnimationState) { }
+    func addToAnimationBlock(_ endingState: TransitionAnimationState) { }
     
     func managesOwnTransitions() -> Bool {
         return false

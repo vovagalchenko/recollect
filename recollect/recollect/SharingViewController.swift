@@ -26,67 +26,75 @@ class SharingViewController: HalfScreenViewController {
         super.viewDidLoad()
         
         let repeatButton = UIButton.buttonWithCustomBackground(RepeatIconView())
-        repeatButton.addTarget(self, action: "repeatButtonPressed:", forControlEvents: UIControlEvents.TouchUpInside)
+        repeatButton.addTarget(
+            self,
+            action: #selector(SharingViewController.repeatButtonPressed(_:)),
+            for: UIControlEvents.touchUpInside
+        )
         view.addSubview(repeatButton)
         
         let menuButton = UIButton.buttonWithCustomBackground(MenuIconView())
-        menuButton.addTarget(self, action: "menuButtonPressed:", forControlEvents: UIControlEvents.TouchUpInside)
+        menuButton.addTarget(
+            self,
+            action: #selector(SharingViewController.menuButtonPressed(_:)),
+            for: UIControlEvents.touchUpInside
+        )
         view.addSubview(menuButton)
         
         view.addConstraints(
             [
                 NSLayoutConstraint(
                     item: menuButton,
-                    attribute: .CenterX,
-                    relatedBy: .Equal,
+                    attribute: .centerX,
+                    relatedBy: .equal,
                     toItem: view,
-                    attribute: .CenterX,
+                    attribute: .centerX,
                     multiplier: 1.0 - 0.25,
                     constant: 0.0),
                 NSLayoutConstraint(
                     item: repeatButton,
-                    attribute: .CenterX,
-                    relatedBy: .Equal,
+                    attribute: .centerX,
+                    relatedBy: .equal,
                     toItem: view,
-                    attribute: .CenterX,
+                    attribute: .centerX,
                     multiplier: 1.0 + 0.25,
                     constant: 0.0),
                 NSLayoutConstraint(
                     item: repeatButton,
-                    attribute: .CenterY,
-                    relatedBy: .Equal,
+                    attribute: .centerY,
+                    relatedBy: .equal,
                     toItem: view,
-                    attribute: .CenterY,
+                    attribute: .centerY,
                     multiplier: 1.0,
                     constant: 0.0),
                 NSLayoutConstraint(
                     item: menuButton,
-                    attribute: .CenterY,
-                    relatedBy: .Equal,
+                    attribute: .centerY,
+                    relatedBy: .equal,
                     toItem: view,
-                    attribute: .CenterY,
+                    attribute: .centerY,
                     multiplier: 1.0,
                     constant: 0.0),
             ]
         )
     }
     
-    func withExistingDelegate(work: (SharingViewControllerDelegate) -> Void) {
+    func withExistingDelegate(_ work: (SharingViewControllerDelegate) -> Void) {
         if let existingDelegate = delegate {
             work(existingDelegate)
         }
     }
     
-    func repeatButtonPressed(button: UIButton) {
+    func repeatButtonPressed(_ button: UIButton) {
         withExistingDelegate { $0.repeatButtonPressed(self) }
     }
     
-    func menuButtonPressed(button: UIButton) {
+    func menuButtonPressed(_ button: UIButton) {
         withExistingDelegate { $0.menuButtonPressed(self) }
     }
 }
 
 protocol SharingViewControllerDelegate {
-    func repeatButtonPressed(sharingVC: SharingViewController)
-    func menuButtonPressed(sharingVC: SharingViewController)
+    func repeatButtonPressed(_ sharingVC: SharingViewController)
+    func menuButtonPressed(_ sharingVC: SharingViewController)
 }

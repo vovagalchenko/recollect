@@ -8,7 +8,7 @@
 
 import Foundation
 
-final class Challenge: NSObject, Streamable {
+final class Challenge: NSObject, TextOutputStreamable {
     let lOperand: Int
     let rOperand: Int
     let challengeOperator: ChallengeOperator
@@ -17,14 +17,14 @@ final class Challenge: NSObject, Streamable {
     init(left: Int, right: Int) {
         lOperand = left
         rOperand = right
-        challengeOperator = .Sum
+        challengeOperator = .sum
     }
     
     init(left: Int, right: Int, userResponses: [Int]) {
         lOperand = left
         rOperand = right
         self.userResponses = userResponses
-        challengeOperator = .Sum
+        challengeOperator = .sum
     }
     
     init(left: Int, right: Int, challengeOperator: ChallengeOperator, userResponses: [Int]) {
@@ -34,13 +34,14 @@ final class Challenge: NSObject, Streamable {
         self.challengeOperator = challengeOperator
     }
     
-    func respond(response: Int) -> (Bool, Challenge) {
+    func respond(_ response: Int) -> (Bool, Challenge) {
         var newResponses = userResponses
         newResponses.append(response)
         return (challengeOperator.apply(lOperand, rOperand: rOperand) == response, Challenge(left: lOperand, right: rOperand, userResponses: newResponses))
     }
     
-    func writeTo<Target : OutputStreamType>(inout target: Target) {
+    func write<Target : TextOutputStream>(to target: inout Target) {
+        
         target.write("\(lOperand) \(challengeOperator) \(rOperand)")
         if userResponses.count > 0 {
             target.write(" = \(userResponses)")
@@ -49,18 +50,18 @@ final class Challenge: NSObject, Streamable {
 }
 
 extension Challenge: NSCoding {
-    func encodeWithCoder(aCoder: NSCoder) {
-        aCoder.encodeInteger(lOperand, forKey: "lOperand")
-        aCoder.encodeInteger(rOperand, forKey: "rOperand")
-        aCoder.encodeInteger(challengeOperator.rawValue, forKey: "challengeOperator")
-        aCoder.encodeObject(userResponses, forKey: "userResponses")
+    func encode(with aCoder: NSCoder) {
+        aCoder.encode(lOperand, forKey: "lOperand")
+        aCoder.encode(rOperand, forKey: "rOperand")
+        aCoder.encode(challengeOperator.rawValue, forKey: "challengeOperator")
+        aCoder.encode(userResponses, forKey: "userResponses")
     }
     
     convenience init?(coder aDecoder: NSCoder) {
-        let newLOperand = aDecoder.decodeIntegerForKey("lOperand")
-        let newROperand = aDecoder.decodeIntegerForKey("rOperand")
-        let newChallengeOperator = ChallengeOperator(rawValue: aDecoder.decodeIntegerForKey("challengeOperator"))!
-        let newUserResponses = aDecoder.decodeObjectForKey("userResponses") as! [Int]
+        let newLOperand = aDecoder.decodeInteger(forKey: "lOperand")
+        let newROperand = aDecoder.decodeInteger(forKey: "rOperand")
+        let newChallengeOperator = ChallengeOperator(rawValue: aDecoder.decodeInteger(forKey: "challengeOperator"))!
+        let newUserResponses = aDecoder.decodeObject(forKey: "userResponses") as! [Int]
         
         self.init(
             left: newLOperand,
@@ -71,18 +72,18 @@ extension Challenge: NSCoding {
     }
 }
 
-enum ChallengeOperator: Int, Streamable {
-    case Sum
+enum ChallengeOperator: Int, TextOutputStreamable {
+    case sum
     
-    func apply(lOperand: Int, rOperand: Int) -> Int {
+    func apply(_ lOperand: Int, rOperand: Int) -> Int {
         switch (self) {
-            case .Sum: return (lOperand + rOperand) % 10
+            case .sum: return (lOperand + rOperand) % 10
         }
     }
     
-    func writeTo<Target : OutputStreamType>(inout target: Target) {
+    func write<Target : TextOutputStream>(to target: inout Target) {
         switch (self) {
-            case .Sum: target.write("+")
+            case .sum: target.write("+")
         }
     }
 }

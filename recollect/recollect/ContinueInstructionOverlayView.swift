@@ -14,41 +14,41 @@ class ContinueInstructionOverlayView: UIView {
     
     override init(frame: CGRect) {
         instructionLabel = ManglableLabel()
-        instructionLabel.backgroundColor = UIColor.clearColor()
+        instructionLabel.backgroundColor = UIColor.clear
         instructionLabel.textColor = DesignLanguage.BottomHalfBGColor
         instructionLabel.font = UIFont(name: "HelveticaNeue", size: 28.8)
         instructionLabel.numberOfLines = 2
         instructionLabel.text = "Memorize challenge,\nthen press continue"
-        instructionLabel.textAlignment = NSTextAlignment.Center
+        instructionLabel.textAlignment = NSTextAlignment.center
         super.init(frame: frame)
         
-        userInteractionEnabled = false
+        isUserInteractionEnabled = false
         translatesAutoresizingMaskIntoConstraints = false
-        backgroundColor = UIColor.whiteColor().colorWithAlphaComponent(0.2)
+        backgroundColor = UIColor.white.withAlphaComponent(0.2)
         
         addSubview(instructionLabel)
         addConstraints([
             NSLayoutConstraint(
                 item: instructionLabel,
-                attribute: NSLayoutAttribute.CenterX,
-                relatedBy: NSLayoutRelation.Equal,
+                attribute: NSLayoutAttribute.centerX,
+                relatedBy: NSLayoutRelation.equal,
                 toItem: self,
-                attribute: NSLayoutAttribute.CenterX,
+                attribute: NSLayoutAttribute.centerX,
                 multiplier: 1.0,
                 constant: 0.0),
             NSLayoutConstraint(
                 item: instructionLabel,
-                attribute: NSLayoutAttribute.CenterY,
-                relatedBy: NSLayoutRelation.Equal,
+                attribute: NSLayoutAttribute.centerY,
+                relatedBy: NSLayoutRelation.equal,
                 toItem: self,
-                attribute: NSLayoutAttribute.CenterY,
+                attribute: NSLayoutAttribute.centerY,
                 multiplier: 1.0,
                 constant: 0.0)
         ])
     }
     
     convenience init() {
-        self.init(frame: CGRectZero)
+        self.init(frame: CGRect.zero)
     }
     
     required init?(coder aDecoder: NSCoder) {

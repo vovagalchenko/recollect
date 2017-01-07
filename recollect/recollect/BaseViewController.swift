@@ -42,40 +42,40 @@ class BaseViewController: UIViewController {
         queueTransition(
             newTopViewControllerFunc: { return LogoViewController() },
             newBottomViewControllerFunc: { return LevelPickerViewController(delegate: GameManager.sharedInstance) },
-            rotationParams: (.None, .None)
+            rotationParams: (.none, .none)
         )
         
         GameManager.sharedInstance.subscribeToGameStateChangeNotifications(self)
     }
     
-    private func constraints(halfViewContainer: UIView, isTop: Bool) -> [NSLayoutConstraint] {
+    private func constraints(_ halfViewContainer: UIView, isTop: Bool) -> [NSLayoutConstraint] {
         return [
             NSLayoutConstraint(item: halfViewContainer,
-                attribute: NSLayoutAttribute.CenterX,
-                relatedBy: NSLayoutRelation.Equal,
+                attribute: NSLayoutAttribute.centerX,
+                relatedBy: NSLayoutRelation.equal,
                 toItem: self.view!,
-                attribute: NSLayoutAttribute.CenterX,
+                attribute: NSLayoutAttribute.centerX,
                 multiplier: 1.0,
                 constant: 0.0),
             NSLayoutConstraint(item: halfViewContainer,
-                attribute: NSLayoutAttribute.CenterY,
-                relatedBy: NSLayoutRelation.Equal,
+                attribute: NSLayoutAttribute.centerY,
+                relatedBy: NSLayoutRelation.equal,
                 toItem: self.view!,
-                attribute: NSLayoutAttribute.CenterY,
+                attribute: NSLayoutAttribute.centerY,
                 multiplier: isTop ? 0.5 : 1.5,
                 constant: 0.0),
             NSLayoutConstraint(item: halfViewContainer,
-                attribute: NSLayoutAttribute.Width,
-                relatedBy: NSLayoutRelation.Equal,
+                attribute: NSLayoutAttribute.width,
+                relatedBy: NSLayoutRelation.equal,
                 toItem: self.view!,
-                attribute: NSLayoutAttribute.Width,
+                attribute: NSLayoutAttribute.width,
                 multiplier: 1.0,
                 constant: 0.0),
             NSLayoutConstraint(item: halfViewContainer,
-                attribute: NSLayoutAttribute.Height,
-                relatedBy: NSLayoutRelation.Equal,
+                attribute: NSLayoutAttribute.height,
+                relatedBy: NSLayoutRelation.equal,
                 toItem: self.view!,
-                attribute: NSLayoutAttribute.Height,
+                attribute: NSLayoutAttribute.height,
                 multiplier: 0.5,
                 constant: 0.0)
         ]
@@ -88,9 +88,9 @@ class BaseViewController: UIViewController {
     // Ewwww, I really should turn these into objects
     private var transitionQueue: [((() -> HalfScreenViewController?)?, (() -> HalfScreenViewController?)?, HalfScreenViewController?, HalfScreenViewController?, (TransitionRotation, TransitionRotation))] = []
     
-    func queueTransition(newTopViewControllerFunc newTopViewControllerFunc: (() -> HalfScreenViewController?)? = nil, newBottomViewControllerFunc: (() -> HalfScreenViewController?)? = nil,
+    func queueTransition(newTopViewControllerFunc: (() -> HalfScreenViewController?)? = nil, newBottomViewControllerFunc: (() -> HalfScreenViewController?)? = nil,
         checkTopViewController: HalfScreenViewController? = nil, checkBottomViewController: HalfScreenViewController? = nil, rotationParams: (TransitionRotation, TransitionRotation)) {
-        assert(NSThread.isMainThread(), "queueTransition(...) has to be called on the main thread")
+        assert(Thread.isMainThread, "queueTransition(...) has to be called on the main thread")
         transitionQueue.append((newTopViewControllerFunc, newBottomViewControllerFunc, checkTopViewController, checkBottomViewController, rotationParams))
         if transitionQueue.count == 1 {
             transition()
@@ -98,7 +98,7 @@ class BaseViewController: UIViewController {
     }
     
     private func transition() {
-        assert(NSThread.isMainThread(), "transition(...) has to be called on the main thread")
+        assert(Thread.isMainThread, "transition(...) has to be called on the main thread")
         
         if (transitionQueue.count == 0) { return }
         let (newTopViewControllerFunc, newBottomViewControllerFunc, checkTopViewController, checkBottomViewController, rotationParams) = transitionQueue[0]
@@ -108,7 +108,7 @@ class BaseViewController: UIViewController {
         let newBottomViewController = newBottomViewControllerFunc == nil ? self.bottomViewController : newBottomViewControllerFunc!()
         if (checkBottomViewController != nil && checkBottomViewController != self.bottomViewController) ||
            (checkTopViewController != nil && checkTopViewController != self.topViewController) {
-            transitionQueue.removeAtIndex(0)
+            transitionQueue.remove(at: 0)
             transition()
             return
         }
@@ -130,17 +130,17 @@ class BaseViewController: UIViewController {
                 let isTop = existingNewController == newTopViewController
                 let viewToAddTo = isTop ? self.topHalfContainerView! : self.bottomHalfContainerView!
                 viewToAddTo.addSubview(existingNewController.view)
-                viewToAddTo.sendSubviewToBack(existingNewController.view)
-                existingNewController.didMoveToParentViewController(self)
+                viewToAddTo.sendSubview(toBack: existingNewController.view)
+                existingNewController.didMove(toParentViewController: self)
                 
-                newViewConstraints.appendContentsOf(
-                    NSLayoutConstraint.constraintsWithVisualFormat(
-                        "V:|[newView]|",
+                newViewConstraints.append(
+                    contentsOf: NSLayoutConstraint.constraints(
+                        withVisualFormat: "V:|[newView]|",
                         options: NSLayoutFormatOptions(rawValue: 0),
                         metrics: nil,
                         views: ["newView" : existingNewController.view]) +
-                        NSLayoutConstraint.constraintsWithVisualFormat(
-                            "H:|[newView]|",
+                        NSLayoutConstraint.constraints(
+                            withVisualFormat: "H:|[newView]|",
                             options: NSLayoutFormatOptions(rawValue: 0),
                             metrics: nil,
                             views: ["newView" : existingNewController.view])
@@ -148,13 +148,13 @@ class BaseViewController: UIViewController {
                 
                 if !existingNewController.managesOwnTransitions() {
                     let sign = CGFloat(isTop ? rotationParams.0.rawValue : rotationParams.1.rawValue)
-                    existingNewController.view.transform = CGAffineTransformRotate(CGAffineTransformMakeScale(transitionStartScale, transitionStartScale), sign * CGFloat(M_PI_2))
+                    existingNewController.view.transform = CGAffineTransform(scaleX: transitionStartScale, y: transitionStartScale).rotated(by: sign * CGFloat(M_PI_2))
                 }
-                existingNewController.animationWillBegin(.Inactive, plannedAnimationDuration: DesignLanguage.TransitionAnimationDuration)
+                existingNewController.animationWillBegin(.inactive, plannedAnimationDuration: DesignLanguage.TransitionAnimationDuration)
             }
             if let existingOldController = oldController {
-                constraintsToRemove.appendContentsOf(existingOldController.view.superview?.constraintsConstrainingView(existingOldController.view) ?? [NSLayoutConstraint]())
-                existingOldController.animationWillBegin(.Active, plannedAnimationDuration: DesignLanguage.TransitionAnimationDuration)
+                constraintsToRemove.append(contentsOf: existingOldController.view.superview?.constraintsConstrainingView(existingOldController.view) ?? [NSLayoutConstraint]())
+                existingOldController.animationWillBegin(.active, plannedAnimationDuration: DesignLanguage.TransitionAnimationDuration)
             }
         }
         view.addConstraints(newViewConstraints)
@@ -163,30 +163,30 @@ class BaseViewController: UIViewController {
         
 
         let animatingOutViews = controllersToAnimate.map { $0.0?.view }.filter { $0 != nil }.map { $0! }
-        UIView.animateWithDuration(DesignLanguage.TransitionAnimationDuration, animations: {
+        UIView.animate(withDuration: DesignLanguage.TransitionAnimationDuration, animations: {
             for (oldController, newController) in controllersToAnimate {
                 if let existingOldController = oldController {
-                    existingOldController.addToAnimationBlock(.Inactive)
+                    existingOldController.addToAnimationBlock(.inactive)
                     if !existingOldController.managesOwnTransitions() {
                         existingOldController.view.alpha = 0
                         let isTop = existingOldController.view.superview == self.topHalfContainerView
                         let sign = -CGFloat(isTop ? rotationParams.0.rawValue : rotationParams.1.rawValue)
-                        existingOldController.view.transform = CGAffineTransformRotate(CGAffineTransformMakeScale(self.transitionEndScale, self.transitionEndScale), sign * CGFloat(M_PI_2))
+                        existingOldController.view.transform = CGAffineTransform(scaleX: self.transitionEndScale, y: self.transitionEndScale).rotated(by: sign * CGFloat(M_PI_2))
                     }
                 }
                 if let existingNewController = newController {
-                    existingNewController.addToAnimationBlock(.Active)
+                    existingNewController.addToAnimationBlock(.active)
                     if !existingNewController.managesOwnTransitions() {
                         existingNewController.view.alpha = 1.0
-                        existingNewController.view.transform = CGAffineTransformIdentity
+                        existingNewController.view.transform = CGAffineTransform.identity
                     }
                 }
             }
-        }) { (finished: Bool) in
-            assert(NSThread.isMainThread(), "Expecting the animation completion to be executed on the main thread")
+        }, completion: { (finished: Bool) in
+            assert(Thread.isMainThread, "Expecting the animation completion to be executed on the main thread")
             for (oldController, _) in controllersToAnimate {
                 if let existingOldController = oldController {
-                    existingOldController.willMoveToParentViewController(nil)
+                    existingOldController.willMove(toParentViewController: nil)
                     let superviewHalf = existingOldController.view.superview
                     existingOldController.view.removeFromSuperview()
                     existingOldController.removeFromParentViewController()
@@ -194,25 +194,22 @@ class BaseViewController: UIViewController {
                 }
             }
             
-            self.transitionQueue.removeAtIndex(0)
+            self.transitionQueue.remove(at: 0)
             self.transition()
-        }
+        }) 
         
         self.topViewController = newTopViewController
         self.bottomViewController = newBottomViewController
         
-        func doAfterRandomTimeout(work: () -> Void) {
+        func doAfterRandomTimeout(_ work: @escaping () -> Void) {
             let minTimeout = 5.0 + DesignLanguage.TransitionAnimationDuration
             let maxTimeout = minTimeout + 25.0
             let timeout = (Double(arc4random()) / Double(UINT32_MAX))*(maxTimeout - minTimeout) + minTimeout
-            let dispatchTime = dispatch_time(
-                DISPATCH_TIME_NOW,
-                Int64(timeout * Double(NSEC_PER_SEC))
-            )
-            dispatch_after(dispatchTime, dispatch_get_main_queue(), work)
+            let dispatchTime = DispatchTime.now() + Double(Int64(timeout * Double(NSEC_PER_SEC))) / Double(NSEC_PER_SEC)
+            DispatchQueue.main.asyncAfter(deadline: dispatchTime, execute: work)
         }
         
-        func randomRotationParam() -> TransitionRotation { return TransitionRotation(rawValue: (Int(rand()) % 3) - 1)! }
+        func randomRotationParam() -> TransitionRotation { return TransitionRotation(rawValue: (Int(arc4random()) % 3) - 1)! }
         
         if topViewController?.isPurelyDecorative() ?? false {
             let requiredOldVc = topViewController
@@ -220,7 +217,7 @@ class BaseViewController: UIViewController {
                 self.queueTransition(
                     newTopViewControllerFunc: newTopViewControllerFunc,
                     checkTopViewController: requiredOldVc,
-                    rotationParams: (randomRotationParam(), .None)
+                    rotationParams: (randomRotationParam(), .none)
                 )
             }
         }
@@ -230,13 +227,13 @@ class BaseViewController: UIViewController {
                 self.queueTransition(
                     newBottomViewControllerFunc: newBottomViewControllerFunc,
                     checkBottomViewController: requiredOldVc,
-                    rotationParams: (.None, randomRotationParam())
+                    rotationParams: (.none, randomRotationParam())
                 )
             }
         }
     }
     
-    private func getControllersToAnimate(oldController oldController: HalfScreenViewController?, newController: HalfScreenViewController?) -> (HalfScreenViewController?, HalfScreenViewController?) {
+    private func getControllersToAnimate(oldController: HalfScreenViewController?, newController: HalfScreenViewController?) -> (HalfScreenViewController?, HalfScreenViewController?) {
         if oldController != nil && oldController! == newController {
             // The two controllers are the same – nothing to animate
             return (nil, nil);
@@ -245,28 +242,28 @@ class BaseViewController: UIViewController {
         }
     }
     
-    func showContinueInstructionOverlayIfNeeded(timer: NSTimer) {
+    func showContinueInstructionOverlayIfNeeded(_ timer: Timer) {
         let gameState = timer.userInfo! as! GameState
         if GameManager.sharedInstance.currentGameState == gameState && continueHelperOverlay == nil {
             continueHelperOverlay = ContinueInstructionOverlayView()
             continueHelperOverlay!.alpha = 0
             bottomHalfContainerView?.addSubview(continueHelperOverlay!)
             bottomHalfContainerView?.addConstraints(
-                NSLayoutConstraint.constraintsWithVisualFormat(
-                    "H:|[overlay]|",
+                NSLayoutConstraint.constraints(
+                    withVisualFormat: "H:|[overlay]|",
                     options: NSLayoutFormatOptions(rawValue: 0),
                     metrics: nil,
                     views: ["overlay" : continueHelperOverlay!]) +
-                NSLayoutConstraint.constraintsWithVisualFormat(
-                    "V:|[overlay]|",
+                NSLayoutConstraint.constraints(
+                    withVisualFormat: "V:|[overlay]|",
                     options: NSLayoutFormatOptions(rawValue: 0),
                     metrics: nil,
                     views: ["overlay" : continueHelperOverlay!])
             )
             
-            UIView.animateWithDuration(DesignLanguage.MinorAnimationDuration) {
+            UIView.animate(withDuration: DesignLanguage.MinorAnimationDuration, animations: {
                 self.continueHelperOverlay!.alpha = 1
-            }
+            }) 
         }
     }
 
@@ -275,52 +272,52 @@ class BaseViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
 
-    override func preferredStatusBarStyle() -> UIStatusBarStyle {
-        return UIStatusBarStyle.LightContent
+    override var preferredStatusBarStyle : UIStatusBarStyle {
+        return UIStatusBarStyle.lightContent
     }
 }
 
 
 extension BaseViewController: GameStateChangeListener {
-    func gameStateChanged(change: GameStateChange) {
+    func gameStateChanged(_ change: GameStateChange) {
         if change.newGameState != nil && (change.oldGameState?.gameId ?? "") != change.newGameState!.gameId {
             queueTransition(
                 newTopViewControllerFunc: { return GameplayOutputViewController(gameState: change.newGameState!) },
                 newBottomViewControllerFunc: { return GameplayInputController(delegate: GameManager.sharedInstance) },
-                rotationParams: (.None, change.oldGameState == nil ? .Clockwise : .Anticlockwise)
+                rotationParams: (.none, change.oldGameState == nil ? .clockwise : .anticlockwise)
             )
         } else if change.oldGameState != nil && change.newGameState == nil {
             queueTransition(
                 newTopViewControllerFunc: { return LogoViewController() },
                 newBottomViewControllerFunc: { return LevelPickerViewController(delegate: GameManager.sharedInstance) },
-                rotationParams: (.None, self.bottomViewController is GameplayInputController ? .Anticlockwise : .None)
+                rotationParams: (.none, self.bottomViewController is GameplayInputController ? .anticlockwise : .none)
             )
         } else if change.newGameState?.isFinished() ?? false {
             queueTransition(
                 newTopViewControllerFunc: { return GameResultViewController(gameState: change.newGameState!) },
                 newBottomViewControllerFunc: { return SharingViewController(gameState: change.newGameState!) },
-                rotationParams: (.None, .Clockwise)
+                rotationParams: (.none, .clockwise)
             )
         }
         
         if continueHelperOverlay?.superview != nil {
-            UIView.animateWithDuration(
-                DesignLanguage.MinorAnimationDuration,
+            UIView.animate(
+                withDuration: DesignLanguage.MinorAnimationDuration,
                 animations: { () -> Void in
                     self.continueHelperOverlay!.alpha = 0.0
-                }) { (finished: Bool) -> Void in
+                }, completion: { (finished: Bool) -> Void in
                     self.bottomHalfContainerView!.removeConstraints(self.bottomHalfContainerView!.constraintsConstrainingView(self.continueHelperOverlay!))
                     self.continueHelperOverlay!.removeFromSuperview()
                     self.continueHelperOverlay = nil
-            }
+            }) 
         }
         
         if (change.newGameState?.currentChallengeIndex ?? 0) < 0 {
             PlayerIdentityManager.sharedInstance.currentIdentity.getMyBestScores { bestScores in
-                NSTimer.scheduledTimerWithTimeInterval(
-                    DesignLanguage.delayBeforeInstructionalOverlay(change.newGameState!.levelId, finishedLevelBefore: bestScores[change.newGameState!.levelId] != nil),
+                Timer.scheduledTimer(
+                    timeInterval: DesignLanguage.delayBeforeInstructionalOverlay(change.newGameState!.levelId, finishedLevelBefore: bestScores[change.newGameState!.levelId] != nil),
                     target: self,
-                    selector: "showContinueInstructionOverlayIfNeeded:",
+                    selector: #selector(BaseViewController.showContinueInstructionOverlayIfNeeded(_:)),
                     userInfo: change.newGameState!,
                     repeats: false)
             }
@@ -330,8 +327,8 @@ extension BaseViewController: GameStateChangeListener {
 
 extension UIView {
     func constraintsConstrainingView(
-        constrainedView: UIView,
-        constrainedAttributePredicate: (NSLayoutAttribute -> Bool) = { _ -> Bool in return true }
+        _ constrainedView: UIView,
+        constrainedAttributePredicate: ((NSLayoutAttribute) -> Bool) = { _ -> Bool in return true }
     ) -> [NSLayoutConstraint] {
         return constraints.filter {
             ($0.firstItem as! NSObject == constrainedView && constrainedAttributePredicate($0.firstAttribute)) ||
@@ -341,19 +338,19 @@ extension UIView {
 }
 
 enum TransitionRotation: Int {
-    case Clockwise = -1
-    case None
-    case Anticlockwise
+    case clockwise = -1
+    case none
+    case anticlockwise
 }
 
 enum TransitionAnimationState {
-    case Inactive
-    case Active
+    case inactive
+    case active
 }
 
 protocol TransitionAnimationDelegate {
-    func animationWillBegin(beginningState: TransitionAnimationState, plannedAnimationDuration: NSTimeInterval)
-    func addToAnimationBlock(endingState: TransitionAnimationState)
+    func animationWillBegin(_ beginningState: TransitionAnimationState, plannedAnimationDuration: Foundation.TimeInterval)
+    func addToAnimationBlock(_ endingState: TransitionAnimationState)
     func managesOwnTransitions() -> Bool
     func isPurelyDecorative() -> Bool
 }

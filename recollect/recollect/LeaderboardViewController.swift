@@ -14,13 +14,13 @@ class LeaderboardViewController: UIViewController, GKGameCenterControllerDelegat
     
     override func viewDidLoad() {
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = UIColor.clearColor()
+        view.backgroundColor = UIColor.clear
         
-        let tapRecognizer = UITapGestureRecognizer(target: self, action: "handleTap:")
+        let tapRecognizer = UITapGestureRecognizer(target: self, action: #selector(LeaderboardViewController.handleTap(_:)))
         view.addGestureRecognizer(tapRecognizer)
     }
     
-    func setLeaderboard(leaderboard: Leaderboard) {
+    func setLeaderboard(_ leaderboard: Leaderboard) {
         assert(2...4 ~= leaderboard.entries.count, "Leaderboards must have lengths between 2 and 4.")
         
         currentLeaderboard = leaderboard
@@ -28,21 +28,21 @@ class LeaderboardViewController: UIViewController, GKGameCenterControllerDelegat
         view.removeConstraints(view.constraints)
         
         var leaderboardEntryViews = [LeaderboardEntryView]()
-        for (index, entry) in leaderboard.entries.enumerate() {
+        for (index, entry) in leaderboard.entries.enumerated() {
             let position: LeaderboardEntryViewPosition
             if index == 0 {
-                position = .Top
+                position = .top
             } else if index == leaderboard.entries.count - 1 {
-                position = .Bottom
+                position = .bottom
             } else {
-                position = .Middle
+                position = .middle
             }
             let entryView = LeaderboardEntryView(pos: position)
             entryView.setLeaderboardEntry(entry)
             view.addSubview(entryView)
             view.addConstraints(
-                NSLayoutConstraint.constraintsWithVisualFormat(
-                    "H:|[entry]|",
+                NSLayoutConstraint.constraints(
+                    withVisualFormat: "H:|[entry]|",
                     options: NSLayoutFormatOptions(rawValue: 0),
                     metrics: nil,
                     views: ["entry": entryView])
@@ -50,29 +50,29 @@ class LeaderboardViewController: UIViewController, GKGameCenterControllerDelegat
             if let existingPrevEntryView = leaderboardEntryViews.last {
                 let viewToStickTo: UIView
                 if existingPrevEntryView.rank < entry.rank - 1 {
-                    let gapEntryView = LeaderboardEntryView(pos: .Gap)
+                    let gapEntryView = LeaderboardEntryView(pos: .gap)
                     view.addSubview(gapEntryView)
                     view.addConstraints(
-                        NSLayoutConstraint.constraintsWithVisualFormat(
-                            "H:|[entry]|",
+                        NSLayoutConstraint.constraints(
+                            withVisualFormat: "H:|[entry]|",
                             options: NSLayoutFormatOptions(rawValue: 0),
                             metrics: nil,
                             views: ["entry": gapEntryView]) +
                         [
                             NSLayoutConstraint(
                                 item: gapEntryView,
-                                attribute: .Height,
-                                relatedBy: .Equal,
+                                attribute: .height,
+                                relatedBy: .equal,
                                 toItem: existingPrevEntryView,
-                                attribute: .Height,
+                                attribute: .height,
                                 multiplier: 0.5,
                                 constant: 0.0),
                             NSLayoutConstraint(
                                 item: gapEntryView,
-                                attribute: .Top,
-                                relatedBy: .Equal,
+                                attribute: .top,
+                                relatedBy: .equal,
                                 toItem: existingPrevEntryView,
-                                attribute: .Bottom,
+                                attribute: .bottom,
                                 multiplier: 1.0,
                                 constant: 0.0)
                         ]
@@ -84,18 +84,18 @@ class LeaderboardViewController: UIViewController, GKGameCenterControllerDelegat
                 view.addConstraints([
                     NSLayoutConstraint(
                         item: entryView,
-                        attribute: .Height,
-                        relatedBy: .Equal,
+                        attribute: .height,
+                        relatedBy: .equal,
                         toItem: existingPrevEntryView,
-                        attribute: .Height,
+                        attribute: .height,
                         multiplier: 1.0,
                         constant: 0.0),
                     NSLayoutConstraint(
                         item: entryView,
-                        attribute: .Top,
-                        relatedBy: .Equal,
+                        attribute: .top,
+                        relatedBy: .equal,
                         toItem: viewToStickTo,
-                        attribute: .Bottom,
+                        attribute: .bottom,
                         multiplier: 1.0,
                         constant: 0.0)
                 ])
@@ -103,10 +103,10 @@ class LeaderboardViewController: UIViewController, GKGameCenterControllerDelegat
                 view.addConstraint(
                     NSLayoutConstraint(
                         item: entryView,
-                        attribute: .Top,
-                        relatedBy: .Equal,
+                        attribute: .top,
+                        relatedBy: .equal,
                         toItem: view,
-                        attribute: .Top,
+                        attribute: .top,
                         multiplier: 1.0,
                         constant: 0.0)
                 )
@@ -115,10 +115,10 @@ class LeaderboardViewController: UIViewController, GKGameCenterControllerDelegat
                 view.addConstraint(
                     NSLayoutConstraint(
                         item: entryView,
-                        attribute: .Bottom,
-                        relatedBy: .Equal,
+                        attribute: .bottom,
+                        relatedBy: .equal,
                         toItem: view,
-                        attribute: .Bottom,
+                        attribute: .bottom,
                         multiplier: 1.0,
                         constant: 0.0)
                 )
@@ -127,22 +127,22 @@ class LeaderboardViewController: UIViewController, GKGameCenterControllerDelegat
         }
         
         let playerIds = leaderboard.entries.map { $0.playerId }
-        GKPlayer.loadPlayersForIdentifiers(playerIds) { (players, error) -> Void in
+        GKPlayer.loadPlayers(forIdentifiers: playerIds) { (players, error) -> Void in
             if let existingPlayers = players {
                 existingPlayers.forEach { player -> Void in
-                    player.loadPhotoForSize(GKPhotoSizeNormal) { (image, error) -> Void in
+                    player.loadPhoto(forSize: GKPhotoSizeNormal) { (image, error) -> Void in
                         if let existingImage = image {
                             leaderboardEntryViews
                                 .filter { $0.playerId == player.playerID }
                                 .forEach { $0.setAvatarImage(existingImage) }
                         } else {
                             Analytics.sharedInstance()
-                                .logEventWithName(
-                                    "player_avatar_load_fail",
+                                .logEvent(
+                                    withName: "player_avatar_load_fail",
                                     type: AnalyticsEventTypeWarning,
                                     attributes: [
                                         "player_id": player.playerID ?? "unknown_player_id",
-                                        "error": error?.description ?? "unknown_error"
+                                        "error": error?.localizedDescription ?? "unknown_error"
                                     ]
                             )
                         }
@@ -150,29 +150,29 @@ class LeaderboardViewController: UIViewController, GKGameCenterControllerDelegat
                 }
             } else {
                 Analytics.sharedInstance()
-                    .logEventWithName(
-                        "player_for_id_load_fail",
+                    .logEvent(
+                        withName: "player_for_id_load_fail",
                         type: AnalyticsEventTypeWarning,
                         attributes: [
                             "player_ids": playerIds.description,
-                            "error": error?.description ?? "unknown_error"
+                            "error": error?.localizedDescription ?? "unknown_error"
                         ]
                 )
             }
         }
     }
     
-    @objc private func handleTap(tapRecognizer: UITapGestureRecognizer) {
+    @objc private func handleTap(_ tapRecognizer: UITapGestureRecognizer) {
         if let leaderboard = currentLeaderboard {
             let nativeLeaderboardVc = GKGameCenterViewController()
             nativeLeaderboardVc.gameCenterDelegate = self
-            nativeLeaderboardVc.viewState = .Leaderboards
+            nativeLeaderboardVc.viewState = .leaderboards
             nativeLeaderboardVc.leaderboardIdentifier = leaderboard.leaderboardId
-            presentViewController(nativeLeaderboardVc, animated: true, completion: nil)
+            present(nativeLeaderboardVc, animated: true, completion: nil)
         }
     }
     
-    func gameCenterViewControllerDidFinish(gameCenterViewController: GKGameCenterViewController) {
-        dismissViewControllerAnimated(true, completion: nil)
+    func gameCenterViewControllerDidFinish(_ gameCenterViewController: GKGameCenterViewController) {
+        dismiss(animated: true, completion: nil)
     }
 }

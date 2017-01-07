@@ -17,10 +17,10 @@ class BlurView: UIView {
         self.viewToBlur = viewToBlur
         blurredView = UIImageView()
         blurredView.translatesAutoresizingMaskIntoConstraints = false
-        gradientView = GradientView(frame: CGRectZero)
-        super.init(frame: CGRectZero)
+        gradientView = GradientView(frame: CGRect.zero)
+        super.init(frame: CGRect.zero)
         
-        opaque = true
+        isOpaque = true
         clipsToBounds = true
         backgroundColor = DesignLanguage.TopHalfBGColor
         translatesAutoresizingMaskIntoConstraints = false
@@ -31,34 +31,34 @@ class BlurView: UIView {
         addConstraints([
             NSLayoutConstraint(
                 item: gradientView,
-                attribute: NSLayoutAttribute.Top,
-                relatedBy: NSLayoutRelation.Equal,
+                attribute: NSLayoutAttribute.top,
+                relatedBy: NSLayoutRelation.equal,
                 toItem: self,
-                attribute: NSLayoutAttribute.Top,
+                attribute: NSLayoutAttribute.top,
                 multiplier: 1.0,
                 constant: 0.0),
             NSLayoutConstraint(
                 item: gradientView,
-                attribute: NSLayoutAttribute.Bottom,
-                relatedBy: NSLayoutRelation.Equal,
+                attribute: NSLayoutAttribute.bottom,
+                relatedBy: NSLayoutRelation.equal,
                 toItem: self,
-                attribute: NSLayoutAttribute.Bottom,
+                attribute: NSLayoutAttribute.bottom,
                 multiplier: 1.0,
                 constant: DesignLanguage.ProgressBarHeight),
             NSLayoutConstraint(
                 item: gradientView,
-                attribute: NSLayoutAttribute.Left,
-                relatedBy: NSLayoutRelation.Equal,
+                attribute: NSLayoutAttribute.left,
+                relatedBy: NSLayoutRelation.equal,
                 toItem: self,
-                attribute: NSLayoutAttribute.Left,
+                attribute: NSLayoutAttribute.left,
                 multiplier: 1.0,
                 constant: 0.0),
             NSLayoutConstraint(
                 item: gradientView,
-                attribute: NSLayoutAttribute.Right,
-                relatedBy: NSLayoutRelation.Equal,
+                attribute: NSLayoutAttribute.right,
+                relatedBy: NSLayoutRelation.equal,
                 toItem: self,
-                attribute: NSLayoutAttribute.Right,
+                attribute: NSLayoutAttribute.right,
                 multiplier: 1.0,
                 constant: 0.0),
         ])
@@ -67,24 +67,24 @@ class BlurView: UIView {
     override func layoutSubviews() {
         let beforeRect = blurredView.bounds
         super.layoutSubviews()
-        if !CGRectEqualToRect(beforeRect, blurredView.bounds) &&
+        if !beforeRect.equalTo(blurredView.bounds) &&
             viewToBlur.bounds.width * viewToBlur.bounds.height > 0  {
             let blurredImage = self.treatImage(self.screenshot(self.viewToBlur))
             self.blurredView.image = blurredImage
         }
     }
     
-    private func screenshot(viewToCapture: UIView) -> CIImage {
-        UIGraphicsBeginImageContextWithOptions(viewToCapture.bounds.size, false, UIScreen.mainScreen().scale)
+    private func screenshot(_ viewToCapture: UIView) -> CIImage {
+        UIGraphicsBeginImageContextWithOptions(viewToCapture.bounds.size, false, UIScreen.main.scale)
         let ctx = UIGraphicsGetCurrentContext()!
-        viewToCapture.layer.renderInContext(ctx)
+        viewToCapture.layer.render(in: ctx)
         
         let uiImage = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
-        return CIImage(CGImage: uiImage.CGImage!)
+        return CIImage(cgImage: uiImage!.cgImage!)
     }
     
-    private func treatImage(image: CIImage) -> UIImage {
+    private func treatImage(_ image: CIImage) -> UIImage {
         let blurFilter = CIFilter(name: "CIGaussianBlur")!
         blurFilter.setValue(image, forKey: kCIInputImageKey)
         blurFilter.setValue(DesignLanguage.obfuscationBlurRadius, forKey: kCIInputRadiusKey)
@@ -93,16 +93,16 @@ class BlurView: UIView {
         let blurredImageExtent = blurredImage.extent
         let centerOfImage = CGPoint(x: blurredImageExtent.midX, y: blurredImageExtent.midY)
         
-        let croppedBlurredImage = blurredImage.imageByCroppingToRect(
-            CGRectMake(
-                centerOfImage.x - blurredImageExtent.width/2,
-                centerOfImage.y - originalImageExtent.height/2,
-                blurredImageExtent.width,
-                originalImageExtent.height
+        let croppedBlurredImage = blurredImage.cropping(
+            to: CGRect(
+                x: centerOfImage.x - blurredImageExtent.width/2,
+                y: centerOfImage.y - originalImageExtent.height/2,
+                width: blurredImageExtent.width,
+                height: originalImageExtent.height
             )
         )
         
-        return UIImage(CIImage: croppedBlurredImage, scale: UIScreen.mainScreen().scale, orientation: UIImageOrientation.Up)
+        return UIImage(ciImage: croppedBlurredImage, scale: UIScreen.main.scale, orientation: UIImageOrientation.up)
     }
     
     required init?(coder aDecoder: NSCoder) {

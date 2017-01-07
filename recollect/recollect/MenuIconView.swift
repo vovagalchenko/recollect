@@ -9,28 +9,28 @@
 import UIKit
 
 class MenuIconView: ButtonBackground {
-    override func drawRect(rect: CGRect) {
+    override func draw(_ rect: CGRect) {
         let ctx = UIGraphicsGetCurrentContext()
         
         let boundingBoxDimension = min(bounds.height, bounds.width)
         let lineThickness = boundingBoxDimension/6.0
         let numLines = 3
         
-        CGContextSetLineWidth(ctx, lineThickness)
-        CGContextSetLineCap(ctx, CGLineCap.Round)
+        ctx?.setLineWidth(lineThickness)
+        ctx?.setLineCap(CGLineCap.round)
         baseColor.setStroke()
         
         for i in 0..<numLines {
             let y = (bounds.height/CGFloat(numLines + 1))*CGFloat(i + 1)
-            CGContextMoveToPoint(ctx, lineThickness/2.0, y)
-            CGContextAddLineToPoint(ctx, lineThickness/2.0, y)
-            CGContextMoveToPoint(ctx, lineThickness*2.0, y)
-            CGContextAddLineToPoint(ctx, bounds.width - (lineThickness/2.0), y)
+            ctx?.move(to: CGPoint(x: lineThickness/2.0, y: y))
+            ctx?.addLine(to: CGPoint(x: lineThickness/2.0, y: y))
+            ctx?.move(to: CGPoint(x: lineThickness*2.0, y: y))
+            ctx?.addLine(to: CGPoint(x: bounds.width - (lineThickness/2.0), y: y))
         }
-        CGContextStrokePath(ctx)
+        ctx?.strokePath()
     }
     
-    override func intrinsicContentSize() -> CGSize {
+    override var intrinsicContentSize : CGSize {
         return CGSize(width: 40, height: 40)
     }
 }
