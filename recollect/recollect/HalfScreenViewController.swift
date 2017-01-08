@@ -50,7 +50,7 @@ class HalfScreenViewController: UIViewController, TransitionAnimationDelegate {
     private func subviewsWalk(_ root: UIView, work: (UIView) -> Void) {
         work(root)
         for subview in root.subviews {
-            subviewsWalk(subview , work: work)
+            subviewsWalk(subview, work: work)
         }
     }
     
@@ -92,7 +92,7 @@ class HalfScreenViewController: UIViewController, TransitionAnimationDelegate {
         }
     }
     
-    func animationWillBegin(_ beginningState: TransitionAnimationState, plannedAnimationDuration: Foundation.TimeInterval) {
+    func animationWillBegin(beginningState: TransitionAnimationState, plannedAnimationDuration: Foundation.TimeInterval) {
         let displayLink = CADisplayLink(target: self, selector: #selector(HalfScreenViewController.refreshFrame(_:)))
         transitionBeginningState = beginningState
         displayLinkStartDate = Date()
@@ -101,7 +101,7 @@ class HalfScreenViewController: UIViewController, TransitionAnimationDelegate {
         displayLink.add(to: RunLoop.main, forMode: RunLoopMode.defaultRunLoopMode)
     }
     
-    func addToAnimationBlock(_ endingState: TransitionAnimationState) { }
+    func addToAnimationBlock(endingState: TransitionAnimationState) { }
     
     func managesOwnTransitions() -> Bool {
         return false

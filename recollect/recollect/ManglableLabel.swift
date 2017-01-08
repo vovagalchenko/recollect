@@ -38,12 +38,36 @@ class ManglableLabel: UILabel {
             }
         }
     }
+    
+    
+    override var textColor: UIColor! {
+        set(newColor) {
+            if originalTextColor != nil {
+                originalTextColor = newColor
+            }
+            if let existingOriginalAttributedText = originalAttributedText {
+                let attrString = NSMutableAttributedString(attributedString: existingOriginalAttributedText)
+                attrString.setAttributes(
+                    [NSForegroundColorAttributeName: newColor],
+                    range: NSRange(location: 0, length: attrString.length)
+                )
+                originalAttributedText = attrString
+            }
+            else {
+                super.textColor = newColor
+            }
+        }
+        
+        get {
+            return originalTextColor ?? super.textColor
+        }
+    }
     private var originalAttributedText: NSAttributedString?
     private var originalTextColor: UIColor?
     
-    private let aToZCaps = Array(0x41...0x5A).map {UnicodeScalar($0)!}
-    private let aToZLowercase = Array(0x61...0x7A).map {UnicodeScalar($0)!}
-    private let zeroToNine = Array(0x30...0x39).map {UnicodeScalar($0)!}
+    private let aToZCaps = Array(0x41...0x5A).map { UnicodeScalar($0)! }
+    private let aToZLowercase = Array(0x61...0x7A).map { UnicodeScalar($0)! }
+    private let zeroToNine = Array(0x30...0x39).map { UnicodeScalar($0)! }
     
     init() {
         super.init(frame: CGRect.zero)
@@ -75,16 +99,17 @@ class ManglableLabel: UILabel {
             let numCharactersToLeaveUnmangled = Int(round(Float(strLength) * portionOfTextToLeaveUnmangled))
             let indexOfSplitChar = mangledString.string.characters.index(mangledString.string.startIndex, offsetBy: numCharactersToLeaveUnmangled)
             var stringToPrepend = ""
-            for character in mangledString.string.substring(from: indexOfSplitChar).unicodeScalars {
+            let unicodeScalars = mangledString.string.substring(from: indexOfSplitChar).unicodeScalars
+            for unicodeScalar in unicodeScalars {
                 let replacement: UnicodeScalar
-                if aToZCaps.first!.value <= character.value && aToZCaps.last!.value >= character.value {
+                if aToZCaps.first!.value <= unicodeScalar.value && aToZCaps.last!.value >= unicodeScalar.value {
                     replacement = aToZCaps[Int(arc4random_uniform(UInt32(aToZCaps.count)))]
-                } else if aToZLowercase.first!.value <= character.value && aToZLowercase.last!.value >= character.value {
+                } else if aToZLowercase.first!.value <= unicodeScalar.value && aToZLowercase.last!.value >= unicodeScalar.value {
                     replacement = aToZLowercase[Int(arc4random_uniform(UInt32(aToZLowercase.count)))]
-                } else if zeroToNine.first!.value <= character.value && zeroToNine.last!.value >= character.value {
+                } else if zeroToNine.first!.value <= unicodeScalar.value && zeroToNine.last!.value >= unicodeScalar.value {
                     replacement = zeroToNine[Int(arc4random_uniform(UInt32(zeroToNine.count)))]
                 } else {
-                    replacement = character
+                    replacement = unicodeScalar
                 }
                 stringToPrepend.append(Character(replacement))
             }
@@ -108,10 +133,13 @@ class ManglableLabel: UILabel {
             attributedText = existingOriginalAttributedText
         } else if let existingOriginalText = originalText {
             super.text = existingOriginalText
+            super.attributedText = nil
             textColor = originalTextColor
         }
         originalTextColor = nil
         originalText = nil
         originalAttributedText = nil
+        
+
     }
 }

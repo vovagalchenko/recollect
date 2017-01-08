@@ -1,3 +1,4 @@
+
 //
 //  ViewController.swift
 //  recollect
@@ -50,34 +51,39 @@ class BaseViewController: UIViewController {
     
     private func constraints(_ halfViewContainer: UIView, isTop: Bool) -> [NSLayoutConstraint] {
         return [
-            NSLayoutConstraint(item: halfViewContainer,
+            NSLayoutConstraint(
+                item: halfViewContainer,
                 attribute: NSLayoutAttribute.centerX,
                 relatedBy: NSLayoutRelation.equal,
                 toItem: self.view!,
                 attribute: NSLayoutAttribute.centerX,
                 multiplier: 1.0,
-                constant: 0.0),
-            NSLayoutConstraint(item: halfViewContainer,
+                constant: 0.0
+            ), NSLayoutConstraint(
+                item: halfViewContainer,
                 attribute: NSLayoutAttribute.centerY,
                 relatedBy: NSLayoutRelation.equal,
                 toItem: self.view!,
                 attribute: NSLayoutAttribute.centerY,
                 multiplier: isTop ? 0.5 : 1.5,
-                constant: 0.0),
-            NSLayoutConstraint(item: halfViewContainer,
+                constant: 0.0
+            ), NSLayoutConstraint(
+                item: halfViewContainer,
                 attribute: NSLayoutAttribute.width,
                 relatedBy: NSLayoutRelation.equal,
                 toItem: self.view!,
                 attribute: NSLayoutAttribute.width,
                 multiplier: 1.0,
-                constant: 0.0),
-            NSLayoutConstraint(item: halfViewContainer,
+                constant: 0.0
+            ), NSLayoutConstraint(
+                item: halfViewContainer,
                 attribute: NSLayoutAttribute.height,
                 relatedBy: NSLayoutRelation.equal,
                 toItem: self.view!,
                 attribute: NSLayoutAttribute.height,
                 multiplier: 0.5,
-                constant: 0.0)
+                constant: 0.0
+            )
         ]
     }
     
@@ -150,11 +156,11 @@ class BaseViewController: UIViewController {
                     let sign = CGFloat(isTop ? rotationParams.0.rawValue : rotationParams.1.rawValue)
                     existingNewController.view.transform = CGAffineTransform(scaleX: transitionStartScale, y: transitionStartScale).rotated(by: sign * CGFloat(M_PI_2))
                 }
-                existingNewController.animationWillBegin(.inactive, plannedAnimationDuration: DesignLanguage.TransitionAnimationDuration)
+                existingNewController.animationWillBegin(beginningState: .inactive, plannedAnimationDuration: DesignLanguage.TransitionAnimationDuration)
             }
             if let existingOldController = oldController {
                 constraintsToRemove.append(contentsOf: existingOldController.view.superview?.constraintsConstrainingView(existingOldController.view) ?? [NSLayoutConstraint]())
-                existingOldController.animationWillBegin(.active, plannedAnimationDuration: DesignLanguage.TransitionAnimationDuration)
+                existingOldController.animationWillBegin(beginningState: .active, plannedAnimationDuration: DesignLanguage.TransitionAnimationDuration)
             }
         }
         view.addConstraints(newViewConstraints)
@@ -166,7 +172,7 @@ class BaseViewController: UIViewController {
         UIView.animate(withDuration: DesignLanguage.TransitionAnimationDuration, animations: {
             for (oldController, newController) in controllersToAnimate {
                 if let existingOldController = oldController {
-                    existingOldController.addToAnimationBlock(.inactive)
+                    existingOldController.addToAnimationBlock(endingState: .inactive)
                     if !existingOldController.managesOwnTransitions() {
                         existingOldController.view.alpha = 0
                         let isTop = existingOldController.view.superview == self.topHalfContainerView
@@ -175,7 +181,7 @@ class BaseViewController: UIViewController {
                     }
                 }
                 if let existingNewController = newController {
-                    existingNewController.addToAnimationBlock(.active)
+                    existingNewController.addToAnimationBlock(endingState: .active)
                     if !existingNewController.managesOwnTransitions() {
                         existingNewController.view.alpha = 1.0
                         existingNewController.view.transform = CGAffineTransform.identity
@@ -349,8 +355,8 @@ enum TransitionAnimationState {
 }
 
 protocol TransitionAnimationDelegate {
-    func animationWillBegin(_ beginningState: TransitionAnimationState, plannedAnimationDuration: Foundation.TimeInterval)
-    func addToAnimationBlock(_ endingState: TransitionAnimationState)
+    func animationWillBegin(beginningState: TransitionAnimationState, plannedAnimationDuration: Foundation.TimeInterval)
+    func addToAnimationBlock(endingState: TransitionAnimationState)
     func managesOwnTransitions() -> Bool
     func isPurelyDecorative() -> Bool
 }

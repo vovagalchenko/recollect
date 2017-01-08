@@ -159,7 +159,8 @@ class LevelPickerViewController: HalfScreenViewController, UIGestureRecognizerDe
             withVisualFormat: horizontalConstraint + "|",
             options: NSLayoutFormatOptions(rawValue: 0),
             metrics: nil,
-            views: labelsDict)
+            views: labelsDict
+        )
         
         let allConstraints =
             NSLayoutConstraint.constraints(
@@ -231,14 +232,12 @@ class LevelPickerViewController: HalfScreenViewController, UIGestureRecognizerDe
         tapRecognizer.delegate = self
         scrollView.addGestureRecognizer(tapRecognizer)
         
-        view.setNeedsLayout()
-        view.layoutIfNeeded()
-        
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(LevelPickerViewController.bestScoreChanged(_:)),
             name: NSNotification.Name(rawValue: PlayerIdentityManager.BestScoresChangeNotificationName),
-            object: nil)
+            object: nil
+        )
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -246,11 +245,13 @@ class LevelPickerViewController: HalfScreenViewController, UIGestureRecognizerDe
         initializeViewForAppearance()
     }
     
-    @objc private func appDidBecomeActive(_ notification: Notification) {
+    @objc private func appDidBecomeActive(_ notification:  Notification) {
         initializeViewForAppearance()
     }
     
     private func initializeViewForAppearance() {
+        view.setNeedsLayout()
+        view.layoutIfNeeded()
         scrollViewDidScroll(scrollView)
         fadeInTimeLabels()
     }
@@ -336,7 +337,8 @@ extension LevelPickerViewController: UIScrollViewDelegate {
     }
     
     private func refreshLevelLabelColors() {
-        var inactiveR:CGFloat = 0, inactiveG:CGFloat = 0, inactiveB:CGFloat = 0, activeR:CGFloat = 0, activeG:CGFloat = 0, activeB:CGFloat = 0
+        assert(Thread.isMainThread, "Can't refresh level label colors off the main thread.")
+        var inactiveR: CGFloat = 0, inactiveG: CGFloat = 0, inactiveB: CGFloat = 0, activeR: CGFloat = 0, activeG: CGFloat = 0, activeB: CGFloat = 0
         DesignLanguage.InactiveTextColor.getRed(&inactiveR, green: &inactiveG, blue: &inactiveB, alpha: nil)
         DesignLanguage.ActiveTextColor.getRed(&activeR, green: &activeG, blue: &activeB, alpha: nil)
         func interpolate(_ distance: CGFloat, from: CGFloat, to: CGFloat) -> CGFloat {
@@ -355,7 +357,8 @@ extension LevelPickerViewController: UIScrollViewDelegate {
                     red: interpolate(xDistance, from: inactiveR, to: activeR),
                     green: interpolate(xDistance, from: inactiveG, to: activeG),
                     blue: interpolate(xDistance, from: inactiveB, to: activeB),
-                    alpha: 1.0)
+                    alpha: 1.0
+                )
             }
         }
     }

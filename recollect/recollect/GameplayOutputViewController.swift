@@ -523,8 +523,8 @@ class GameplayOutputViewController: HalfScreenViewController, UIGestureRecognize
         }
     }
     
-    override func animationWillBegin(_ beginningState: TransitionAnimationState, plannedAnimationDuration: Foundation.TimeInterval) {
-        super.animationWillBegin(beginningState, plannedAnimationDuration: plannedAnimationDuration)
+    override func animationWillBegin(beginningState: TransitionAnimationState, plannedAnimationDuration: Foundation.TimeInterval) {
+        super.animationWillBegin(beginningState: beginningState, plannedAnimationDuration: plannedAnimationDuration)
         view.superview?.bringSubview(toFront: view)
         configureForTransition(beginningState)
         
@@ -533,7 +533,7 @@ class GameplayOutputViewController: HalfScreenViewController, UIGestureRecognize
         }
     }
     
-    override func addToAnimationBlock(_ endingState: TransitionAnimationState) {
+    override func addToAnimationBlock(endingState: TransitionAnimationState) {
         configureForTransition(endingState)
     }
     

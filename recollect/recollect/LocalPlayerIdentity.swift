@@ -52,7 +52,7 @@ class LocalPlayerIdentity: PlayerIdentity {
         return delta
     }
     
-    func getLeaderboard(_ levelId: String, ownForcedScore: Foundation.TimeInterval = -1, completion: (Leaderboard) -> Void) {
+    func getLeaderboard(_ levelId: String, ownForcedScore: Foundation.TimeInterval = -1, completion: @escaping (Leaderboard) -> Void) {
         var leaderboard = [LeaderboardEntry]()
         if let bestTime = bestGames[levelId]?.finalTime() {
             leaderboard.append(LeaderboardEntry(playerId: playerId, time: bestTime, rank: 1))
@@ -60,7 +60,7 @@ class LocalPlayerIdentity: PlayerIdentity {
         completion(Leaderboard(entries: leaderboard, leaderboardId: levelId))
     }
     
-    func getMyBestScores(_ completion: ([String: PlayerScore]) -> Void) {
+    func getMyBestScores(_ completion: @escaping ([String: PlayerScore]) -> Void) {
         var myBestScores = [String: PlayerScore]()
         for (levelId, bestGameState) in bestGames {
             myBestScores[levelId] = PlayerScore(playerId: playerId, time: bestGameState.finalTime())
@@ -68,7 +68,7 @@ class LocalPlayerIdentity: PlayerIdentity {
         completion(myBestScores)
     }
     
-    func recordNewGame(_ newGame: GameState, completion: () -> Void) {
+    func recordNewGame(_ newGame: GameState, completion: @escaping () -> Void) {
         if let bestGameForLevel = bestGames[newGame.levelId] {
             if bestGameForLevel.finalTime() > newGame.finalTime() {
                 bestGames[newGame.levelId] = newGame

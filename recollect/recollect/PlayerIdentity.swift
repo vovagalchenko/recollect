@@ -10,7 +10,7 @@ import Foundation
 
 protocol PlayerIdentity: class {
     var playerId: String { get }
-    func getLeaderboard(_ levelId: String, ownForcedScore: Foundation.TimeInterval, completion: (Leaderboard) -> Void)
-    func recordNewGame(_ newGame: GameState, completion: () -> Void) // <-- best effort, could be done asynchronously
-    func getMyBestScores(_ completion: ([String: PlayerScore]) -> Void)
+    func getLeaderboard(_ levelId: String, ownForcedScore: Foundation.TimeInterval, completion: @escaping (Leaderboard) -> Void)
+    func recordNewGame(_ newGame: GameState, completion: @escaping () -> Void) // <-- best effort, could be done asynchronously
+    func getMyBestScores(_ completion: @escaping ([String: PlayerScore]) -> Void)
 }
