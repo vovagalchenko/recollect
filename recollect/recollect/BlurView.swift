@@ -95,9 +95,9 @@ class BlurView: UIView {
         
         let croppedBlurredImage = blurredImage.cropping(
             to: CGRect(
-                x: centerOfImage.x - blurredImageExtent.width/2,
+                x: centerOfImage.x - originalImageExtent.width/2,
                 y: centerOfImage.y - originalImageExtent.height/2,
-                width: blurredImageExtent.width,
+                width: originalImageExtent.width,
                 height: originalImageExtent.height
             )
         )
