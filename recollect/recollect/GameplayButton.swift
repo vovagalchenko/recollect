@@ -59,12 +59,12 @@ class GameplayButton: UIControl, CAAnimationDelegate {
         self.addConstraints(
             NSLayoutConstraint.constraints(
                 withVisualFormat: "H:|[label]|",
-                options: NSLayoutFormatOptions(rawValue: 0),
+                options: NSLayoutConstraint.FormatOptions(rawValue: 0),
                 metrics: nil,
                 views: ["label": label]) +
             NSLayoutConstraint.constraints(
                 withVisualFormat: "V:|[label]|",
-                options: NSLayoutFormatOptions(rawValue: 0),
+                options: NSLayoutConstraint.FormatOptions(rawValue: 0),
                 metrics: nil,
                 views: ["label": label])
         )
@@ -115,7 +115,7 @@ class GameplayButton: UIControl, CAAnimationDelegate {
     }
     
     override var intrinsicContentSize : CGSize {
-        return CGSize(width: UIViewNoIntrinsicMetric, height: UIViewNoIntrinsicMetric)
+        return CGSize(width: UIView.noIntrinsicMetric, height: UIView.noIntrinsicMetric)
     }
     
     private lazy var label: ManglableLabel = {
@@ -124,10 +124,10 @@ class GameplayButton: UIControl, CAAnimationDelegate {
         label.textColor = DesignLanguage.ActiveTextColor
         label.textAlignment = NSTextAlignment.center
         label.font = UIFont(name: "AvenirNext-UltraLight", size: 54)
-        label.setContentCompressionResistancePriority(1000, for: UILayoutConstraintAxis.vertical)
-        label.setContentCompressionResistancePriority(1000, for: UILayoutConstraintAxis.horizontal)
-        label.setContentHuggingPriority(250, for: UILayoutConstraintAxis.vertical)
-        label.setContentHuggingPriority(250, for: UILayoutConstraintAxis.horizontal)
+        label.setContentCompressionResistancePriority(UILayoutPriority(rawValue: 1000), for: NSLayoutConstraint.Axis.vertical)
+        label.setContentCompressionResistancePriority(UILayoutPriority(rawValue: 1000), for: NSLayoutConstraint.Axis.horizontal)
+        label.setContentHuggingPriority(UILayoutPriority(rawValue: 250), for: NSLayoutConstraint.Axis.vertical)
+        label.setContentHuggingPriority(UILayoutPriority(rawValue: 250), for: NSLayoutConstraint.Axis.horizontal)
         return label
     }()
     

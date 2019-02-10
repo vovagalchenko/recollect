@@ -15,7 +15,7 @@ import GameKit
     
     init(gameCenterLocalPlayer: GKPlayer) {
         gameKitPlayer = gameCenterLocalPlayer
-        playerId = gameKitPlayer.playerID!
+        playerId = gameKitPlayer.playerID
         super.init()
         
         GameManager.sharedInstance.subscribeToGameStateChangeNotifications(self)
@@ -94,7 +94,7 @@ import GameKit
             if error == nil {
                 var needToAddOwnScore = true
                 let playerScores = (scores ?? []).map { s -> LeaderboardEntry in
-                    if s.player!.playerID == self.gameKitPlayer.playerID {
+                    if s.player.playerID == self.gameKitPlayer.playerID {
                         needToAddOwnScore = false
                     }
                     return self.gkScoreToLeaderboardEntry(s)
@@ -163,7 +163,7 @@ import GameKit
                     let myScoreRequest = GKLeaderboard(players: [self.gameKitPlayer])
                     myScoreRequest.identifier = leaderboardId
                     myScoreRequest.loadScores(completionHandler: { (myScoreArray: [GKScore]?, error: Error?) -> Void in
-                        let myScore = (myScoreArray ?? []).filter { $0.player!.playerID == self.gameKitPlayer.playerID }.map {
+                        let myScore = (myScoreArray ?? []).filter { $0.player.playerID == self.gameKitPlayer.playerID }.map {
                             self.gkScoreToLeaderboardEntry($0)
                         }
                         sortResultAndCallCompletion(playerScores + myScore)
@@ -188,14 +188,14 @@ import GameKit
     private func gameTimeToScoreValue(_ time: Foundation.TimeInterval) -> Int64 { return Int64(round(time*100)) }
     private func gkScoreToLeaderboardEntry(_ score: GKScore) -> LeaderboardEntry {
         return LeaderboardEntry(
-            playerId: score.player!.playerID!,
+            playerId: score.player.playerID,
             time: Foundation.TimeInterval(score.value)/100.0,
-            playerName: score.player!.alias ?? "",
+            playerName: score.player.alias,
             rank: score.rank
         )
     }
     private func gkScoreToPlayerScore(_ score: GKScore) -> PlayerScore {
-        return PlayerScore(playerId: score.player!.playerID!, time: Foundation.TimeInterval(score.value)/100.0)
+        return PlayerScore(playerId: score.player.playerID, time: Foundation.TimeInterval(score.value)/100.0)
     }
 
     func recordNewGame(_ newGame: GameState, completion: @escaping () -> Void) {
@@ -258,7 +258,7 @@ extension GameCenterPlayerIdentity: GameStateChangeListener {
                         attributes: ["error": error?.localizedDescription ?? "unexplained_error"]
                     )
                 } else {
-                    let achievementIds = achievementsToReport.map { $0.identifier! }
+                    let achievementIds = achievementsToReport.map { $0.identifier }
                     Analytics.sharedInstance().logEvent(
                         withName: "game_center_achievement_report",
                         type: AnalyticsEventTypeDebug,

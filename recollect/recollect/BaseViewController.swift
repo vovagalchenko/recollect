@@ -53,34 +53,34 @@ class BaseViewController: UIViewController {
         return [
             NSLayoutConstraint(
                 item: halfViewContainer,
-                attribute: NSLayoutAttribute.centerX,
-                relatedBy: NSLayoutRelation.equal,
+                attribute: NSLayoutConstraint.Attribute.centerX,
+                relatedBy: NSLayoutConstraint.Relation.equal,
                 toItem: self.view!,
-                attribute: NSLayoutAttribute.centerX,
+                attribute: NSLayoutConstraint.Attribute.centerX,
                 multiplier: 1.0,
                 constant: 0.0
             ), NSLayoutConstraint(
                 item: halfViewContainer,
-                attribute: NSLayoutAttribute.centerY,
-                relatedBy: NSLayoutRelation.equal,
+                attribute: NSLayoutConstraint.Attribute.centerY,
+                relatedBy: NSLayoutConstraint.Relation.equal,
                 toItem: self.view!,
-                attribute: NSLayoutAttribute.centerY,
+                attribute: NSLayoutConstraint.Attribute.centerY,
                 multiplier: isTop ? 0.5 : 1.5,
                 constant: 0.0
             ), NSLayoutConstraint(
                 item: halfViewContainer,
-                attribute: NSLayoutAttribute.width,
-                relatedBy: NSLayoutRelation.equal,
+                attribute: NSLayoutConstraint.Attribute.width,
+                relatedBy: NSLayoutConstraint.Relation.equal,
                 toItem: self.view!,
-                attribute: NSLayoutAttribute.width,
+                attribute: NSLayoutConstraint.Attribute.width,
                 multiplier: 1.0,
                 constant: 0.0
             ), NSLayoutConstraint(
                 item: halfViewContainer,
-                attribute: NSLayoutAttribute.height,
-                relatedBy: NSLayoutRelation.equal,
+                attribute: NSLayoutConstraint.Attribute.height,
+                relatedBy: NSLayoutConstraint.Relation.equal,
                 toItem: self.view!,
-                attribute: NSLayoutAttribute.height,
+                attribute: NSLayoutConstraint.Attribute.height,
                 multiplier: 0.5,
                 constant: 0.0
             )
@@ -132,29 +132,32 @@ class BaseViewController: UIViewController {
             if let existingNewController = newController {
                 existingNewController.view.alpha = existingNewController.managesOwnTransitions() ? 1.0 : 0.0
                 
-                self.addChildViewController(existingNewController)
+                self.addChild(existingNewController)
                 let isTop = existingNewController == newTopViewController
                 let viewToAddTo = isTop ? self.topHalfContainerView! : self.bottomHalfContainerView!
                 viewToAddTo.addSubview(existingNewController.view)
-                viewToAddTo.sendSubview(toBack: existingNewController.view)
-                existingNewController.didMove(toParentViewController: self)
+                viewToAddTo.sendSubviewToBack(existingNewController.view)
+                existingNewController.didMove(toParent: self)
                 
                 newViewConstraints.append(
                     contentsOf: NSLayoutConstraint.constraints(
                         withVisualFormat: "V:|[newView]|",
-                        options: NSLayoutFormatOptions(rawValue: 0),
+                        options: NSLayoutConstraint.FormatOptions(rawValue: 0),
                         metrics: nil,
                         views: ["newView" : existingNewController.view]) +
                         NSLayoutConstraint.constraints(
                             withVisualFormat: "H:|[newView]|",
-                            options: NSLayoutFormatOptions(rawValue: 0),
+                            options: NSLayoutConstraint.FormatOptions(rawValue: 0),
                             metrics: nil,
                             views: ["newView" : existingNewController.view])
                 )
                 
                 if !existingNewController.managesOwnTransitions() {
                     let sign = CGFloat(isTop ? rotationParams.0.rawValue : rotationParams.1.rawValue)
-                    existingNewController.view.transform = CGAffineTransform(scaleX: transitionStartScale, y: transitionStartScale).rotated(by: sign * CGFloat(M_PI_2))
+                    existingNewController.view.transform = CGAffineTransform(
+                        scaleX: transitionStartScale,
+                        y: transitionStartScale
+                    ).rotated(by: sign * (CGFloat.pi/2))
                 }
                 existingNewController.animationWillBegin(beginningState: .inactive, plannedAnimationDuration: DesignLanguage.TransitionAnimationDuration)
             }
@@ -177,7 +180,10 @@ class BaseViewController: UIViewController {
                         existingOldController.view.alpha = 0
                         let isTop = existingOldController.view.superview == self.topHalfContainerView
                         let sign = -CGFloat(isTop ? rotationParams.0.rawValue : rotationParams.1.rawValue)
-                        existingOldController.view.transform = CGAffineTransform(scaleX: self.transitionEndScale, y: self.transitionEndScale).rotated(by: sign * CGFloat(M_PI_2))
+                        existingOldController.view.transform = CGAffineTransform(
+                            scaleX: self.transitionEndScale,
+                            y: self.transitionEndScale
+                        ).rotated(by: sign * (.pi / 2))
                     }
                 }
                 if let existingNewController = newController {
@@ -192,10 +198,10 @@ class BaseViewController: UIViewController {
             assert(Thread.isMainThread, "Expecting the animation completion to be executed on the main thread")
             for (oldController, _) in controllersToAnimate {
                 if let existingOldController = oldController {
-                    existingOldController.willMove(toParentViewController: nil)
+                    existingOldController.willMove(toParent: nil)
                     let superviewHalf = existingOldController.view.superview
                     existingOldController.view.removeFromSuperview()
-                    existingOldController.removeFromParentViewController()
+                    existingOldController.removeFromParent()
                     superviewHalf?.removeConstraints(constraintsToRemove)
                 }
             }
@@ -248,7 +254,7 @@ class BaseViewController: UIViewController {
         }
     }
     
-    func showContinueInstructionOverlayIfNeeded(_ timer: Timer) {
+    @objc func showContinueInstructionOverlayIfNeeded(_ timer: Timer) {
         let gameState = timer.userInfo! as! GameState
         if GameManager.sharedInstance.currentGameState == gameState && continueHelperOverlay == nil {
             continueHelperOverlay = ContinueInstructionOverlayView()
@@ -257,12 +263,12 @@ class BaseViewController: UIViewController {
             bottomHalfContainerView?.addConstraints(
                 NSLayoutConstraint.constraints(
                     withVisualFormat: "H:|[overlay]|",
-                    options: NSLayoutFormatOptions(rawValue: 0),
+                    options: NSLayoutConstraint.FormatOptions(rawValue: 0),
                     metrics: nil,
                     views: ["overlay" : continueHelperOverlay!]) +
                 NSLayoutConstraint.constraints(
                     withVisualFormat: "V:|[overlay]|",
-                    options: NSLayoutFormatOptions(rawValue: 0),
+                    options: NSLayoutConstraint.FormatOptions(rawValue: 0),
                     metrics: nil,
                     views: ["overlay" : continueHelperOverlay!])
             )
@@ -334,7 +340,7 @@ extension BaseViewController: GameStateChangeListener {
 extension UIView {
     func constraintsConstrainingView(
         _ constrainedView: UIView,
-        constrainedAttributePredicate: ((NSLayoutAttribute) -> Bool) = { _ -> Bool in return true }
+        constrainedAttributePredicate: ((NSLayoutConstraint.Attribute) -> Bool) = { _ -> Bool in return true }
     ) -> [NSLayoutConstraint] {
         return constraints.filter {
             ($0.firstItem as! NSObject == constrainedView && constrainedAttributePredicate($0.firstAttribute)) ||

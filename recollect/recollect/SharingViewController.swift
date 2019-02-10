@@ -29,7 +29,7 @@ class SharingViewController: HalfScreenViewController {
         repeatButton.addTarget(
             self,
             action: #selector(SharingViewController.repeatButtonPressed(_:)),
-            for: UIControlEvents.touchUpInside
+            for: UIControl.Event.touchUpInside
         )
         view.addSubview(repeatButton)
         
@@ -37,7 +37,7 @@ class SharingViewController: HalfScreenViewController {
         menuButton.addTarget(
             self,
             action: #selector(SharingViewController.menuButtonPressed(_:)),
-            for: UIControlEvents.touchUpInside
+            for: UIControl.Event.touchUpInside
         )
         view.addSubview(menuButton)
         
@@ -85,11 +85,11 @@ class SharingViewController: HalfScreenViewController {
         }
     }
     
-    func repeatButtonPressed(_ button: UIButton) {
+    @objc func repeatButtonPressed(_ button: UIButton) {
         withExistingDelegate { $0.repeatButtonPressed(self) }
     }
     
-    func menuButtonPressed(_ button: UIButton) {
+    @objc func menuButtonPressed(_ button: UIButton) {
         withExistingDelegate { $0.menuButtonPressed(self) }
     }
 }

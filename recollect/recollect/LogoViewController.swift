@@ -26,37 +26,37 @@ class LogoViewController: HalfScreenViewController {
         view.addConstraints([
             NSLayoutConstraint(
                 item: logoContainer,
-                attribute: NSLayoutAttribute.centerX,
-                relatedBy: NSLayoutRelation.equal,
+                attribute: NSLayoutConstraint.Attribute.centerX,
+                relatedBy: NSLayoutConstraint.Relation.equal,
                 toItem: view,
-                attribute: NSLayoutAttribute.centerX,
+                attribute: NSLayoutConstraint.Attribute.centerX,
                 multiplier: 1.0,
                 constant: 0.0
             ),
             NSLayoutConstraint(
                 item: logoContainer,
-                attribute: NSLayoutAttribute.centerY,
-                relatedBy: NSLayoutRelation.equal,
+                attribute: NSLayoutConstraint.Attribute.centerY,
+                relatedBy: NSLayoutConstraint.Relation.equal,
                 toItem: view,
-                attribute: NSLayoutAttribute.centerY,
+                attribute: NSLayoutConstraint.Attribute.centerY,
                 multiplier: 1.0,
                 constant: 0.0
             ),
             NSLayoutConstraint(
                 item: logoContainer,
-                attribute: NSLayoutAttribute.width,
-                relatedBy: NSLayoutRelation.equal,
+                attribute: NSLayoutConstraint.Attribute.width,
+                relatedBy: NSLayoutConstraint.Relation.equal,
                 toItem: view,
-                attribute: NSLayoutAttribute.width,
+                attribute: NSLayoutConstraint.Attribute.width,
                 multiplier: 0.5,
                 constant: 0.0
             ),
             NSLayoutConstraint(
                 item: logoContainer,
-                attribute: NSLayoutAttribute.height,
-                relatedBy: NSLayoutRelation.equal,
+                attribute: NSLayoutConstraint.Attribute.height,
+                relatedBy: NSLayoutConstraint.Relation.equal,
                 toItem: view,
-                attribute: NSLayoutAttribute.height,
+                attribute: NSLayoutConstraint.Attribute.height,
                 multiplier: 0.5,
                 constant: 0.0
             )
@@ -65,7 +65,7 @@ class LogoViewController: HalfScreenViewController {
         
         for (lineIndex, line) in logoText.enumerated() {
             assert(line.lengthOfBytes(using: String.Encoding.utf8) == self.logoText.count, "The logo text must be such that it forms a perfect square")
-            for (index, character) in line.characters.enumerated() {
+            for (index, character) in line.enumerated() {
                 let characterView = ManglableLabel()
                 characterView.backgroundColor = UIColor.clear
                 characterView.textColor = DesignLanguage.NeverActiveTextColor
@@ -77,19 +77,19 @@ class LogoViewController: HalfScreenViewController {
                 view.addConstraints([
                     NSLayoutConstraint(
                         item: characterView,
-                        attribute: NSLayoutAttribute.centerX,
-                        relatedBy: NSLayoutRelation.equal,
+                        attribute: NSLayoutConstraint.Attribute.centerX,
+                        relatedBy: NSLayoutConstraint.Relation.equal,
                         toItem: logoContainer,
-                        attribute: NSLayoutAttribute.centerX,
+                        attribute: NSLayoutConstraint.Attribute.centerX,
                         multiplier: CGFloat((2.0/(Float(line.lengthOfBytes(using: String.Encoding.ascii)) + 1.0)) * Float(index + 1)),
                         constant: 0.0
                     ),
                     NSLayoutConstraint(
                         item: characterView,
-                        attribute: NSLayoutAttribute.centerY,
-                        relatedBy: NSLayoutRelation.equal,
+                        attribute: NSLayoutConstraint.Attribute.centerY,
+                        relatedBy: NSLayoutConstraint.Relation.equal,
                         toItem: logoContainer,
-                        attribute: NSLayoutAttribute.centerY,
+                        attribute: NSLayoutConstraint.Attribute.centerY,
                         multiplier: CGFloat((2.0/(CGFloat(logoText.count) + 1.0)) * CGFloat(lineIndex + 1)),
                         constant: 0.0
                     )

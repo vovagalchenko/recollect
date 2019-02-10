@@ -20,7 +20,7 @@ class RepeatIconView: ButtonBackground {
         ctx?.translateBy(x: bounds.width, y: 0.0)
         ctx?.scaleBy(x: -1.0, y: 1.0)
         
-        let arcEndingAngle = CGFloat(0.8*(M_PI*2.0))
+        let arcEndingAngle = 0.8 * CGFloat.pi * 2.0
         ctx?.addArc(
             center: CGPoint(x: bounds.midX, y: bounds.midY),
             radius: boundingBoxDimension/2.0 - arrowShaftThickness*0.5 - ((arrowThickness - arrowShaftThickness)*0.5),
@@ -38,7 +38,9 @@ class RepeatIconView: ButtonBackground {
 
         ctx?.move(to: CGPoint(x: bounds.size.width - arrowThickness, y: bounds.midY))
         ctx?.addLine(to: CGPoint(x: bounds.size.width, y: bounds.midY))
-        ctx?.addLine(to: CGPoint(x: bounds.size.width - arrowThickness*0.5, y: bounds.midY + (sqrt(3.0)/2.0)*arrowThickness))
+        ctx?.addLine(to:
+            CGPoint(x: bounds.size.width - arrowThickness*0.5, y: bounds.midY + (sqrt(3.0)/2.0)*arrowThickness)
+        )
         ctx?.closePath()
         baseColor.setFill()
         ctx?.setLineWidth(0.5)

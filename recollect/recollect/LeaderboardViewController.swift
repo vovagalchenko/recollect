@@ -43,7 +43,7 @@ class LeaderboardViewController: UIViewController, GKGameCenterControllerDelegat
             view.addConstraints(
                 NSLayoutConstraint.constraints(
                     withVisualFormat: "H:|[entry]|",
-                    options: NSLayoutFormatOptions(rawValue: 0),
+                    options: NSLayoutConstraint.FormatOptions(rawValue: 0),
                     metrics: nil,
                     views: ["entry": entryView])
             )
@@ -55,7 +55,7 @@ class LeaderboardViewController: UIViewController, GKGameCenterControllerDelegat
                     view.addConstraints(
                         NSLayoutConstraint.constraints(
                             withVisualFormat: "H:|[entry]|",
-                            options: NSLayoutFormatOptions(rawValue: 0),
+                            options: NSLayoutConstraint.FormatOptions(rawValue: 0),
                             metrics: nil,
                             views: ["entry": gapEntryView]) +
                         [
@@ -130,7 +130,7 @@ class LeaderboardViewController: UIViewController, GKGameCenterControllerDelegat
         GKPlayer.loadPlayers(forIdentifiers: playerIds) { (players, error) -> Void in
             if let existingPlayers = players {
                 existingPlayers.forEach { player -> Void in
-                    player.loadPhoto(forSize: GKPhotoSizeNormal) { (image, error) -> Void in
+                    player.loadPhoto(for: GKPlayer.PhotoSize.normal) { (image, error) -> Void in
                         if let existingImage = image {
                             leaderboardEntryViews
                                 .filter { $0.playerId == player.playerID }
@@ -141,7 +141,7 @@ class LeaderboardViewController: UIViewController, GKGameCenterControllerDelegat
                                     withName: "player_avatar_load_fail",
                                     type: AnalyticsEventTypeWarning,
                                     attributes: [
-                                        "player_id": player.playerID ?? "unknown_player_id",
+                                        "player_id": player.playerID,
                                         "error": error?.localizedDescription ?? "unknown_error"
                                     ]
                             )

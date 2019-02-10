@@ -52,7 +52,7 @@ class LevelPickerViewController: HalfScreenViewController, UIGestureRecognizerDe
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(LevelPickerViewController.appDidBecomeActive(_:)),
-            name: NSNotification.Name.UIApplicationDidBecomeActive,
+            name: UIApplication.didBecomeActiveNotification,
             object: nil
         )
     }
@@ -85,16 +85,16 @@ class LevelPickerViewController: HalfScreenViewController, UIGestureRecognizerDe
         scrollView.showsHorizontalScrollIndicator = false
         scrollView.showsVerticalScrollIndicator = false
         view.addSubview(scrollView)
-        view.bringSubview(toFront: scrollView)
+        view.bringSubviewToFront(scrollView)
         let scrollViewConstraints =
             NSLayoutConstraint.constraints(
                 withVisualFormat: "H:|[scrollView]|",
-                options: NSLayoutFormatOptions(rawValue: 0),
+                options: NSLayoutConstraint.FormatOptions(rawValue: 0),
                 metrics: nil,
                 views: ["scrollView": scrollView]) +
             NSLayoutConstraint.constraints(
                 withVisualFormat: "V:|[scrollView]|",
-                options: NSLayoutFormatOptions(rawValue: 0),
+                options: NSLayoutConstraint.FormatOptions(rawValue: 0),
                 metrics: nil,
                 views: ["scrollView": scrollView])
         
@@ -114,18 +114,18 @@ class LevelPickerViewController: HalfScreenViewController, UIGestureRecognizerDe
             levelLabelConstraints += [
                 NSLayoutConstraint(
                     item: label,
-                    attribute: NSLayoutAttribute.top,
-                    relatedBy: NSLayoutRelation.equal,
+                    attribute: NSLayoutConstraint.Attribute.top,
+                    relatedBy: NSLayoutConstraint.Relation.equal,
                     toItem: view,
-                    attribute: NSLayoutAttribute.top,
+                    attribute: NSLayoutConstraint.Attribute.top,
                     multiplier: 1.0,
                     constant: 0.0),
                 NSLayoutConstraint(
                     item: label,
-                    attribute: NSLayoutAttribute.bottom,
-                    relatedBy: NSLayoutRelation.equal,
+                    attribute: NSLayoutConstraint.Attribute.bottom,
+                    relatedBy: NSLayoutConstraint.Relation.equal,
                     toItem: view,
-                    attribute: NSLayoutAttribute.bottom,
+                    attribute: NSLayoutConstraint.Attribute.bottom,
                     multiplier: 1.0,
                     constant: 0.0)
             ]
@@ -133,10 +133,10 @@ class LevelPickerViewController: HalfScreenViewController, UIGestureRecognizerDe
                 levelLabelConstraints.append(
                     NSLayoutConstraint(
                         item: label,
-                        attribute: NSLayoutAttribute.left,
-                        relatedBy: NSLayoutRelation.equal,
+                        attribute: NSLayoutConstraint.Attribute.left,
+                        relatedBy: NSLayoutConstraint.Relation.equal,
                         toItem: scrollView,
-                        attribute: NSLayoutAttribute.left,
+                        attribute: NSLayoutConstraint.Attribute.left,
                         multiplier: 1.0,
                         constant: view.bounds.size.width/2 - label.intrinsicContentSize.width/2)
                 )
@@ -144,10 +144,10 @@ class LevelPickerViewController: HalfScreenViewController, UIGestureRecognizerDe
                 levelLabelConstraints.append(
                     NSLayoutConstraint(
                         item: label,
-                        attribute: NSLayoutAttribute.right,
-                        relatedBy: NSLayoutRelation.equal,
+                        attribute: NSLayoutConstraint.Attribute.right,
+                        relatedBy: NSLayoutConstraint.Relation.equal,
                         toItem: scrollView,
-                        attribute: NSLayoutAttribute.right,
+                        attribute: NSLayoutConstraint.Attribute.right,
                         multiplier: 1.0,
                         constant: label.intrinsicContentSize.width/2 - view.bounds.size.width/2)
                 )
@@ -157,7 +157,7 @@ class LevelPickerViewController: HalfScreenViewController, UIGestureRecognizerDe
         
         levelLabelConstraints += NSLayoutConstraint.constraints(
             withVisualFormat: horizontalConstraint + "|",
-            options: NSLayoutFormatOptions(rawValue: 0),
+            options: NSLayoutConstraint.FormatOptions(rawValue: 0),
             metrics: nil,
             views: labelsDict
         )
@@ -165,25 +165,25 @@ class LevelPickerViewController: HalfScreenViewController, UIGestureRecognizerDe
         let allConstraints =
             NSLayoutConstraint.constraints(
                 withVisualFormat: "V:|-(\(verticalPadding))-[swipeLabel][tapLabel]",
-                options: NSLayoutFormatOptions(rawValue: 0),
+                options: NSLayoutConstraint.FormatOptions(rawValue: 0),
                 metrics: nil,
                 views: ["swipeLabel": swipeLabel, "tapLabel": tapLabel]) +
             scrollViewConstraints +
             [
                 NSLayoutConstraint(
                     item: swipeLabel,
-                    attribute: NSLayoutAttribute.centerX,
-                    relatedBy: NSLayoutRelation.equal,
+                    attribute: NSLayoutConstraint.Attribute.centerX,
+                    relatedBy: NSLayoutConstraint.Relation.equal,
                     toItem: view,
-                    attribute: NSLayoutAttribute.centerX,
+                    attribute: NSLayoutConstraint.Attribute.centerX,
                     multiplier: 1.0,
                     constant: 0.0),
                 NSLayoutConstraint(
                     item: tapLabel,
-                    attribute: NSLayoutAttribute.centerX,
-                    relatedBy: NSLayoutRelation.equal,
+                    attribute: NSLayoutConstraint.Attribute.centerX,
+                    relatedBy: NSLayoutConstraint.Relation.equal,
                     toItem: view,
-                    attribute: NSLayoutAttribute.centerX,
+                    attribute: NSLayoutConstraint.Attribute.centerX,
                     multiplier: 1.0,
                     constant: 0.0),
             ] + levelLabelConstraints
@@ -202,24 +202,24 @@ class LevelPickerViewController: HalfScreenViewController, UIGestureRecognizerDe
         view.addConstraints(
             NSLayoutConstraint.constraints(
                 withVisualFormat: "V:[bestTimeValue][bestTimeKey]-(\(verticalPadding))-|",
-                options: NSLayoutFormatOptions(rawValue: 0),
+                options: NSLayoutConstraint.FormatOptions(rawValue: 0),
                 metrics: nil,
                 views: ["bestTimeValue" : bestTimeValueLabel!, "bestTimeKey" : bestTimeKeyLabel!]) +
             [
                 NSLayoutConstraint(
                     item: bestTimeValueLabel!,
-                    attribute: NSLayoutAttribute.centerX,
-                    relatedBy: NSLayoutRelation.equal,
+                    attribute: NSLayoutConstraint.Attribute.centerX,
+                    relatedBy: NSLayoutConstraint.Relation.equal,
                     toItem: view,
-                    attribute: NSLayoutAttribute.centerX,
+                    attribute: NSLayoutConstraint.Attribute.centerX,
                     multiplier: 1.0,
                     constant: 0.0),
                 NSLayoutConstraint(
                     item: bestTimeKeyLabel!,
-                    attribute: NSLayoutAttribute.centerX,
-                    relatedBy: NSLayoutRelation.equal,
+                    attribute: NSLayoutConstraint.Attribute.centerX,
+                    relatedBy: NSLayoutConstraint.Relation.equal,
                     toItem: view,
-                    attribute: NSLayoutAttribute.centerX,
+                    attribute: NSLayoutConstraint.Attribute.centerX,
                     multiplier: 1.0,
                     constant: 0.0),
             ]
@@ -263,7 +263,7 @@ class LevelPickerViewController: HalfScreenViewController, UIGestureRecognizerDe
         }
     }
     
-    func bestScoreChanged(_ notification: Notification) {
+    @objc func bestScoreChanged(_ notification: Notification) {
         if !scrollView.isDragging {
             fadeInTimeLabels()
         }
@@ -273,7 +273,7 @@ class LevelPickerViewController: HalfScreenViewController, UIGestureRecognizerDe
         return true
     }
     
-    func handleTap(_ tapRecognizer: UITapGestureRecognizer) {
+    @objc func handleTap(_ tapRecognizer: UITapGestureRecognizer) {
         let scrollView = tapRecognizer.view! as! UIScrollView
         var minDistance = CGFloat.greatestFiniteMagnitude
         var labelClosestToCenter: ManglableLabel?
@@ -303,9 +303,9 @@ class LevelPickerViewController: HalfScreenViewController, UIGestureRecognizerDe
         levelLabel.font = UIFont(name: "AvenirNext-UltraLight", size: 100.75)
         levelLabel.textColor = DesignLanguage.InactiveTextColor
         levelLabel.numberOfLines = 1
-        levelLabel.setContentCompressionResistancePriority(1000, for: UILayoutConstraintAxis.horizontal)
-        levelLabel.setContentCompressionResistancePriority(1000, for: UILayoutConstraintAxis.vertical)
-        levelLabel.setContentHuggingPriority(250, for: UILayoutConstraintAxis.horizontal)
+        levelLabel.setContentCompressionResistancePriority(UILayoutPriority(rawValue: 1000), for: NSLayoutConstraint.Axis.horizontal)
+        levelLabel.setContentCompressionResistancePriority(UILayoutPriority(rawValue: 1000), for: NSLayoutConstraint.Axis.vertical)
+        levelLabel.setContentHuggingPriority(UILayoutPriority(rawValue: 250), for: NSLayoutConstraint.Axis.horizontal)
         levelLabel.text = levelName
         return levelLabel
     }
@@ -325,11 +325,11 @@ extension LevelPickerViewController: UIScrollViewDelegate {
     
     fileprivate func fadeInTimeLabels() {
         refreshBestTimeLabels()
-        let haveBestScore = (self.bestTimeValueLabel?.text ?? "").characters.count > 0
+        let haveBestScore = (self.bestTimeValueLabel?.text ?? "").count > 0
         UIView.animate(
             withDuration: DesignLanguage.MinorAnimationDuration,
             delay: 0.0,
-            options: UIViewAnimationOptions.beginFromCurrentState,
+            options: UIView.AnimationOptions.beginFromCurrentState,
             animations: { () -> Void in
                 self.bestTimeKeyLabel?.alpha = haveBestScore ? 1.0 : 0.0
                 self.bestTimeValueLabel?.alpha = haveBestScore ? 1.0 : 0.0
@@ -369,7 +369,7 @@ extension LevelPickerViewController: UIScrollViewDelegate {
             UIView.animate(
                 withDuration: DesignLanguage.MinorAnimationDuration,
                 delay: 0.0,
-                options: UIViewAnimationOptions.beginFromCurrentState,
+                options: UIView.AnimationOptions.beginFromCurrentState,
                 animations: { () -> Void in
                     self.bestTimeKeyLabel?.alpha = 0
                     self.bestTimeValueLabel?.alpha = 0

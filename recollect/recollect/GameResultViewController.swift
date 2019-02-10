@@ -41,7 +41,7 @@ class GameResultViewController: HalfScreenViewController, UIGestureRecognizerDel
         resultViewContainer = UIView()
         resultViewContainer!.backgroundColor = UIColor.clear
         resultViewContainer!.translatesAutoresizingMaskIntoConstraints = false
-        resultViewContainer!.setContentHuggingPriority(1000, for: UILayoutConstraintAxis.vertical)
+        resultViewContainer!.setContentHuggingPriority(UILayoutPriority(rawValue: 1000), for: NSLayoutConstraint.Axis.vertical)
         view.addSubview(resultViewContainer!)
         
         let completionMsgLabelHeight = CGFloat(24.5)
@@ -49,8 +49,8 @@ class GameResultViewController: HalfScreenViewController, UIGestureRecognizerDel
         let deltaTimeLabelHeight = CGFloat(24.0)
         
         completionMsgLabel = ManglableLabel()
-        completionMsgLabel!.setContentHuggingPriority(1000, for: UILayoutConstraintAxis.vertical)
-        completionMsgLabel!.setContentCompressionResistancePriority(1000, for: UILayoutConstraintAxis.vertical)
+        completionMsgLabel!.setContentHuggingPriority(UILayoutPriority(rawValue: 1000), for: NSLayoutConstraint.Axis.vertical)
+        completionMsgLabel!.setContentCompressionResistancePriority(UILayoutPriority(rawValue: 1000), for: NSLayoutConstraint.Axis.vertical)
         completionMsgLabel!.font = UIFont(name: "AvenirNextCondensed-DemiBold", size: completionMsgLabelHeight)
         completionMsgLabel!.textColor = DesignLanguage.NeverActiveTextColor
         completionMsgLabel!.adjustsFontSizeToFitWidth = true
@@ -59,16 +59,16 @@ class GameResultViewController: HalfScreenViewController, UIGestureRecognizerDel
         resultViewContainer!.addSubview(completionMsgLabel!)
         
         mainTimeLabel = ManglableLabel()
-        mainTimeLabel!.setContentHuggingPriority(1000, for: UILayoutConstraintAxis.vertical)
-        mainTimeLabel!.setContentCompressionResistancePriority(1000, for: UILayoutConstraintAxis.vertical)
+        mainTimeLabel!.setContentHuggingPriority(UILayoutPriority(rawValue: 1000), for: NSLayoutConstraint.Axis.vertical)
+        mainTimeLabel!.setContentCompressionResistancePriority(UILayoutPriority(rawValue: 1000), for: NSLayoutConstraint.Axis.vertical)
         mainTimeLabel!.font = UIFont(name: "AvenirNextCondensed-DemiBold", size: mainTimeLabelHeight)
         mainTimeLabel!.textColor = DesignLanguage.ActiveTextColor
         mainTimeLabel!.text = gameState.finalTime().minuteSecondCentisecondString()
         resultViewContainer!.addSubview(mainTimeLabel!)
         
         deltaTimeLabel = ManglableLabel()
-        deltaTimeLabel!.setContentHuggingPriority(1000, for: UILayoutConstraintAxis.vertical)
-        deltaTimeLabel!.setContentCompressionResistancePriority(1000, for: UILayoutConstraintAxis.vertical)
+        deltaTimeLabel!.setContentHuggingPriority(UILayoutPriority(rawValue: 1000), for: NSLayoutConstraint.Axis.vertical)
+        deltaTimeLabel!.setContentCompressionResistancePriority(UILayoutPriority(rawValue: 1000), for: NSLayoutConstraint.Axis.vertical)
         deltaTimeLabel!.font = UIFont(name: "AvenirNextCondensed-DemiBold", size: deltaTimeLabelHeight)
         deltaTimeLabel!.textAlignment = NSTextAlignment.right
         deltaTimeLabel!.textColor = DesignLanguage.NeverActiveTextColor
@@ -122,21 +122,21 @@ class GameResultViewController: HalfScreenViewController, UIGestureRecognizerDel
             resultLabelsConstraints +
             NSLayoutConstraint.constraints(
                 withVisualFormat: "H:|[completionMsg]|",
-                options: NSLayoutFormatOptions(rawValue: 0),
+                options: NSLayoutConstraint.FormatOptions(rawValue: 0),
                 metrics: nil,
                 views: [
                     "completionMsg" : completionMsgLabel!,
                 ]) +
             NSLayoutConstraint.constraints(
                 withVisualFormat: "H:|[mainTime]|",
-                options: NSLayoutFormatOptions(rawValue: 0),
+                options: NSLayoutConstraint.FormatOptions(rawValue: 0),
                 metrics: nil,
                 views: [
                     "mainTime" : mainTimeLabel!,
                 ]) +
             NSLayoutConstraint.constraints(
                 withVisualFormat: "H:[deltaTime]|",
-                options: NSLayoutFormatOptions(rawValue: 0),
+                options: NSLayoutConstraint.FormatOptions(rawValue: 0),
                 metrics: nil,
                 views: [
                     "deltaTime" : deltaTimeLabel!,
@@ -153,19 +153,19 @@ class GameResultViewController: HalfScreenViewController, UIGestureRecognizerDel
         view.addSubview(gameCenterSolicitationLabel!)
         
         leaderboardVC = LeaderboardViewController()
-        addChildViewController(leaderboardVC)
+        addChild(leaderboardVC)
         view.addSubview(leaderboardVC.view)
-        leaderboardVC.didMove(toParentViewController: self)
+        leaderboardVC.didMove(toParent: self)
         
         view.addConstraints(
             NSLayoutConstraint.constraints(
                 withVisualFormat: "H:|[leaderboardView]|",
-                options: NSLayoutFormatOptions(rawValue: 0),
+                options: NSLayoutConstraint.FormatOptions(rawValue: 0),
                 metrics: nil,
                 views: ["leaderboardView": leaderboardVC.view]) +
             NSLayoutConstraint.constraints(
                 withVisualFormat: "V:[leaderboardView]|",
-                options: NSLayoutFormatOptions(rawValue: 0),
+                options: NSLayoutConstraint.FormatOptions(rawValue: 0),
                 metrics: nil,
                 views: ["leaderboardView": leaderboardVC.view])
         )
@@ -173,10 +173,10 @@ class GameResultViewController: HalfScreenViewController, UIGestureRecognizerDel
         view.addConstraints([
             NSLayoutConstraint(
                 item: resultViewContainer!,
-                attribute: NSLayoutAttribute.centerY,
-                relatedBy: NSLayoutRelation.equal,
+                attribute: NSLayoutConstraint.Attribute.centerY,
+                relatedBy: NSLayoutConstraint.Relation.equal,
                 toItem: view,
-                attribute: NSLayoutAttribute.centerY,
+                attribute: NSLayoutConstraint.Attribute.centerY,
                 multiplier: 1.0,
                 constant: 0.0),
             NSLayoutConstraint(
@@ -190,28 +190,28 @@ class GameResultViewController: HalfScreenViewController, UIGestureRecognizerDel
             ),
             NSLayoutConstraint(
                 item: resultViewContainer!,
-                attribute: NSLayoutAttribute.centerX,
-                relatedBy: NSLayoutRelation.equal,
+                attribute: NSLayoutConstraint.Attribute.centerX,
+                relatedBy: NSLayoutConstraint.Relation.equal,
                 toItem: view,
-                attribute: NSLayoutAttribute.centerX,
+                attribute: NSLayoutConstraint.Attribute.centerX,
                 multiplier: 1.0,
                 constant: 0.0
             ),
             NSLayoutConstraint(
                 item: gameCenterSolicitationLabel!,
-                attribute: NSLayoutAttribute.centerX,
-                relatedBy: NSLayoutRelation.equal,
+                attribute: NSLayoutConstraint.Attribute.centerX,
+                relatedBy: NSLayoutConstraint.Relation.equal,
                 toItem: view,
-                attribute: NSLayoutAttribute.centerX,
+                attribute: NSLayoutConstraint.Attribute.centerX,
                 multiplier: 1.0,
                 constant: 0.0
             ),
             NSLayoutConstraint(
                 item: gameCenterSolicitationLabel!,
-                attribute: NSLayoutAttribute.bottom,
-                relatedBy: NSLayoutRelation.equal,
+                attribute: NSLayoutConstraint.Attribute.bottom,
+                relatedBy: NSLayoutConstraint.Relation.equal,
                 toItem: view,
-                attribute: NSLayoutAttribute.bottom,
+                attribute: NSLayoutConstraint.Attribute.bottom,
                 multiplier: 1.0,
                 constant: -5.0 // a little breathing room never hurt nobody
             ),
@@ -228,7 +228,7 @@ class GameResultViewController: HalfScreenViewController, UIGestureRecognizerDel
         if isViewLoaded { refreshLayout() }
     }
     
-    func loginViaGameCenterLabelTapped(_ tapRecognizer: UITapGestureRecognizer) {
+    @objc func loginViaGameCenterLabelTapped(_ tapRecognizer: UITapGestureRecognizer) {
         UIApplication.shared.openURL(URL(string: "gamecenter:")!)
     }
     
@@ -281,11 +281,11 @@ class GameResultViewController: HalfScreenViewController, UIGestureRecognizerDel
         
         gameCenterSolicitationLabel?.attributedText = NSAttributedString(
             string: PlayerIdentityManager.sharedInstance.currentIdentity is GameCenterPlayerIdentity ? "See the full leaderboard" : "Log in via Game Center",
-            attributes: [
-                NSFontAttributeName: UIFont(name: "AvenirNext-Regular", size: 17.5)!,
-                NSForegroundColorAttributeName: DesignLanguage.ActiveTextColor,
-                NSUnderlineStyleAttributeName: 1,
-            ]
+            attributes: convertToOptionalNSAttributedStringKeyDictionary([
+                convertFromNSAttributedStringKey(NSAttributedString.Key.font): UIFont(name: "AvenirNext-Regular", size: 17.5)!,
+                convertFromNSAttributedStringKey(NSAttributedString.Key.foregroundColor): DesignLanguage.ActiveTextColor,
+                convertFromNSAttributedStringKey(NSAttributedString.Key.underlineStyle): 1,
+            ])
         )
         
         UIView.animate(withDuration: DesignLanguage.MinorAnimationDuration, animations: {
@@ -306,10 +306,10 @@ class GameResultViewController: HalfScreenViewController, UIGestureRecognizerDel
             } else {
                 constraintToAdd = NSLayoutConstraint(
                     item: self.resultViewContainer!,
-                    attribute: NSLayoutAttribute.centerY,
-                    relatedBy: NSLayoutRelation.equal,
+                    attribute: NSLayoutConstraint.Attribute.centerY,
+                    relatedBy: NSLayoutConstraint.Relation.equal,
                     toItem: self.view,
-                    attribute: NSLayoutAttribute.centerY,
+                    attribute: NSLayoutConstraint.Attribute.centerY,
                     multiplier: 1.0,
                     constant: 0.0
                 )
@@ -323,4 +323,15 @@ class GameResultViewController: HalfScreenViewController, UIGestureRecognizerDel
             self.leaderboardVC.view.alpha = 2...4 ~= leaderboard.entries.count ? 1.0 : 0.0
         }) 
     }
+}
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertToOptionalNSAttributedStringKeyDictionary(_ input: [String: Any]?) -> [NSAttributedString.Key: Any]? {
+	guard let input = input else { return nil }
+	return Dictionary(uniqueKeysWithValues: input.map { key, value in (NSAttributedString.Key(rawValue: key), value)})
+}
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertFromNSAttributedStringKey(_ input: NSAttributedString.Key) -> String {
+	return input.rawValue
 }

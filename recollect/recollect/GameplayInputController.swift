@@ -44,37 +44,37 @@ class GameplayInputController: HalfScreenViewController {
                     [
                         NSLayoutConstraint(
                             item: button,
-                            attribute: NSLayoutAttribute.centerX,
-                            relatedBy: NSLayoutRelation.equal,
+                            attribute: NSLayoutConstraint.Attribute.centerX,
+                            relatedBy: NSLayoutConstraint.Relation.equal,
                             toItem: view,
-                            attribute: NSLayoutAttribute.centerX,
+                            attribute: NSLayoutConstraint.Attribute.centerX,
                             multiplier: CGFloat((2.0/(CGFloat(buttonTextLine.count)*2)) * CGFloat(buttonNumber*2 + 1)),
                             constant: 0.0
                         ),
                         NSLayoutConstraint(
                             item: button,
-                            attribute: NSLayoutAttribute.centerY,
-                            relatedBy: NSLayoutRelation.equal,
+                            attribute: NSLayoutConstraint.Attribute.centerY,
+                            relatedBy: NSLayoutConstraint.Relation.equal,
                             toItem: view,
-                            attribute: NSLayoutAttribute.centerY,
+                            attribute: NSLayoutConstraint.Attribute.centerY,
                             multiplier: CGFloat((2.0/(CGFloat(buttonsText.count)*2)) * CGFloat(lineNumber*2 + 1)),
                             constant: 0.0
                         ),
                         NSLayoutConstraint(
                             item: button,
-                            attribute: NSLayoutAttribute.height,
-                            relatedBy: NSLayoutRelation.equal,
+                            attribute: NSLayoutConstraint.Attribute.height,
+                            relatedBy: NSLayoutConstraint.Relation.equal,
                             toItem: view,
-                            attribute: NSLayoutAttribute.height,
+                            attribute: NSLayoutConstraint.Attribute.height,
                             multiplier: CGFloat(1.0)/CGFloat(buttonsText.count),
                             constant: 0.0
                         ),
                         NSLayoutConstraint(
                             item: button,
-                            attribute: NSLayoutAttribute.width,
-                            relatedBy: NSLayoutRelation.equal,
+                            attribute: NSLayoutConstraint.Attribute.width,
+                            relatedBy: NSLayoutConstraint.Relation.equal,
                             toItem: view,
-                            attribute: NSLayoutAttribute.width,
+                            attribute: NSLayoutConstraint.Attribute.width,
                             multiplier: CGFloat(1.0)/CGFloat(buttonTextLine.count),
                             constant: 0.0
                         )
@@ -90,13 +90,13 @@ class GameplayInputController: HalfScreenViewController {
         GameManager.sharedInstance.unsubscribeFromGameStateChangeNotifications(self)
     }
     
-    func handleButtonPress(_ gameplayButton: GameplayButton) {
+    @objc func handleButtonPress(_ gameplayButton: GameplayButton) {
         delegate.receivedInput(GameplayInput.fromString(gameplayButton.text))
     }
     
     private func gameplayButton(_ text: String) -> GameplayButton {
         let button = GameplayButton()
-        button.addTarget(self, action: #selector(GameplayInputController.handleButtonPress(_:)), for: UIControlEvents.touchUpInside)
+        button.addTarget(self, action: #selector(GameplayInputController.handleButtonPress(_:)), for: UIControl.Event.touchUpInside)
         button.text = text
         button.glowWhenEnabled = text == "»"
         return button

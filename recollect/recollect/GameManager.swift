@@ -90,7 +90,7 @@ class GameManager {
     
     init() {
         NotificationCenter.default
-            .addObserver(self, selector: #selector(GameManager.appDidEnterBackground(_:)), name: NSNotification.Name.UIApplicationDidEnterBackground, object: nil)
+            .addObserver(self, selector: #selector(GameManager.appDidEnterBackground(_:)), name: UIApplication.didEnterBackgroundNotification, object: nil)
     }
     
     @objc private func appDidEnterBackground(_ notification: Notification) {
@@ -175,7 +175,7 @@ protocol GameStateChangeListener: class {
 }
 
 extension NSObject {
-    func gameStateChangeNotificationReceived(_ notification: Notification!) {
+    @objc func gameStateChangeNotificationReceived(_ notification: Notification!) {
         let change = notification!.userInfo![GameManager.GameStateChangeUserInfoKey]! as! GameStateChange
         if let gameChangeListener = self as? GameStateChangeListener {
             gameChangeListener.gameStateChanged(change)

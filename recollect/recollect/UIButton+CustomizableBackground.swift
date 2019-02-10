@@ -10,7 +10,7 @@ import UIKit
 
 extension UIButton {
     class func buttonWithCustomBackground(_ bg: ButtonBackground) -> UIButton {
-        let button = UIButton(type: UIButtonType.custom)
+        let button = UIButton(type: UIButton.ButtonType.custom)
         button.addTarget(button, action: #selector(UIButton.didBecomePressed(_:)), for: [.touchDown, .touchDragEnter])
         button.addTarget(button, action: #selector(UIButton.didBecomeUnpressed(_:)), for: [.touchDragExit, .touchUpInside])
         button.translatesAutoresizingMaskIntoConstraints = false
@@ -18,12 +18,12 @@ extension UIButton {
         button.addConstraints(
             NSLayoutConstraint.constraints(
                 withVisualFormat: "H:|[bg]|",
-                options: NSLayoutFormatOptions(rawValue: 0),
+                options: NSLayoutConstraint.FormatOptions(rawValue: 0),
                 metrics: nil,
                 views: ["bg" : bg]) +
             NSLayoutConstraint.constraints(
                 withVisualFormat: "V:|[bg]|",
-                options: NSLayoutFormatOptions(rawValue: 0),
+                options: NSLayoutConstraint.FormatOptions(rawValue: 0),
                 metrics: nil,
                 views: ["bg" : bg])
         )
@@ -38,11 +38,11 @@ extension UIButton {
         }
     }
     
-    func didBecomePressed(_ button: UIButton) {
+    @objc func didBecomePressed(_ button: UIButton) {
         actOnButtonBackground { $0.baseColor = DesignLanguage.InactiveTextColor }
     }
     
-    func didBecomeUnpressed(_ button: UIButton) {
+    @objc func didBecomeUnpressed(_ button: UIButton) {
         actOnButtonBackground { $0.baseColor = DesignLanguage.ActiveTextColor }
     }
 }

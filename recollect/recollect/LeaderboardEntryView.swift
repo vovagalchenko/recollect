@@ -38,7 +38,7 @@ class LeaderboardEntryView: UIView {
         avatarImageView.layer.borderColor = DesignLanguage.NeverActiveTextColor.cgColor
         avatarImageView.layer.borderWidth = 1.0
         avatarImageView.layer.masksToBounds = true
-        avatarImageView.contentMode = UIViewContentMode.scaleAspectFill
+        avatarImageView.contentMode = UIView.ContentMode.scaleAspectFill
         avatarImageView.translatesAutoresizingMaskIntoConstraints = false
         avatarImageView.alpha = 0.0
         let padding: CGFloat = 15.0
@@ -47,7 +47,7 @@ class LeaderboardEntryView: UIView {
             addConstraints(
                 NSLayoutConstraint.constraints(
                     withVisualFormat: "V:|-(\(padding/2.0))-[subview]-(\(padding/2.0))-|",
-                    options: NSLayoutFormatOptions(rawValue: 0),
+                    options: NSLayoutConstraint.FormatOptions(rawValue: 0),
                     metrics: nil,
                     views: ["subview": subview])
             )
@@ -56,12 +56,12 @@ class LeaderboardEntryView: UIView {
         addConstraints(
             NSLayoutConstraint.constraints(
                 withVisualFormat: "H:|-(\(padding))-[rank]-(\(padding))-[avatar]-(\(padding))-[name]",
-                options: NSLayoutFormatOptions(rawValue: 0),
+                options: NSLayoutConstraint.FormatOptions(rawValue: 0),
                 metrics: nil,
                 views: ["rank": rankLabel, "avatar": avatarImageView, "name": nameLabel]) +
             NSLayoutConstraint.constraints(
                 withVisualFormat: "H:[timeLabel]-(\(padding))-|",
-                options: NSLayoutFormatOptions(rawValue: 0),
+                options: NSLayoutConstraint.FormatOptions(rawValue: 0),
                 metrics: nil,
                 views: ["timeLabel": timeLabel])
         )

@@ -54,7 +54,7 @@ class HalfScreenViewController: UIViewController, TransitionAnimationDelegate {
         }
     }
     
-    func refreshFrame(_ displayLink: CADisplayLink) {
+    @objc func refreshFrame(_ displayLink: CADisplayLink) {
         if let existingDisplayLinkStartDate = displayLinkStartDate {
             let timeElapsed = Date().timeIntervalSince(existingDisplayLinkStartDate)
             let timeLeft = displayLinkDuration! - timeElapsed
@@ -98,7 +98,7 @@ class HalfScreenViewController: UIViewController, TransitionAnimationDelegate {
         displayLinkStartDate = Date()
         displayLinkDuration = plannedAnimationDuration
         
-        displayLink.add(to: RunLoop.main, forMode: RunLoopMode.defaultRunLoopMode)
+        displayLink.add(to: RunLoop.main, forMode: RunLoop.Mode.default)
     }
     
     func addToAnimationBlock(endingState: TransitionAnimationState) { }

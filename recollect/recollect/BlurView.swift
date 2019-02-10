@@ -31,34 +31,34 @@ class BlurView: UIView {
         addConstraints([
             NSLayoutConstraint(
                 item: gradientView,
-                attribute: NSLayoutAttribute.top,
-                relatedBy: NSLayoutRelation.equal,
+                attribute: NSLayoutConstraint.Attribute.top,
+                relatedBy: NSLayoutConstraint.Relation.equal,
                 toItem: self,
-                attribute: NSLayoutAttribute.top,
+                attribute: NSLayoutConstraint.Attribute.top,
                 multiplier: 1.0,
                 constant: 0.0),
             NSLayoutConstraint(
                 item: gradientView,
-                attribute: NSLayoutAttribute.bottom,
-                relatedBy: NSLayoutRelation.equal,
+                attribute: NSLayoutConstraint.Attribute.bottom,
+                relatedBy: NSLayoutConstraint.Relation.equal,
                 toItem: self,
-                attribute: NSLayoutAttribute.bottom,
+                attribute: NSLayoutConstraint.Attribute.bottom,
                 multiplier: 1.0,
                 constant: DesignLanguage.ProgressBarHeight),
             NSLayoutConstraint(
                 item: gradientView,
-                attribute: NSLayoutAttribute.left,
-                relatedBy: NSLayoutRelation.equal,
+                attribute: NSLayoutConstraint.Attribute.left,
+                relatedBy: NSLayoutConstraint.Relation.equal,
                 toItem: self,
-                attribute: NSLayoutAttribute.left,
+                attribute: NSLayoutConstraint.Attribute.left,
                 multiplier: 1.0,
                 constant: 0.0),
             NSLayoutConstraint(
                 item: gradientView,
-                attribute: NSLayoutAttribute.right,
-                relatedBy: NSLayoutRelation.equal,
+                attribute: NSLayoutConstraint.Attribute.right,
+                relatedBy: NSLayoutConstraint.Relation.equal,
                 toItem: self,
-                attribute: NSLayoutAttribute.right,
+                attribute: NSLayoutConstraint.Attribute.right,
                 multiplier: 1.0,
                 constant: 0.0),
         ])
@@ -93,7 +93,7 @@ class BlurView: UIView {
         let blurredImageExtent = blurredImage.extent
         let centerOfImage = CGPoint(x: blurredImageExtent.midX, y: blurredImageExtent.midY)
         
-        let croppedBlurredImage = blurredImage.cropping(
+        let croppedBlurredImage = blurredImage.cropped(
             to: CGRect(
                 x: centerOfImage.x - originalImageExtent.width/2,
                 y: centerOfImage.y - originalImageExtent.height/2,
@@ -102,7 +102,7 @@ class BlurView: UIView {
             )
         )
         
-        return UIImage(ciImage: croppedBlurredImage, scale: UIScreen.main.scale, orientation: UIImageOrientation.up)
+        return UIImage(ciImage: croppedBlurredImage, scale: UIScreen.main.scale, orientation: UIImage.Orientation.up)
     }
     
     required init?(coder aDecoder: NSCoder) {

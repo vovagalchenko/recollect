@@ -19,7 +19,7 @@ class ManglableLabel: UILabel {
                 if let existingNewText = newText {
                     originalAttributedText = NSAttributedString(
                         string: existingNewText,
-                        attributes: [NSForegroundColorAttributeName: originalTextColor ?? textColor!]
+                        attributes: convertToOptionalNSAttributedStringKeyDictionary([convertFromNSAttributedStringKey(NSAttributedString.Key.foregroundColor): originalTextColor ?? textColor!])
                     )
                 } else {
                     originalAttributedText = nil
@@ -48,7 +48,7 @@ class ManglableLabel: UILabel {
             if let existingOriginalAttributedText = originalAttributedText {
                 let attrString = NSMutableAttributedString(attributedString: existingOriginalAttributedText)
                 attrString.setAttributes(
-                    [NSForegroundColorAttributeName: newColor],
+                    convertToOptionalNSAttributedStringKeyDictionary([convertFromNSAttributedStringKey(NSAttributedString.Key.foregroundColor): newColor]),
                     range: NSRange(location: 0, length: attrString.length)
                 )
                 originalAttributedText = attrString
@@ -92,14 +92,14 @@ class ManglableLabel: UILabel {
         if let existingOriginalAttributedText = originalAttributedText {
             mangledString = NSMutableAttributedString(attributedString: existingOriginalAttributedText)
         } else if originalText != nil && originalTextColor != nil {
-            mangledString = NSMutableAttributedString(string: originalText!, attributes: [NSForegroundColorAttributeName: originalTextColor!])
+            mangledString = NSMutableAttributedString(string: originalText!, attributes: convertToOptionalNSAttributedStringKeyDictionary([convertFromNSAttributedStringKey(NSAttributedString.Key.foregroundColor): originalTextColor!]))
         }
-        if mangledString.string.characters.count > 0 {
-            let strLength = mangledString.string.characters.count
+        if mangledString.string.count > 0 {
+            let strLength = mangledString.string.count
             let numCharactersToLeaveUnmangled = Int(round(Float(strLength) * portionOfTextToLeaveUnmangled))
-            let indexOfSplitChar = mangledString.string.characters.index(mangledString.string.startIndex, offsetBy: numCharactersToLeaveUnmangled)
+            let indexOfSplitChar = mangledString.string.index(mangledString.string.startIndex, offsetBy: numCharactersToLeaveUnmangled)
             var stringToPrepend = ""
-            let unicodeScalars = mangledString.string.substring(from: indexOfSplitChar).unicodeScalars
+            let unicodeScalars = mangledString.string[indexOfSplitChar...].unicodeScalars
             for unicodeScalar in unicodeScalars {
                 let replacement: UnicodeScalar
                 if aToZCaps.first!.value <= unicodeScalar.value && aToZCaps.last!.value >= unicodeScalar.value {
@@ -113,16 +113,19 @@ class ManglableLabel: UILabel {
                 }
                 stringToPrepend.append(Character(replacement))
             }
-            let mangledStringRange = NSRange(location: mangledString.string.characters.count - stringToPrepend.characters.count, length: stringToPrepend.characters.count)
+            let mangledStringRange = NSRange(
+                location: mangledString.string.count - stringToPrepend.count,
+                length: stringToPrepend.count
+            )
             mangledString.mutableString.replaceCharacters(in: mangledStringRange, with: stringToPrepend)
             
             if canUseAlphaForAccents {
                 // TODO: ManglableLabel animation probably looks weird if the original attributedText isn't of uniform color, but we don't have that case for now.
-                let color = originalTextColor ?? mangledString.attribute(NSForegroundColorAttributeName, at: 0, effectiveRange: nil) as! UIColor
+                let color = originalTextColor ?? mangledString.attribute(NSAttributedString.Key.foregroundColor, at: 0, effectiveRange: nil) as! UIColor
                 var alpha: CGFloat = 0
                 color.getRed(nil, green: nil, blue: nil, alpha: &alpha)
                 let mangledStringColor = canUseAlphaForAccents ? color.withAlphaComponent(alpha * 0.5) : color
-                mangledString.addAttribute(NSForegroundColorAttributeName, value: mangledStringColor, range: mangledStringRange)
+                mangledString.addAttribute(NSAttributedString.Key.foregroundColor, value: mangledStringColor, range: mangledStringRange)
             }
             attributedText = mangledString
         }
@@ -142,4 +145,15 @@ class ManglableLabel: UILabel {
         
 
     }
+}
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertToOptionalNSAttributedStringKeyDictionary(_ input: [String: Any]?) -> [NSAttributedString.Key: Any]? {
+	guard let input = input else { return nil }
+	return Dictionary(uniqueKeysWithValues: input.map { key, value in (NSAttributedString.Key(rawValue: key), value)})
+}
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertFromNSAttributedStringKey(_ input: NSAttributedString.Key) -> String {
+	return input.rawValue
 }

@@ -55,7 +55,7 @@ class PlayerIdentityManager {
     }
     
     private func authenticateGameCenterPlayer() {
-        let localGCPlayer = GKLocalPlayer.localPlayer()
+        let localGCPlayer = GKLocalPlayer.local
         localGCPlayer.authenticateHandler = { (loginVC: UIViewController?, error: Error?) -> (Void) in
             if let existingLoginVC = loginVC {
                 self.gameCenterLoginViewController = existingLoginVC

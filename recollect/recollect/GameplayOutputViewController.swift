@@ -39,19 +39,19 @@ class GameplayOutputViewController: HalfScreenViewController, UIGestureRecognize
         
         progressVC = ProgressViewController()
         progressVC?.gameState = gameState
-        addChildViewController(progressVC!)
+        addChild(progressVC!)
         view.addSubview(progressVC!.view)
-        progressVC!.didMove(toParentViewController: self)
+        progressVC!.didMove(toParent: self)
         
         view.addConstraints(
             NSLayoutConstraint.constraints(
                 withVisualFormat: "H:|[progressView]|",
-                options: NSLayoutFormatOptions(rawValue: 0),
+                options: NSLayoutConstraint.FormatOptions(rawValue: 0),
                 metrics: nil,
                 views: ["progressView" : progressVC!.view]) +
             NSLayoutConstraint.constraints(
                 withVisualFormat: "V:[progressView(\(DesignLanguage.ProgressBarHeight))]|",
-                options: NSLayoutFormatOptions(rawValue: 0),
+                options: NSLayoutConstraint.FormatOptions(rawValue: 0),
                 metrics: nil,
                 views: ["progressView" : progressVC!.view])
         )
@@ -65,26 +65,26 @@ class GameplayOutputViewController: HalfScreenViewController, UIGestureRecognize
             [
                 NSLayoutConstraint(
                     item: challengeContainer!,
-                    attribute: NSLayoutAttribute.top,
-                    relatedBy: NSLayoutRelation.equal,
+                    attribute: NSLayoutConstraint.Attribute.top,
+                    relatedBy: NSLayoutConstraint.Relation.equal,
                     toItem: view,
-                    attribute: NSLayoutAttribute.top,
+                    attribute: NSLayoutConstraint.Attribute.top,
                     multiplier: 1.0,
                     constant: 0.0),
                 NSLayoutConstraint(
                     item: challengeContainer!,
-                    attribute: NSLayoutAttribute.bottom,
-                    relatedBy: NSLayoutRelation.equal,
+                    attribute: NSLayoutConstraint.Attribute.bottom,
+                    relatedBy: NSLayoutConstraint.Relation.equal,
                     toItem: progressVC!.view,
-                    attribute: NSLayoutAttribute.top,
+                    attribute: NSLayoutConstraint.Attribute.top,
                     multiplier: 1.0,
                     constant: 0.0),
                 NSLayoutConstraint(
                     item: challengeContainer!,
-                    attribute: NSLayoutAttribute.width,
-                    relatedBy: NSLayoutRelation.equal,
+                    attribute: NSLayoutConstraint.Attribute.width,
+                    relatedBy: NSLayoutConstraint.Relation.equal,
                     toItem: view,
-                    attribute: NSLayoutAttribute.width,
+                    attribute: NSLayoutConstraint.Attribute.width,
                     multiplier: CGFloat(gameState.challenges.count)/CGFloat(gameState.n + 1),
                     constant: 0.0)
             ]
@@ -100,34 +100,34 @@ class GameplayOutputViewController: HalfScreenViewController, UIGestureRecognize
                 [
                     NSLayoutConstraint(
                         item: topLabel,
-                        attribute: NSLayoutAttribute.centerY,
-                        relatedBy: NSLayoutRelation.equal,
+                        attribute: NSLayoutConstraint.Attribute.centerY,
+                        relatedBy: NSLayoutConstraint.Relation.equal,
                         toItem: challengeContainer,
-                        attribute: NSLayoutAttribute.centerY,
+                        attribute: NSLayoutConstraint.Attribute.centerY,
                         multiplier: 2.0/3.0,
                         constant: 0.0),
                     NSLayoutConstraint(
                         item: bottomLabel,
-                        attribute: NSLayoutAttribute.centerY,
-                        relatedBy: NSLayoutRelation.equal,
+                        attribute: NSLayoutConstraint.Attribute.centerY,
+                        relatedBy: NSLayoutConstraint.Relation.equal,
                         toItem: challengeContainer,
-                        attribute: NSLayoutAttribute.centerY,
+                        attribute: NSLayoutConstraint.Attribute.centerY,
                         multiplier: 4.0/3.0,
                         constant: 0.0),
                     NSLayoutConstraint(
                         item: topLabel,
-                        attribute: NSLayoutAttribute.centerX,
-                        relatedBy: NSLayoutRelation.equal,
+                        attribute: NSLayoutConstraint.Attribute.centerX,
+                        relatedBy: NSLayoutConstraint.Relation.equal,
                         toItem: challengeContainer,
-                        attribute: NSLayoutAttribute.centerX,
+                        attribute: NSLayoutConstraint.Attribute.centerX,
                         multiplier: (2.0/CGFloat(gameState.challenges.count * 2)) * CGFloat(challengeIndex*2 + 1),
                         constant: 0.0),
                     NSLayoutConstraint(
                         item: bottomLabel,
-                        attribute: NSLayoutAttribute.centerX,
-                        relatedBy: NSLayoutRelation.equal,
+                        attribute: NSLayoutConstraint.Attribute.centerX,
+                        relatedBy: NSLayoutConstraint.Relation.equal,
                         toItem: topLabel,
-                        attribute: NSLayoutAttribute.centerX,
+                        attribute: NSLayoutConstraint.Attribute.centerX,
                         multiplier: 1.0,
                         constant: 0.0)
                 ]
@@ -145,26 +145,26 @@ class GameplayOutputViewController: HalfScreenViewController, UIGestureRecognize
         view.addConstraints([
             NSLayoutConstraint(
                 item: blurView!.blurredView,
-                attribute: NSLayoutAttribute.centerY,
-                relatedBy: NSLayoutRelation.equal,
+                attribute: NSLayoutConstraint.Attribute.centerY,
+                relatedBy: NSLayoutConstraint.Relation.equal,
                 toItem: challengeContainer,
-                attribute: NSLayoutAttribute.centerY,
+                attribute: NSLayoutConstraint.Attribute.centerY,
                 multiplier: 1.0,
                 constant: 0.0),
             NSLayoutConstraint(
                 item: blurView!.blurredView,
-                attribute: NSLayoutAttribute.height,
-                relatedBy: NSLayoutRelation.equal,
+                attribute: NSLayoutConstraint.Attribute.height,
+                relatedBy: NSLayoutConstraint.Relation.equal,
                 toItem: challengeContainer,
-                attribute: NSLayoutAttribute.height,
+                attribute: NSLayoutConstraint.Attribute.height,
                 multiplier:1.0,
                 constant: 0.0),
             NSLayoutConstraint(
                 item: blurView!.blurredView,
-                attribute: NSLayoutAttribute.centerX,
-                relatedBy: NSLayoutRelation.equal,
+                attribute: NSLayoutConstraint.Attribute.centerX,
+                relatedBy: NSLayoutConstraint.Relation.equal,
                 toItem: challengeContainer,
-                attribute: NSLayoutAttribute.centerX,
+                attribute: NSLayoutConstraint.Attribute.centerX,
                 multiplier: 1.0,
                 constant: 0.0),
         ])
@@ -173,34 +173,34 @@ class GameplayOutputViewController: HalfScreenViewController, UIGestureRecognize
             [
                 NSLayoutConstraint(
                     item: blurView!,
-                    attribute: NSLayoutAttribute.top,
-                    relatedBy: NSLayoutRelation.equal,
+                    attribute: NSLayoutConstraint.Attribute.top,
+                    relatedBy: NSLayoutConstraint.Relation.equal,
                     toItem: view,
-                    attribute: NSLayoutAttribute.top,
+                    attribute: NSLayoutConstraint.Attribute.top,
                     multiplier: 1.0,
                     constant: 0.0),
                 NSLayoutConstraint(
                     item: blurView!,
-                    attribute: NSLayoutAttribute.bottom,
-                    relatedBy: NSLayoutRelation.equal,
+                    attribute: NSLayoutConstraint.Attribute.bottom,
+                    relatedBy: NSLayoutConstraint.Relation.equal,
                     toItem: view,
-                    attribute: NSLayoutAttribute.bottom,
+                    attribute: NSLayoutConstraint.Attribute.bottom,
                     multiplier: 1.0,
                     constant: 0.0),
                 NSLayoutConstraint(
                     item: blurView!,
-                    attribute: NSLayoutAttribute.left,
-                    relatedBy: NSLayoutRelation.equal,
+                    attribute: NSLayoutConstraint.Attribute.left,
+                    relatedBy: NSLayoutConstraint.Relation.equal,
                     toItem: view,
-                    attribute: NSLayoutAttribute.left,
+                    attribute: NSLayoutConstraint.Attribute.left,
                     multiplier: 1.0,
                     constant: 0.0),
                 NSLayoutConstraint(
                     item: blurView!,
-                    attribute: NSLayoutAttribute.right,
-                    relatedBy: NSLayoutRelation.equal,
+                    attribute: NSLayoutConstraint.Attribute.right,
+                    relatedBy: NSLayoutConstraint.Relation.equal,
                     toItem: view,
-                    attribute: NSLayoutAttribute.right,
+                    attribute: NSLayoutConstraint.Attribute.right,
                     multiplier: CGFloat(gameState.n)/CGFloat(gameState.n + 1),
                     constant: 0.0),
             ]
@@ -218,24 +218,24 @@ class GameplayOutputViewController: HalfScreenViewController, UIGestureRecognize
             [
                 NSLayoutConstraint(
                     item: plusLabel!,
-                    attribute: NSLayoutAttribute.centerY,
-                    relatedBy: NSLayoutRelation.equal,
+                    attribute: NSLayoutConstraint.Attribute.centerY,
+                    relatedBy: NSLayoutConstraint.Relation.equal,
                     toItem: challengeContainer,
-                    attribute: NSLayoutAttribute.centerY,
+                    attribute: NSLayoutConstraint.Attribute.centerY,
                     multiplier: 1.0,
                     constant: 0.0),
                 NSLayoutConstraint(
                     item: plusLabel!,
-                    attribute: NSLayoutAttribute.centerX,
-                    relatedBy: NSLayoutRelation.equal,
+                    attribute: NSLayoutConstraint.Attribute.centerX,
+                    relatedBy: NSLayoutConstraint.Relation.equal,
                     toItem: view,
-                    attribute: NSLayoutAttribute.right,
+                    attribute: NSLayoutConstraint.Attribute.right,
                     multiplier: (CGFloat(gameState.n) + 0.25)/CGFloat(gameState.n + 1),
                     constant: 0.0)
             ]
         )
         
-        view.bringSubview(toFront: progressVC!.view)
+        view.bringSubviewToFront(progressVC!.view)
         
         setActiveChallenge(gameState.currentChallengeIndex, animated: false)
         
@@ -252,10 +252,10 @@ class GameplayOutputViewController: HalfScreenViewController, UIGestureRecognize
     }
     
     var previousXTranslation: CGFloat = 0.0
-    func blurViewDragged(_ panGestureRecognizer: UIPanGestureRecognizer) {
-        if panGestureRecognizer.state == UIGestureRecognizerState.began ||
-           panGestureRecognizer.state == UIGestureRecognizerState.changed {
-            if panGestureRecognizer.state == UIGestureRecognizerState.began {
+    @objc func blurViewDragged(_ panGestureRecognizer: UIPanGestureRecognizer) {
+        if panGestureRecognizer.state == UIGestureRecognizer.State.began ||
+           panGestureRecognizer.state == UIGestureRecognizer.State.changed {
+            if panGestureRecognizer.state == UIGestureRecognizer.State.began {
                 currentSlidingHighlightId = nil
                 blurView!.layer.removeAllAnimations()
             }
@@ -293,13 +293,13 @@ class GameplayOutputViewController: HalfScreenViewController, UIGestureRecognize
             }
             
             previousXTranslation = xTranslation
-        } else if panGestureRecognizer.state == UIGestureRecognizerState.ended ||
-                  panGestureRecognizer.state == UIGestureRecognizerState.cancelled {
+        } else if panGestureRecognizer.state == UIGestureRecognizer.State.ended ||
+                  panGestureRecognizer.state == UIGestureRecognizer.State.cancelled {
             let priorXTranslate = self.blurView!.transform.tx
             UIView.animate(
                 withDuration: DesignLanguage.MinorAnimationDuration/2.0,
                 delay: 0.0,
-                options: UIViewAnimationOptions.curveEaseIn,
+                options: UIView.AnimationOptions.curveEaseIn,
                 animations: { () -> Void in
                     self.blurView!.transform = CGAffineTransform.identity
                     self.blurView!.blurredView.transform = CGAffineTransform.identity
@@ -307,7 +307,7 @@ class GameplayOutputViewController: HalfScreenViewController, UIGestureRecognize
                 UIView.animate(
                     withDuration: DesignLanguage.MinorAnimationDuration/3.0,
                     delay: 0.0,
-                    options: UIViewAnimationOptions.curveEaseOut,
+                    options: UIView.AnimationOptions.curveEaseOut,
                     animations: { () -> Void in
                         self.blurView!.transform = CGAffineTransform(translationX: priorXTranslate/CGFloat(8.0), y: 0.0)
                         self.blurView!.blurredView.transform = CGAffineTransform(translationX: -priorXTranslate/CGFloat(8.0), y: 0.0)
@@ -315,7 +315,7 @@ class GameplayOutputViewController: HalfScreenViewController, UIGestureRecognize
                     UIView.animate(
                         withDuration: DesignLanguage.MinorAnimationDuration/3.0,
                         delay: 0.0,
-                        options: UIViewAnimationOptions.curveEaseIn,
+                        options: UIView.AnimationOptions.curveEaseIn,
                         animations: { () -> Void in
                             self.blurView!.transform = CGAffineTransform.identity
                             self.blurView!.blurredView.transform = CGAffineTransform.identity
@@ -350,10 +350,10 @@ class GameplayOutputViewController: HalfScreenViewController, UIGestureRecognize
         }
         challengeContainerXPositionConstraint = NSLayoutConstraint(
             item: challengeContainer!,
-            attribute: NSLayoutAttribute.left,
-            relatedBy: NSLayoutRelation.equal,
+            attribute: NSLayoutConstraint.Attribute.left,
+            relatedBy: NSLayoutConstraint.Relation.equal,
             toItem: view,
-            attribute: NSLayoutAttribute.right,
+            attribute: NSLayoutConstraint.Attribute.right,
             multiplier: UIView.sanitizeLocationConstraintMultiplier(-CGFloat(challengeIndex)/CGFloat(gameState.n + 1)),
             constant: 0.0)
         view.addConstraint(challengeContainerXPositionConstraint!)
@@ -414,7 +414,7 @@ class GameplayOutputViewController: HalfScreenViewController, UIGestureRecognize
             UIView.animate(
                 withDuration: DesignLanguage.MinorAnimationDuration/2.0,
                 delay: 0.0,
-                options: UIViewAnimationOptions.curveEaseOut,
+                options: UIView.AnimationOptions.curveEaseOut,
                 animations: { () -> Void in
                     self.blurView!.transform = CGAffineTransform(translationX: -slidingAmount, y: 0.0)
                     self.blurView!.blurredView.transform = CGAffineTransform(translationX: slidingAmount, y: 0.0)
@@ -423,7 +423,7 @@ class GameplayOutputViewController: HalfScreenViewController, UIGestureRecognize
                     UIView.animate(
                         withDuration: DesignLanguage.MinorAnimationDuration/2.0,
                         delay: 0.0,
-                        options: UIViewAnimationOptions.curveEaseIn,
+                        options: UIView.AnimationOptions.curveEaseIn,
                         animations: { () -> Void in
                             self.blurView!.transform = CGAffineTransform.identity
                             self.blurView!.blurredView.transform = CGAffineTransform.identity
@@ -432,7 +432,7 @@ class GameplayOutputViewController: HalfScreenViewController, UIGestureRecognize
                             UIView.animate(
                                 withDuration: DesignLanguage.MinorAnimationDuration/3.0,
                                 delay: 0.0,
-                                options: UIViewAnimationOptions.curveEaseOut,
+                                options: UIView.AnimationOptions.curveEaseOut,
                                 animations: { () -> Void in
                                     self.blurView!.transform = CGAffineTransform(translationX: -slidingAmount/8.0, y: 0.0)
                                     self.blurView!.blurredView.transform = CGAffineTransform(translationX: slidingAmount/8.0, y: 0.0)
@@ -441,7 +441,7 @@ class GameplayOutputViewController: HalfScreenViewController, UIGestureRecognize
                                 UIView.animate(
                                     withDuration: DesignLanguage.MinorAnimationDuration/3.0,
                                     delay: 0.0,
-                                    options: UIViewAnimationOptions.curveEaseIn,
+                                    options: UIView.AnimationOptions.curveEaseIn,
                                     animations: { () -> Void in
                                         self.blurView!.transform = CGAffineTransform.identity
                                         self.blurView!.blurredView.transform = CGAffineTransform.identity
@@ -457,7 +457,7 @@ class GameplayOutputViewController: HalfScreenViewController, UIGestureRecognize
         }
     }
     
-    func presentInstructionalOverlayIfNeeded(_ timer: Timer) {
+    @objc func presentInstructionalOverlayIfNeeded(_ timer: Timer) {
         let gameStateAtTimerSetup = timer.userInfo as! GameState
         
         if gameStateAtTimerSetup.currentChallengeIndex == gameState.currentChallengeIndex && challengeContainer != nil {
@@ -485,34 +485,34 @@ class GameplayOutputViewController: HalfScreenViewController, UIGestureRecognize
             view.addConstraints([
                 NSLayoutConstraint(
                     item: borderOverlay!,
-                    attribute: NSLayoutAttribute.centerX,
-                    relatedBy: NSLayoutRelation.equal,
+                    attribute: NSLayoutConstraint.Attribute.centerX,
+                    relatedBy: NSLayoutConstraint.Relation.equal,
                     toItem: blurView,
-                    attribute: NSLayoutAttribute.right,
+                    attribute: NSLayoutConstraint.Attribute.right,
                     multiplier: 1.0/CGFloat(2*gameState.n),
                     constant: 0.0),
                 NSLayoutConstraint(
                     item: borderOverlay!,
-                    attribute: NSLayoutAttribute.centerY,
-                    relatedBy: NSLayoutRelation.equal,
+                    attribute: NSLayoutConstraint.Attribute.centerY,
+                    relatedBy: NSLayoutConstraint.Relation.equal,
                     toItem: challengeContainer!,
-                    attribute: NSLayoutAttribute.centerY,
+                    attribute: NSLayoutConstraint.Attribute.centerY,
                     multiplier: 1.0,
                     constant: 0.0),
                 NSLayoutConstraint(
                     item: borderOverlay!,
-                    attribute: NSLayoutAttribute.width,
-                    relatedBy: NSLayoutRelation.equal,
+                    attribute: NSLayoutConstraint.Attribute.width,
+                    relatedBy: NSLayoutConstraint.Relation.equal,
                     toItem: nil,
-                    attribute: NSLayoutAttribute.notAnAttribute,
+                    attribute: NSLayoutConstraint.Attribute.notAnAttribute,
                     multiplier: 0.0,
                     constant: maxWidth + blurPadding),
                 NSLayoutConstraint(
                     item: borderOverlay!,
-                    attribute: NSLayoutAttribute.height,
-                    relatedBy: NSLayoutRelation.equal,
+                    attribute: NSLayoutConstraint.Attribute.height,
+                    relatedBy: NSLayoutConstraint.Relation.equal,
                     toItem: nil,
-                    attribute: NSLayoutAttribute.notAnAttribute,
+                    attribute: NSLayoutConstraint.Attribute.notAnAttribute,
                     multiplier: 0.0,
                     constant: maxBottom - minYOrigin)
             ])
@@ -525,7 +525,7 @@ class GameplayOutputViewController: HalfScreenViewController, UIGestureRecognize
     
     override func animationWillBegin(beginningState: TransitionAnimationState, plannedAnimationDuration: Foundation.TimeInterval) {
         super.animationWillBegin(beginningState: beginningState, plannedAnimationDuration: plannedAnimationDuration)
-        view.superview?.bringSubview(toFront: view)
+        view.superview?.bringSubviewToFront(view)
         configureForTransition(beginningState)
         
         if beginningState == TransitionAnimationState.active {

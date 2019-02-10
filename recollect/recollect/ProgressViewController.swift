@@ -49,18 +49,18 @@ class ProgressViewController: UIViewController {
             [
                 NSLayoutConstraint(
                     item: timeLabel!,
-                    attribute: NSLayoutAttribute.centerX,
-                    relatedBy: NSLayoutRelation.equal,
+                    attribute: NSLayoutConstraint.Attribute.centerX,
+                    relatedBy: NSLayoutConstraint.Relation.equal,
                     toItem: view,
-                    attribute: NSLayoutAttribute.centerX,
+                    attribute: NSLayoutConstraint.Attribute.centerX,
                     multiplier: 1.0,
                     constant: 0.0),
                 NSLayoutConstraint(
                     item: timeLabel!,
-                    attribute: NSLayoutAttribute.centerY,
-                    relatedBy: NSLayoutRelation.equal,
+                    attribute: NSLayoutConstraint.Attribute.centerY,
+                    relatedBy: NSLayoutConstraint.Relation.equal,
                     toItem: view,
-                    attribute: NSLayoutAttribute.centerY,
+                    attribute: NSLayoutConstraint.Attribute.centerY,
                     multiplier: 1.0,
                     constant: 0.0)
             ]
@@ -79,18 +79,18 @@ class ProgressViewController: UIViewController {
                 [
                     NSLayoutConstraint(
                         item: dotLabel,
-                        attribute: NSLayoutAttribute.centerX,
-                        relatedBy: NSLayoutRelation.equal,
+                        attribute: NSLayoutConstraint.Attribute.centerX,
+                        relatedBy: NSLayoutConstraint.Relation.equal,
                         toItem: view,
-                        attribute: NSLayoutAttribute.centerX,
+                        attribute: NSLayoutConstraint.Attribute.centerX,
                         multiplier: 1.0,
                         constant: -(dotsSpread/2.0) + ((dotsSpread*CGFloat(i - 1))/CGFloat(gameState!.challenges.count - 1))),
                     NSLayoutConstraint(
                         item: dotLabel,
-                        attribute: NSLayoutAttribute.centerY,
-                        relatedBy: NSLayoutRelation.equal,
+                        attribute: NSLayoutConstraint.Attribute.centerY,
+                        relatedBy: NSLayoutConstraint.Relation.equal,
                         toItem: view,
-                        attribute: NSLayoutAttribute.bottom,
+                        attribute: NSLayoutConstraint.Attribute.bottom,
                         multiplier: 0.70,
                         constant: 0)
                 ]
@@ -105,12 +105,12 @@ class ProgressViewController: UIViewController {
         view.addConstraints(
             NSLayoutConstraint.constraints(
                 withVisualFormat: "H:|[bottomShadow]|",
-                options: NSLayoutFormatOptions(rawValue: 0),
+                options: NSLayoutConstraint.FormatOptions(rawValue: 0),
                 metrics: nil,
                 views: ["bottomShadow" : bottomShadow]) +
             NSLayoutConstraint.constraints(
                 withVisualFormat: "V:[bottomShadow(1)]|",
-                options: NSLayoutFormatOptions(rawValue: 0),
+                options: NSLayoutConstraint.FormatOptions(rawValue: 0),
                 metrics: nil,
                 views: ["bottomShadow" : bottomShadow])
         )
@@ -128,12 +128,12 @@ class ProgressViewController: UIViewController {
         view.addConstraints(
             NSLayoutConstraint.constraints(
                 withVisualFormat: "V:|[penaltyLabel]|",
-                options: NSLayoutFormatOptions(rawValue: 0),
+                options: NSLayoutConstraint.FormatOptions(rawValue: 0),
                 metrics: nil,
                 views: ["penaltyLabel" : penaltyLabel!]) +
             NSLayoutConstraint.constraints(
                 withVisualFormat: "H:[penaltyLabel]-|",
-                options: NSLayoutFormatOptions(rawValue: 0),
+                options: NSLayoutConstraint.FormatOptions(rawValue: 0),
                 metrics: nil,
                 views: ["penaltyLabel" : penaltyLabel!])
         )
@@ -169,7 +169,7 @@ class ProgressViewController: UIViewController {
         }
     }
     
-    func refresh(_ displayLink: CADisplayLink) {
+    @objc func refresh(_ displayLink: CADisplayLink) {
         if gameState?.latestTimeStart != nil {
             timeLabel?.text = gameState!.time().minuteSecondCentisecondString()
         } else {
@@ -185,7 +185,7 @@ extension ProgressViewController: GameStateChangeListener {
             timeLabel?.text = existingGameState.time().minuteSecondCentisecondString()
             if change.oldGameState?.latestTimeStart == nil && existingGameState.latestTimeStart != nil {
                 let displayLink = CADisplayLink(target: self, selector: #selector(ProgressViewController.refresh(_:)))
-                displayLink.add(to: RunLoop.current, forMode: RunLoopMode.defaultRunLoopMode)
+                displayLink.add(to: RunLoop.current, forMode: RunLoop.Mode.default)
             }
             if change.oldGameState?.peeks.count < existingGameState.peeks.count {
                 pulsePenaltyLabel()
